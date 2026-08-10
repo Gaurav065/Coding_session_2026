@@ -37,17 +37,17 @@ class Strategy:
         est_revenue = sum(qty * state.market["prices"].get(p, 1) for p, qty in plan.sell_plan.items())
         budget += est_revenue
         
-        # Land: NE at day 2 if affordable
         if state.day >= 2:
             plan.land_purchase = self._decide_land(state, budget)
             if plan.land_purchase:
                 budget -= QUADRANT_COSTS[plan.land_purchase]
         
-        # Hands: hire early
         if state.day >= 1:
             plan.target_hands = 1
-        if state.day >= 5:
+        if state.day >= 4:
             plan.target_hands = 2
+        if state.day >= 10:
+            plan.target_hands = 3
         hand_cost = self._hand_cost(len(state.hands), plan.target_hands)
         budget -= hand_cost
         
@@ -55,36 +55,35 @@ class Strategy:
         current_geese = state.geese_count()
         empty_coops = len(state.empty_structures("COOP"))
         
-        # AGGRESSIVE EARLY GAME: Geese at day 3
         if state.day <= 2:
-            plan.wheat_target = min(6, len(state.empty_unlocked_tiles()))
+            plan.wheat_target = min(6, empty_tiles)
             plan.goose_target = 0
             plan.build_coops = 0
         elif state.day <= 5:
-            plan.wheat_target = min(6, len(state.empty_unlocked_tiles()))
-            if budget >= 600 and state.geese_count() == 0:
+            plan.wheat_target = min(6, empty_tiles)
+            if budget >= 800 and current_geese == 0:
                 plan.goose_target = 2
-                plan.build_coops = max(0, 2 - len(state.empty_structures("COOP")))
+                plan.build_coops = max(0, 2 - empty_coops)
             else:
-                plan.goose_target = state.geese_count()
+                plan.goose_target = current_geese
         elif state.day <= 12:
-            plan.wheat_target = min(6, len(state.empty_unlocked_tiles()))
-            if budget >= 1000:
-                plan.goose_target = max(state.geese_count(), 4)
-                plan.build_coops = max(0, plan.goose_target - state.geese_count() - len(state.empty_structures("COOP")))
+            plan.wheat_target = min(6, empty_tiles)
+            if budget >= 1200:
+                plan.goose_target = max(current_geese, 4)
+                plan.build_coops = max(0, plan.goose_target - current_geese - empty_coops)
             else:
-                plan.goose_target = state.geese_count()
+                plan.goose_target = current_geese
         elif state.day <= 20:
-            plan.wheat_target = min(4, len(state.empty_unlocked_tiles()))
-            max_geese = min(len(state.empty_unlocked_tiles()) // 2, 8)
-            if budget >= 500:
-                plan.goose_target = max(state.geese_count(), min(max_geese, 6))
-                plan.build_coops = max(0, plan.goose_target - state.geese_count() - len(state.empty_structures("COOP")))
+            plan.wheat_target = min(4, empty_tiles)
+            max_geese = min(empty_tiles // 2, 6)
+            if budget >= 800:
+                plan.goose_target = max(current_geese, min(max_geese, 6))
+                plan.build_coops = max(0, plan.goose_target - current_geese - empty_coops)
             else:
-                plan.goose_target = state.geese_count()
+                plan.goose_target = current_geese
         else:
-            plan.wheat_target = min(4, len(state.empty_unlocked_tiles()))
-            plan.goose_target = state.geese_count()
+            plan.wheat_target = min(4, empty_tiles)
+            plan.goose_target = current_geese
             plan.build_coops = 0
         
         self._calc_purchases(state, plan)
@@ -125,38 +124,40 @@ class Strategy:
         for product, qty in state.shed.items():
             if qty == 0 or product == "SEEDS":
                 continue
-            
             if product == "WHEAT":
-                if qty > 3:
-                    plan[product] = qty - 3
-                continue
-            
-            if product == "EGG":
-                if qty > 2:
+                if qty >= 3:
                     plan[product] = qty - 2
                 continue
-            
+            if product == "EGG":
+                if qty >= 2:
+                    plan[product] = qty - 1
+                continue
+            current_inv = state.market["inventory"].get(product, 10000)
             if product in ["MELON", "STRAWBERRY", "MILK", "WOOL"]:
-                current_inv = state.market["inventory"].get(product, 10000)
                 opt_qty, _ = self.market.optimal_sell_batch(product, qty, current_inv)
                 if opt_qty > 0:
                     plan[product] = opt_qty
             else:
-                if qty > 3:
-                    plan[product] = qty - 3
-        
+                if qty >= 3:
+                    plan[product] = qty - 2
         return plan
 
 
 class TaskScheduler:
     def __init__(self):
         self.last_wheat_pos = None
+        self.coops_built_today = 0
+        self.last_build_day = -1
     
     def schedule(self, state: GameState, plan: DailyPlan) -> Dict:
         actions = {"farmer": ["PASS"], "hands": [], "market": []}
         
-        # Build market every turn with fresh sell quantities
         actions["market"] = self._build_market_actions(state, plan)
+        
+        # Reset daily build counter
+        if state.day != self.last_build_day:
+            self.coops_built_today = 0
+            self.last_build_day = state.day
         
         all_units = ["farmer"] + [f"hand_{i}" for i in range(len(state.hands))]
         positions = {"farmer": state.farmer_pos}
@@ -181,8 +182,9 @@ class TaskScheduler:
         actions = []
         money = state.money
         
-        # Dynamic sell plan based on CURRENT shed inventory
         sell_now = self._compute_sell_now(state)
+        est_sell_revenue = sum(qty * state.market["prices"].get(p, 1) for p, qty in sell_now.items())
+        money += est_sell_revenue
         
         for prod in ["EGG", "WOOL", "MILK", "TOMATO", "WHEAT", "FERTILIZER"]:
             qty = sell_now.get(prod, 0)
@@ -218,26 +220,22 @@ class TaskScheduler:
         for product, qty in state.shed.items():
             if qty == 0 or product == "SEEDS":
                 continue
-            
             if product == "WHEAT":
-                if qty > 3:
-                    sell[product] = qty - 3
-                continue
-            
-            if product == "EGG":
-                if qty > 2:
+                if qty >= 3:
                     sell[product] = qty - 2
                 continue
-            
+            if product == "EGG":
+                if qty >= 2:
+                    sell[product] = qty - 1
+                continue
             current_inv = state.market["inventory"].get(product, 10000)
             if product in ["MELON", "STRAWBERRY", "MILK", "WOOL"]:
                 opt_qty, _ = self.market.optimal_sell_batch(product, qty, current_inv)
                 if opt_qty > 0:
                     sell[product] = opt_qty
             else:
-                if qty > 3:
-                    sell[product] = qty - 3
-        
+                if qty >= 3:
+                    sell[product] = qty - 2
         return sell
     
     def _build_queues(self, state: GameState, plan: DailyPlan, positions: Dict) -> Dict[str, List]:
@@ -249,53 +247,59 @@ class TaskScheduler:
             cy = sum(p[1] for p in wheat_tiles) // len(wheat_tiles)
             self.last_wheat_pos = (cx, cy)
         
-        # PRIORITY 1: Water wheat
+        # Track coops built this day
+        max_coops_today = 2
+        
+        # PRIORITY 1: Water wheat (critical)
         for pos in state.wheat_needing_water():
             uid = self._nearest(positions, pos)
             queues[uid].append(("WATER", pos, 100))
         
-        # PRIORITY 2: Feed geese
+        # PRIORITY 2: Feed geese (daily, critical)
         for pos in state.animals_needing_feed():
             uid = self._nearest(positions, pos)
             queues[uid].append(("FEED", pos, 95))
         
-        # PRIORITY 3: Care geese
+        # PRIORITY 3: Care geese (bonus yield)
         for pos in state.animals_needing_care():
             uid = self._nearest(positions, pos)
             queues[uid].append(("CARE", pos, 90))
         
-        # PRIORITY 4: Harvest wheat
+        # PRIORITY 4: Harvest geese (eggs)
+        for pos in state.animals_ready_to_harvest():
+            uid = self._nearest(positions, pos)
+            queues[uid].append(("HARVEST", pos, 85))
+        
+        # PRIORITY 5: Harvest wheat
         for pos in state.wheat_ready_to_harvest():
             tile = state.get_tile(*pos)
             age = state.day - tile["planted_day"]
             if age >= 2 and tile["yield_units"] > 0:
                 uid = self._nearest(positions, pos)
-                queues[uid].append(("HARVEST", pos, 85))
-        
-        # PRIORITY 5: Harvest geese
-        for pos in state.animals_ready_to_harvest():
-            uid = self._nearest(positions, pos)
-            queues[uid].append(("HARVEST", pos, 80))
+                queues[uid].append(("HARVEST", pos, 80))
         
         # PRIORITY 6: Collect fertilizer
         for pos in state.animals_with_fertilizer():
             uid = self._nearest(positions, pos)
             queues[uid].append(("COLLECT_FERTILIZER", pos, 75))
         
-        # PRIORITY 7: Build coops
-        for _ in range(plan.build_coops):
-            empty = state.empty_unlocked_tiles()
-            if empty:
-                center = self.last_wheat_pos or SHED_TILES[0]
-                pos = min(empty, key=lambda p: manhattan_distance(p, center))
-                uid = self._nearest(positions, pos)
-                queues[uid].append(("BUILD_COOP", pos, 70))
+        # PRIORITY 7: Build coops (max 2/day)
+        if self.coops_built_today < 2:
+            for _ in range(plan.build_coops - self.coops_built_today):
+                empty = state.empty_unlocked_tiles()
+                if empty:
+                    center = self.last_wheat_pos or SHED_TILES[0]
+                    pos = min(empty, key=lambda p: manhattan_distance(p, center))
+                    uid = self._nearest(positions, pos)
+                    queues[uid].append(("BUILD_COOP", pos, 70))
+                    self.coops_built_today += 1
         
-        # PRIORITY 8: Place geese (if geese in shed and empty coops)
+        # PRIORITY 8: Place geese (prefer hands)
         shed_geese = state.shed.get("GOOSE", 0)
         for pos in state.empty_structures("COOP"):
             if shed_geese > 0:
-                uid = self._nearest(positions, pos)
+                # Prefer hand for placing
+                uid = self._nearest_hand(positions, pos)
                 queues[uid].append(("PLACE_GOOSE", pos, 65))
                 shed_geese -= 1
         
@@ -312,13 +316,15 @@ class TaskScheduler:
                             wheat_adjacent.append(adj)
                 
                 if wheat_adjacent:
+                    # Assign to closest unit
                     pos = min(wheat_adjacent, key=lambda p: manhattan_distance(p, positions["farmer"]))
+                    uid = self._nearest(positions, pos)
+                    queues[uid].append(("PLANT_WHEAT", pos, 60))
                 else:
                     center = self.last_wheat_pos or positions["farmer"]
                     pos = min(empty, key=lambda p: manhattan_distance(p, center))
-                
-                uid = self._nearest(positions, pos)
-                queues[uid].append(("PLANT_WHEAT", pos, 60))
+                    uid = self._nearest(positions, pos)
+                    queues[uid].append(("PLANT_WHEAT", pos, 55))
         
         # PRIORITY 10: Clear weeds
         for pos in state.weed_tiles():
@@ -336,6 +342,19 @@ class TaskScheduler:
                 best_dist = d
                 best = uid
         return best
+    
+    def _nearest_hand(self, positions: Dict, target: Tuple[int, int]) -> str:
+        """Prefer hand over farmer for this task."""
+        best = None
+        best_dist = float('inf')
+        for uid, pos in positions.items():
+            if uid == "farmer":
+                continue
+            d = manhattan_distance(pos, target)
+            if d < best_dist:
+                best_dist = d
+                best = uid
+        return best if best else "farmer"
     
     def _pop_action(self, state: GameState, unit_id: str, queue: List, pos: Tuple[int, int]):
         if not queue:
@@ -356,7 +375,9 @@ class TaskScheduler:
         elif action_type == "CARE": return ["CARE"]
         elif action_type == "HARVEST": return ["HARVEST"]
         elif action_type == "COLLECT_FERTILIZER": return ["COLLECT_FERTILIZER"]
-        elif action_type == "BUILD_COOP": return ["BUILD_COOP"]
+        elif action_type == "BUILD_COOP": 
+            self.coops_built_today += 1
+            return ["BUILD_COOP"]
         elif action_type == "PLACE_GOOSE": 
             if state.shed.get("GOOSE", 0) > 0:
                 return ["PLACE", "GOOSE"]

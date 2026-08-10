@@ -22,4 +22,8 @@ def agent(obs: Dict) -> Dict[str, Any]:
     
     actions = _scheduler.schedule(state, pstate["plan"])
     
+    # Debug print
+    if state.hour == 0:
+        print(f"Player {player} Day {state.day}: Shed={state.shed}, Market={actions['market']}")
+    
     return actions
