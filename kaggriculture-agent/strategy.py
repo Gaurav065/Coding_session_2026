@@ -41,41 +41,47 @@ class Strategy:
         
         if state.day >= 1:
             plan.target_hands = 1
-        if state.day >= 4:
+        if state.day >= 3:
             plan.target_hands = 2
-        if state.day >= 10:
+        if state.day >= 8:
             plan.target_hands = 3
         hand_cost = self._hand_cost(len(state.hands), plan.target_hands)
         budget -= hand_cost
         
-        empty_tiles = len(state.empty_unlocked_tiles())
         current_geese = state.geese_count()
-        empty_coops = len(state.empty_structures("COOP"))
         
-        if state.day <= 2:
+        if state.day <= 1:
             plan.wheat_target = min(6, len(state.empty_unlocked_tiles()))
             plan.goose_target = 0
             plan.build_coops = 0
+        elif state.day == 2:
+            plan.wheat_target = min(6, len(state.empty_unlocked_tiles()))
+            if state.money >= 500 and state.geese_count() == 0:
+                plan.goose_target = 2
+                plan.build_coops = 2
+            else:
+                plan.goose_target = state.geese_count()
         elif state.day <= 5:
             plan.wheat_target = min(6, len(state.empty_unlocked_tiles()))
-            if budget >= 800 and state.geese_count() == 0:
+            if state.geese_count() < 2:
                 plan.goose_target = 2
-                plan.build_coops = max(0, 2 - len(state.empty_structures("COOP")))
+                plan.build_coops = max(0, 2 - sum(1 for row in state.tiles for t in row if isinstance(t, dict) and t.get("kind") == "COOP"))
             else:
                 plan.goose_target = state.geese_count()
         elif state.day <= 12:
             plan.wheat_target = min(6, len(state.empty_unlocked_tiles()))
-            if budget >= 1200:
-                plan.goose_target = max(state.geese_count(), 4)
-                plan.build_coops = max(0, plan.goose_target - state.geese_count() - len(state.empty_structures("COOP")))
+            empty_coops = sum(1 for row in state.tiles for t in row if isinstance(t, dict) and t.get("kind") == "COOP" and t.get("animal") is None)
+            if state.geese_count() < 4:
+                plan.goose_target = min(4, state.geese_count() + 2)
+                plan.build_coops = max(0, plan.goose_target - state.geese_count() - empty_coops)
             else:
                 plan.goose_target = state.geese_count()
         elif state.day <= 20:
             plan.wheat_target = min(4, len(state.empty_unlocked_tiles()))
-            max_geese = min(len(state.empty_unlocked_tiles()) // 2, 6)
-            if budget >= 800:
-                plan.goose_target = max(state.geese_count(), min(max_geese, 6))
-                plan.build_coops = max(0, plan.goose_target - state.geese_count() - len(state.empty_structures("COOP")))
+            empty_coops = sum(1 for row in state.tiles for t in row if isinstance(t, dict) and t.get("kind") == "COOP" and t.get("animal") is None)
+            if state.geese_count() < 6:
+                plan.goose_target = min(6, state.geese_count() + 2)
+                plan.build_coops = max(0, plan.goose_target - state.geese_count() - empty_coops)
             else:
                 plan.goose_target = state.geese_count()
         else:
@@ -141,10 +147,8 @@ class Strategy:
 
 
 class SimpleController:
-    """Simple, deterministic controller for farmer and hands."""
-    
     def __init__(self):
-        self.wheat_positions: List[Tuple[int, int]] = []
+        self.market = MarketPredictor()
     
     def get_actions(self, state: GameState, plan: DailyPlan) -> Dict:
         actions = {"farmer": ["PASS"], "hands": [], "market": []}
@@ -152,13 +156,9 @@ class SimpleController:
         # Market every turn
         actions["market"] = self._market_actions(state, plan)
         
-        # Track wheat positions
-        self.wheat_positions = state.plant_tiles("WHEAT")
-        
-        # Farmer logic
+        # Simple deterministic actions
         actions["farmer"] = self._farmer_action(state, plan)
         
-        # Hand logic
         hand_actions = []
         for i in range(len(state.hands)):
             hand_actions.append(self._hand_action(i, state, plan))
@@ -243,64 +243,33 @@ class SimpleController:
     def _farmer_action(self, state: GameState, plan: DailyPlan) -> List[str]:
         pos = state.farmer_pos
         
-        # 1. Build coops if needed (max 2, near shed)
+        # 1. Build coops (max 2, near shed)
         if plan.build_coops > 0:
-            empty_coops = len(state.empty_structures("COOP"))
-            built_coops = len([t for t in state.plant_tiles() if False])  # placeholder
-            # Count actual coops
             coop_count = sum(1 for row in state.tiles for t in row if isinstance(t, dict) and t.get("kind") == "COOP")
             if coop_count < plan.build_coops:
                 empty = state.empty_unlocked_tiles()
                 if empty:
-                    # Build near shed
                     target = min(empty, key=lambda p: manhattan_distance(p, SHED_TILES[0]))
                     return self._move_or_act(pos, target, "BUILD_COOP", state)
         
-        # 2. Place geese in empty coops
-        if state.shed.get("GOOSE", 0) > 0:
-            for pos in state.empty_structures("COOP"):
-                return self._move_or_act(pos, pos, "PLACE_GOOSE", state)
-        
-        # 3. Feed geese (daily)
-        for pos in state.animals_needing_feed():
-            return self._move_or_act(pos, pos, "FEED", state)
-        
-        # 4. Care geese
-        for pos in state.animals_needing_care():
-            return self._move_or_act(pos, pos, "CARE", state)
-        
-        # 5. Harvest geese (eggs)
-        for pos in state.animals_ready_to_harvest():
-            return self._move_or_act(pos, pos, "HARVEST", state)
-        
-        # 6. Water wheat
-        for pos in state.wheat_needing_water():
-            return self._move_or_act(pos, pos, "WATER", state)
-        
-        # 7. Harvest wheat
-        for pos in state.wheat_ready_to_harvest():
-            tile = state.get_tile(*pos)
-            age = state.day - tile["planted_day"]
-            if age >= 2 and tile["yield_units"] > 0:
-                return self._move_or_act(pos, pos, "HARVEST", state)
-        
-        # 7. Plant wheat near shed
+        # 2. Plant wheat (near shed, max 6)
         need = plan.wheat_target - len(state.plant_tiles("WHEAT"))
         if need > 0 and state.seeds.get("WHEAT", 0) > 0:
             empty = state.empty_unlocked_tiles()
             if empty:
-                # Prefer adjacent to existing wheat, else near shed
-                wheat_adjacent = []
-                for wp in state.plant_tiles("WHEAT"):
-                    for dx, dy in [(1,0),(-1,0),(0,1),(0,-1)]:
-                        adj = (wp[0]+dx, wp[1]+dy)
-                        if adj in empty:
-                            wheat_adjacent.append(adj)
-                if wheat_adjacent:
-                    target = min(wheat_adjacent, key=lambda p: manhattan_distance(p, pos))
-                else:
-                    target = min(empty, key=lambda p: manhattan_distance(p, SHED_TILES[0]))
+                target = min(empty, key=lambda p: manhattan_distance(p, SHED_TILES[0]))
                 return self._move_or_act(pos, target, "PLANT_WHEAT", state)
+        
+        # 3. Water wheat
+        for p in state.wheat_needing_water():
+            return self._move_or_act(pos, p, "WATER", state)
+        
+        # 3. Harvest wheat
+        for p in state.wheat_ready_to_harvest():
+            tile = state.get_tile(*p)
+            age = state.day - tile["planted_day"]
+            if age >= 2 and tile["yield_units"] > 0:
+                return self._move_or_act(pos, p, "HARVEST", state)
         
         return ["PASS"]
     
@@ -310,24 +279,50 @@ class SimpleController:
         
         pos = state.hands[hand_idx]
         
-        # Hand 0: Geese care (feed, care, harvest eggs)
+        # Hand 0: Goose management - SIMPLE AND ROBUST
         if hand_idx == 0:
-            # Feed geese
-            for p in state.animals_needing_feed():
+            # 1. Feed ALL geese (always feed if we can)
+            for p in state.occupied_animal_structures("GOOSE"):
                 return self._move_or_act(pos, p, "FEED", state)
-            # Care geese
-            for p in state.animals_needing_care():
-                return self._move_or_act(pos, p, "CARE", state)
-            # Harvest eggs
-            for p in state.animals_ready_to_harvest():
-                return self._move_or_act(pos, p, "HARVEST", state)
-            # Place geese
+            
+            # 2. Care geese
+            for p in state.occupied_animal_structures("GOOSE"):
+                tile = state.get_tile(*p)
+                if not tile.get("cared_today", False):
+                    return self._move_or_act(pos, p, "CARE", state)
+            
+            # 3. Harvest eggs
+            for p in state.occupied_animal_structures("GOOSE"):
+                tile = state.get_tile(*p)
+                if tile.get("yield_units", 0) > 0:
+                    return self._move_or_act(pos, p, "HARVEST", state)
+            
+            # 4. Place geese in empty coops
             if state.shed.get("GOOSE", 0) > 0:
                 for p in state.empty_structures("COOP"):
                     return self._move_or_act(pos, p, "PLACE_GOOSE", state)
+            
+            # 5. Help with wheat
+            for p in state.wheat_needing_water():
+                return self._move_or_act(pos, p, "WATER", state)
+            
+            for p in state.wheat_ready_to_harvest():
+                tile = state.get_tile(*p)
+                age = state.day - tile["planted_day"]
+                if age >= 2 and tile["yield_units"] > 0:
+                    return self._move_or_act(pos, p, "HARVEST", state)
+            
+            need = 6 - len(state.plant_tiles("WHEAT"))
+            if need > 0 and state.seeds.get("WHEAT", 0) > 0:
+                empty = state.empty_unlocked_tiles()
+                if empty:
+                    target = min(empty, key=lambda p: manhattan_distance(p, SHED_TILES[0]))
+                    return self._move_or_act(pos, target, "PLANT_WHEAT", state)
+            
+            return ["PASS"]
         
-        # Hand 1: Wheat watering/harvesting
-        if hand_idx == 1:
+        # Hand 1+: Wheat support
+        else:
             for p in state.wheat_needing_water():
                 return self._move_or_act(pos, p, "WATER", state)
             for p in state.wheat_ready_to_harvest():
@@ -335,8 +330,15 @@ class SimpleController:
                 age = state.day - tile["planted_day"]
                 if age >= 2 and tile["yield_units"] > 0:
                     return self._move_or_act(pos, p, "HARVEST", state)
-        
-        return ["PASS"]
+            
+            need = 6 - len(state.plant_tiles("WHEAT"))
+            if need > 0 and state.seeds.get("WHEAT", 0) > 0:
+                empty = state.empty_unlocked_tiles()
+                if empty:
+                    target = min(empty, key=lambda p: manhattan_distance(p, SHED_TILES[0]))
+                    return self._move_or_act(pos, target, "PLANT_WHEAT", state)
+            
+            return ["PASS"]
     
     def _move_or_act(self, from_pos: Tuple[int, int], target: Tuple[int, int], action: str, state: GameState) -> List[str]:
         if from_pos == target:
