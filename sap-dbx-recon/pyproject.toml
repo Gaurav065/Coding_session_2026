@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel", "cython>=3.0"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name            = "val-framework"
+version         = "1.0.0"
+description     = "SAP-Databricks Reconciliation & Validation Framework"
+requires-python = ">=3.10"
+
+# Runtime dependencies — these are installed on the cluster alongside the wheel.
+# Cython itself is a BUILD dependency only (not needed at runtime).
+dependencies = [
+    "openpyxl>=3.1",
+    "pandas>=2.0",
+    "numpy>=1.26",
+    "databricks-sdk>=0.20",           # For Databricks Apps + runtime context
+    "databricks-sql-connector>=3.0",  # For Streamlit app SQL warehouse connection
+]
+
+[project.optional-dependencies]
+dev = [
+    "cython>=3.0",
+    "pytest>=8.0",
+    "pytest-mock",
+    "ruff",           # Linting (replaces flake8 + isort + black)
+]
+
+[tool.setuptools.packages.find]
+where   = ["src"]
+include = ["val_framework*"]
+
+# ── Ruff linting config ───────────────────────────────────────────────────────
+[tool.ruff]
+line-length    = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]   # pycodestyle errors, pyflakes, isort
+ignore = ["E501"]                # line length handled by formatter
+
+# ── Pytest config ─────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths    = ["tests"]
+python_files = ["test_*.py"]

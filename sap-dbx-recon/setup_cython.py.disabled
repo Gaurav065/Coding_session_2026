@@ -1,0 +1,97 @@
+"""
+setup_cython.py
+───────────────
+Compiles all val_framework Python modules to Cython .so binaries.
+
+!! RUN THIS ON THE DATABRICKS CLUSTER, NOT LOCALLY !!
+
+The compiled .so files are Linux x86_64 binaries tied to the exact
+CPython version on the cluster (e.g. Python 3.11 on DBR 15.4 LTS).
+Compiling on macOS or Windows produces binaries that WILL CRASH on
+the cluster with an ImportError.
+
+Invocation (inside build/build_so_on_cluster.py notebook):
+    %run /path/to/setup_cython.py
+Or from shell on cluster driver:
+    python setup_cython.py build_ext --inplace
+"""
+
+import sys
+import os
+from pathlib import Path
+from setuptools import setup, Extension
+from Cython.Build import cythonize
+from Cython.Distutils import build_ext
+
+# ── Locate all .py files inside val_framework that we want to compile ─────────
+# We exclude __init__.py files — they must remain as plain .py because Python
+# uses them for package discovery. Cython-compiled __init__ causes import errors.
+
+ROOT         = Path(__file__).parent.resolve()
+SRC_DIR      = ROOT / "src" / "val_framework"
+EXCLUDE_FILES = {"__init__.py"}
+
+def discover_modules(src_dir: Path) -> list[Extension]:
+    """Walk val_framework and return a Cython Extension for each .py file."""
+    extensions = []
+    for py_file in sorted(src_dir.rglob("*.py")):
+        if py_file.name in EXCLUDE_FILES:
+            continue
+        # Convert path to dotted module name:
+        # src/val_framework/checks/structural.py → val_framework.checks.structural
+        rel       = py_file.relative_to(src_dir.parent)    # val_framework/checks/structural.py
+        mod_name  = str(rel.with_suffix("")).replace(os.sep, ".")   # val_framework.checks.structural
+        extensions.append(
+            Extension(
+                name    = mod_name,
+                sources = [str(py_file)],
+                extra_compile_args = [
+                    "-O2",            # Optimisation level 2 — safe, meaningful speedup
+                    "-fPIC",          # Position-independent code (required for .so)
+                    "-Wno-unused-function",   # Suppress noisy Cython-generated warnings
+                ],
+            )
+        )
+        print(f"  Queued: {mod_name}  ←  {py_file.relative_to(ROOT)}")
+    return extensions
+
+
+if __name__ == "__main__":
+    print(f"\n{'='*65}")
+    print(f"  Cython Build — Python {sys.version}")
+    print(f"  Platform: {sys.platform}")
+    print(f"  Source:   {SRC_DIR}")
+    print(f"{'='*65}\n")
+
+    extensions = discover_modules(SRC_DIR)
+    print(f"\n  Modules to compile: {len(extensions)}\n")
+
+    setup(
+        name        = "val_framework_cython",
+        ext_modules = cythonize(
+            extensions,
+            compiler_directives = {
+                "language_level"  : "3",   # Python 3 syntax
+                "boundscheck"     : False, # Disable array bounds checking (speedup)
+                "wraparound"      : False, # Disable negative indexing (speedup)
+                "cdivision"       : True,  # C-style integer division (speedup)
+                "nonecheck"       : False, # Disable None attribute checks (speedup)
+                "embedsignature"  : True,  # Embed Python signature in docstring
+                "optimize.use_switch"     : True,
+                "optimize.unpack_method_calls": True,
+            },
+            nthreads    = os.cpu_count(),  # Parallel compilation
+            annotate    = False,           # Set True to generate .html annotation files
+        ),
+        cmdclass    = {"build_ext": build_ext},
+        script_args = ["build_ext", "--inplace"],  # Output .so next to .py source
+    )
+
+    # ── Report what was built ──────────────────────────────────────────────────
+    so_files = sorted(SRC_DIR.rglob("*.so"))
+    print(f"\n{'='*65}")
+    print(f"  BUILD COMPLETE — {len(so_files)} .so file(s) produced:")
+    for f in so_files:
+        size_kb = f.stat().st_size / 1024
+        print(f"    {f.relative_to(ROOT)}  ({size_kb:.1f} KB)")
+    print(f"{'='*65}\n")

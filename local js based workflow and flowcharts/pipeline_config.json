@@ -1,0 +1,27 @@
+{
+  "pipelines": [
+    {
+      "EntityName": "CurrencyRates_Daily",
+      "SourceSystemType": "REST_API",
+      "RelativeUrl" : "/v1/latest?base=USD&symbols = EUR,GBP,INR,JPY",
+      "BronzeTargetPath": "bronze/currency_rates/"
+    },
+    {
+      "EntityName" : "SupplierMaster_Active",
+      "SourceSystemType": "Azure_SQL",
+      "SchemaName": "dbo",
+      "TableName":"dim_suppliers",
+      "CustomQuerry": "select * from dbo.dim_suppliers where is_active = 1",
+      "BronzeTargetPath": "bronze/suppliers/"
+    },
+    {
+      "EntityName": "Inventory_DailyDumps",
+      "sourceSystemType": "ADLS_FILE",
+      "SourceContainer" : "raw_landing",
+      "SourceDirectory" : "logistics/inventory/",
+      "FileName" : "daily_stock.csv",
+      "BronzeTargetPath" : "bronze/inventory/"
+    }
+  ]
+
+}

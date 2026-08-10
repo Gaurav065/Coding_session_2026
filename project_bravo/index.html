@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sonal's Story ✦ A Birthday Tale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="locked">
+
+<!-- ══════════════ GLOBAL CANVAS LAYERS ══════════════ -->
+<canvas id="starfield" aria-hidden="true"></canvas>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<canvas id="sparkles" aria-hidden="true"></canvas>
+<div id="flash" aria-hidden="true"></div>
+
+<!-- ══════════════ SCREEN 1 · THE LOCKED GATEWAY ══════════════ -->
+<div id="gate">
+  <div class="gate-brand">✦ &nbsp;S O N A L ’ S&nbsp; &nbsp;S T O R Y&nbsp; ✦</div>
+
+  <div class="gate-card glass" data-depth="14">
+    <h1 class="gate-title">Welcome,<br>Sonal</h1>
+
+    <form id="gate-form" autocomplete="off">
+      <label class="field">
+        <span class="field-label">Username</span>
+        <input type="text" id="username" value="Sonal" readonly>
+      </label>
+      <label class="field">
+        <span class="field-label">Password</span>
+        <input type="password" id="password" placeholder="••••••••" autofocus>
+        <span class="field-lock">
+          <!-- Ancient lock design -->
+          <svg class="ancient-lock" viewBox="0 0 64 64" width="46" height="46" aria-hidden="true">
+            <g class="lock-flourish" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round">
+              <path d="M4 38 q8 -6 12 0 q-4 5 -12 0z"/>
+              <path d="M60 38 q-8 -6 -12 0 q4 5 12 0z"/>
+            </g>
+            <g class="lock-body">
+              <path class="lock-shackle" d="M22 30 v-8 a10 10 0 0 1 20 0 v8" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+              <rect x="17" y="30" width="30" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+              <path d="M17 36 h30 M17 48 h30" stroke="currentColor" stroke-width="1" opacity=".45"/>
+              <circle cx="32" cy="40" r="3.4" fill="currentColor"/>
+              <path d="M32 42 l-2.4 7 h4.8z" fill="currentColor"/>
+            </g>
+          </svg>
+        </span>
+      </label>
+      <p class="gate-hint">Ancient lock design</p>
+      <p class="gate-error" id="gate-error">The ancient lock resists… try again.</p>
+      <button type="submit" class="gate-btn">Unlock Sonal’s Story</button>
+      <button type="button" class="gate-hint-btn" id="hint-btn">need a hint?</button>
+      <p class="gate-hint-reveal" id="hint-reveal">…what the night sky is made of ✨</p>
+    </form>
+  </div>
+
+  <div class="gate-foot">
+    <p>Step Inside and Begin the Tale</p>
+    <div class="prompt-arrow">⟶</div>
+  </div>
+</div>
+
+<!-- ══════════════ THE JOURNEY ══════════════ -->
+<main id="journey" aria-hidden="true">
+
+  <!-- SCREEN 2 · THE EXTENDED FABLE -->
+  <!-- Panel I — The Gilded Tome -->
+  <section class="panel panel-tome" id="p-tome">
+    <div class="scene">
+      <div class="candle-glow" data-depth="30" aria-hidden="true"></div>
+      <div class="tome" data-depth="18">
+        <div class="tome-spine"></div>
+        <div class="tome-page tome-page-left">
+          <p class="type-text serif" data-type="In far, far away lands, a very beautiful soul took their birth… at around 10 PM."></p>
+        </div>
+        <div class="tome-page tome-page-right">
+          <div class="page-ornament">❦</div>
+        </div>
+        <div class="page-curl" aria-hidden="true"></div>
+      </div>
+      <div class="dust dust-a" data-depth="46" aria-hidden="true"></div>
+      <div class="dust dust-b" data-depth="60" aria-hidden="true"></div>
+    </div>
+    <div class="panel-prompt"><span>Turn the page</span><span class="prompt-arrow down">↓</span></div>
+  </section>
+
+  <!-- Panel II — The Heavens Paused (new) -->
+  <section class="panel panel-heavens" id="p-heavens">
+    <div class="scene">
+      <div class="moon" data-depth="26" aria-hidden="true"></div>
+      <div class="comet comet-a" aria-hidden="true"></div>
+      <div class="comet comet-b" aria-hidden="true"></div>
+      <p class="type-text serif big" data-type="That night, the heavens paused to watch — comets held their breath, and the moon leaned in closer, waiting to greet the one the world had quietly been wishing for."></p>
+    </div>
+    <div class="panel-prompt"><span>Follow the light</span><span class="prompt-arrow down">↓</span></div>
+  </section>
+
+  <!-- Panel III — The Star Chart -->
+  <section class="panel panel-chart" id="p-chart">
+    <div class="scene">
+      <div class="starchart" data-depth="14" aria-hidden="true">
+        <svg viewBox="0 0 520 520">
+          <defs>
+            <radialGradient id="core" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffe9b8" stop-opacity=".95"/>
+              <stop offset="45%" stop-color="#f4c869" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="#f4c869" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g class="orbits" fill="none" stroke="#c9b27c" stroke-opacity=".38">
+            <circle cx="260" cy="260" r="70"/>
+            <circle cx="260" cy="260" r="110" stroke-dasharray="3 7"/>
+            <circle cx="260" cy="260" r="150"/>
+            <circle cx="260" cy="260" r="190" stroke-dasharray="2 9"/>
+            <circle cx="260" cy="260" r="230"/>
+          </g>
+          <circle cx="260" cy="260" r="80" fill="url(#core)"/>
+          <g class="chart-glyph" transform="translate(260 260)">
+            <circle r="34" fill="rgba(20,28,58,.55)" stroke="#e8d29a" stroke-width="1.4"/>
+            <path d="M-9 -13 h18 M-9 13 h18 M-8 -13 c0 8 6 9 8 13 c2 -4 8 -5 8 -13 M-8 13 c0 -8 6 -9 8 -13 c2 4 8 5 8 13"
+                  stroke="#f2dfae" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          </g>
+          <g class="orbiter">
+            <circle cx="260" cy="70" r="13" fill="rgba(20,28,58,.7)" stroke="#e8d29a"/>
+            <path d="M256 65 h8 M256 75 h8 M256.5 65 c0 4 3 4.5 3.5 6.5 c.5 -2 3.5 -2.5 3.5 -6.5 M256.5 75 c0 -4 3 -4.5 3.5 -6.5 c.5 2 3.5 2.5 3.5 6.5"
+                  stroke="#f2dfae" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+          </g>
+          <g class="chart-stars" fill="#fff2cf">
+            <circle cx="120" cy="120" r="1.6"/><circle cx="420" cy="90" r="1.2"/>
+            <circle cx="452" cy="300" r="1.8"/><circle cx="90" cy="380" r="1.3"/>
+            <circle cx="360" cy="440" r="1.5"/><circle cx="200" cy="60" r="1.1"/>
+          </g>
+        </svg>
+      </div>
+      <p class="type-text serif" data-type="The stars aligned, and a rare light was kindled… a new kind of wonder."></p>
+    </div>
+    <div class="panel-prompt"><span>Follow the light</span><span class="prompt-arrow down">↓</span></div>
+  </section>
+
+  <!-- Panel IV — The World Grew Brighter (new) -->
+  <section class="panel panel-bright" id="p-bright">
+    <div class="scene">
+      <div class="light-trail" data-depth="24" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <p class="type-text serif big" data-type="And with one small heartbeat, the world grew warmer, kinder… a little brighter than it had ever been before."></p>
+    </div>
+    <div class="panel-prompt"><span>Turn the page</span><span class="prompt-arrow down">↓</span></div>
+  </section>
+
+  <!-- Panel V — The Whispering Woods -->
+  <section class="panel panel-woods" id="p-woods">
+    <div class="scene">
+      <div class="woods-canopy" aria-hidden="true"></div>
+      <div class="tree tree-left" data-depth="10" aria-hidden="true"></div>
+      <div class="tree tree-right" data-depth="16" aria-hidden="true"></div>
+      <div class="firefly f1" aria-hidden="true"></div>
+      <div class="firefly f2" aria-hidden="true"></div>
+      <div class="firefly f3" aria-hidden="true"></div>
+      <div class="firefly f4" aria-hidden="true"></div>
+      <div class="firefly f5" aria-hidden="true"></div>
+      <p class="type-text serif big" data-type="Even the ancient woods seemed to whisper, of a kindness that would soon bless the earth."></p>
+    </div>
+    <div class="panel-prompt stacked">
+      <em>Your journey continues…</em>
+      <span>Turn the page</span><span class="prompt-arrow down">↓</span>
+    </div>
+  </section>
+
+  <!-- SCREEN 3 · THE BIG REVEAL -->
+  <section class="panel panel-reveal" id="p-reveal">
+    <div class="reveal-sky" aria-hidden="true"></div>
+    <div class="scene">
+      <div class="balloon b1" data-depth="34" aria-hidden="true"></div>
+      <div class="balloon b2" data-depth="52" aria-hidden="true"></div>
+      <div class="balloon b3" data-depth="24" aria-hidden="true"></div>
+      <div class="balloon b4" data-depth="44" aria-hidden="true"></div>
+
+      <div class="gift g1" data-depth="30" aria-hidden="true"><div class="gift-lid"></div><div class="gift-box"></div></div>
+      <div class="gift g2" data-depth="48" aria-hidden="true"><div class="gift-lid"></div><div class="gift-box"></div></div>
+      <div class="gift g3" data-depth="20" aria-hidden="true"><div class="gift-lid"></div><div class="gift-box"></div></div>
+
+      <div class="cake" data-depth="16" aria-hidden="true">
+        <div class="cake-flame"></div>
+        <div class="cake-candle"></div>
+        <div class="cake-top"></div>
+        <div class="cake-mid"></div>
+        <div class="cake-base"></div>
+        <div class="cake-plate"></div>
+      </div>
+
+      <h2 class="hbd" data-depth="8">
+        <span class="hbd-line"><span class="hbd-w w1">Happy</span></span>
+        <span class="hbd-line"><span class="hbd-w w2">Birthday,</span></span>
+        <span class="hbd-line"><span class="hbd-w w3">Sonal!</span></span>
+      </h2>
+      <p class="reveal-sub">Today, the whole sky celebrates you.</p>
+    </div>
+    <div class="panel-prompt dark stacked">
+      <em>Your final message waits…</em>
+      <span>Scroll down</span><span class="prompt-arrow down">↓</span>
+    </div>
+  </section>
+
+  <!-- THE VALIDATION CARDS -->
+  <section class="panel panel-cards" id="p-cards">
+    <div class="cards-stack">
+      <article class="vcard glass" data-card="1">
+        <div class="vcard-lock" aria-hidden="true">✦</div>
+        <h3>The Journey</h3>
+        <p>Look at how far you have come. Every hurdle you have faced and every quiet moment
+           of doubt you have conquered has forged the incredible person standing here today.
+           Be fiercely proud of your resilience. Your strength is truly inspiring.</p>
+      </article>
+      <article class="vcard glass" data-card="2">
+        <div class="vcard-lock" aria-hidden="true">✦</div>
+        <h3>The Effort</h3>
+        <p>Even on the days when the world feels heavy, you show up. You take action, you put
+           in the effort, and you keep moving forward with so much grace. Never forget that
+           your quietest efforts are your loudest victories. You are doing brilliantly.</p>
+      </article>
+      <article class="vcard glass" data-card="3">
+        <div class="vcard-lock" aria-hidden="true">✦</div>
+        <h3>The Light</h3>
+        <p>May every dream you hold close to your heart unfold into reality. Whatever path you
+           choose to walk next, may it always be illuminated with clarity, peace, and endless
+           opportunities.</p>
+      </article>
+    </div>
+    <div class="panel-prompt dark"><span>One last light awaits</span><span class="prompt-arrow down">↓</span></div>
+  </section>
+
+  <!-- THE GRAND FINALE -->
+  <section class="panel panel-finale" id="p-finale">
+    <div class="scene">
+      <div class="lantern-wrap" data-depth="12">
+        <div class="lantern">
+          <div class="lantern-cap"></div>
+          <div class="lantern-body">
+            <div class="lantern-flame"></div>
+            <div class="lantern-rib"></div><div class="lantern-rib r2"></div><div class="lantern-rib r3"></div>
+          </div>
+          <div class="lantern-base"></div>
+          <div class="lantern-halo"></div>
+        </div>
+      </div>
+      <p class="finale-text">
+        Here is to you, Sonal. A rare and beautiful soul who makes the world a little brighter
+        just by being in it. Keep shining, keep believing, and keep going.
+        <span class="finale-em">You are celebrated today, tomorrow, and always.</span>
+      </p>
+      <button id="back-to-top" class="gate-btn ghost">Back to Top ↑</button>
+    </div>
+    <footer class="site-foot">✦ &nbsp;made with wonder, for Sonal &nbsp;✦</footer>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[
+  {
+    "entity": "A_SalesOrder",
+    "service": "API_SALES_ORDER_SRV",
+    "target_folder": "salesorders"
+  },
+  {
+    "entity": "A_Product",
+    "service": "API_PRODUCT_SRV",
+    "target_folder": "materials"
+  },
+  {
+    "entity": "A_BusinessPartner",
+    "service": "API_BUSINESS_PARTNER",
+    "target_folder": "customers"
+  }
+]

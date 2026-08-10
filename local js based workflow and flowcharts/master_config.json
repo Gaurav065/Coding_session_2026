@@ -1,0 +1,16 @@
+{
+  "pipelines": [
+    {
+      "source_entity": "customers",
+      "bronze_path": "bronze/customers/",
+      "silver_path": "silver/customers/",
+      "gold_path": "gold/active_customers/"
+    },
+    {
+      "source_entity": "orders",
+      "bronze_path": "bronze/orders/",
+      "silver_path": "silver/orders/",
+      "gold_path": "gold/sales_summary/"
+    }
+  ]
+}

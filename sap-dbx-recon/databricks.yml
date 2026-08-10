@@ -1,0 +1,111 @@
+bundle:
+  name: sap-dbx-recon
+
+variables:
+  uc_catalog:
+    description: Unity Catalog top-level catalog name
+    default: recon_framework
+  sql_warehouse_id:
+    description: SQL Warehouse ID for the Streamlit dashboard app
+    default: ""                          # Set during: databricks bundle deploy -t prod
+  stream_name:
+    description: Default stream name for job widget
+    default: yrforecastn_dc02
+  cluster_node_type:
+    description: Worker node type
+    default: Standard_DS3_v2            # Azure — change to i3.xlarge for AWS
+
+targets:
+  # ── Development target ─────────────────────────────────────────────────────
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: ${workspace.host}
+    variables:
+      uc_catalog: recon_framework_dev
+
+  # ── Production target ──────────────────────────────────────────────────────
+  prod:
+    mode: production
+    workspace:
+      host: ${workspace.host}
+    variables:
+      uc_catalog: recon_framework
+    run_as:
+      service_principal_name: val-framework-sp   # Replace with your SP name
+
+# ── Resources ─────────────────────────────────────────────────────────────────
+resources:
+
+  # ── Validation Workflow ────────────────────────────────────────────────────
+  jobs:
+    validation_workflow:
+      name: "[${bundle.target}] SAP-DBX Validation — ${var.stream_name}"
+      description: "Full reconciliation pipeline: setup → load → validate"
+
+      # All tasks run on the same job cluster (cost-efficient)
+      job_clusters:
+        - job_cluster_key: recon_cluster
+          new_cluster:
+            spark_version:        15.4.x-scala2.12   # DBR 15.4 LTS
+            node_type_id:         ${var.cluster_node_type}
+            num_workers:          2
+            spark_conf:
+              spark.databricks.delta.preview.enabled: "true"
+            # Init script loads compiled .so files from UC Volume
+            init_scripts:
+              - volumes:
+                  destination: /Volumes/${var.uc_catalog}/build/init_script.sh
+
+      tasks:
+        # Task 0: Setup metadata + create all Delta tables
+        - task_key: setup_metadata
+          job_cluster_key: recon_cluster
+          notebook_task:
+            notebook_path: ./notebooks/00_setup_metadata.py
+            base_parameters:
+              stream_name: ${var.stream_name}
+
+        # Task 1: Load Excel → Delta + build column mapping
+        - task_key: load_and_map
+          depends_on: [{task_key: setup_metadata}]
+          job_cluster_key: recon_cluster
+          notebook_task:
+            notebook_path: ./notebooks/02_load_and_map.py
+            base_parameters:
+              stream_name: ${var.stream_name}
+              load_mode:   overwrite
+
+        # Task 2: Run all 12 validation checks
+        - task_key: run_validation
+          depends_on: [{task_key: load_and_map}]
+          job_cluster_key: recon_cluster
+          notebook_task:
+            notebook_path: ./notebooks/03_run_validation.py
+            base_parameters:
+              stream_name: ${var.stream_name}
+
+      # Email on failure only (not on every run)
+      email_notifications:
+        on_failure:
+          - data-engineering-alerts@yourcompany.com
+        no_alert_for_skipped_runs: true
+
+      # Run daily at 6 AM UTC
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id:            UTC
+        pause_status:           PAUSED    # Set to UNPAUSED in prod after testing
+
+  # ── Databricks Apps: Streamlit Dashboard ──────────────────────────────────
+  apps:
+    validation_dashboard:
+      name: "[${bundle.target}] SAP-DBX Validation Dashboard"
+      description: "Non-technical stakeholder view of validation results"
+      source_code_path: ./apps/dashboard
+      resources:
+        - name: validation-warehouse
+          sql_warehouse:
+            id:         ${var.sql_warehouse_id}
+            permission: CAN_USE

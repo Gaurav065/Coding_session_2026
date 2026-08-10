@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TON 618 — Supermassive Black Hole Visualization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #030308;
+      --fg: #e8e8f0;
+      --muted: #6a6a8a;
+      --accent: #ff6b35;
+      --accent-dim: #ff6b3540;
+      --card: #0a0a14;
+      --border: #1e1e30;
+      --glow: #ff8c50;
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #f8f8ff; --fg: #1a1a2e; --muted: #5a5a7a; --card: #ffffff; --border: #d0d0e8; }
+    }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+    #canvas-container { width: 100%; height: 100%; position: relative; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .ui-layer { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+    .ui-panel { position: absolute; pointer-events: auto; background: linear-gradient(135deg, var(--card) 0%, #0d0d1a 100%); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; backdrop-filter: blur(20px); }
+    .top-left { top: 20px; left: 20px; min-width: 280px; }
+    .top-right { top: 20px; right: 20px; text-align: right; min-width: 220px; }
+    .bottom-center { bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 4px; background: linear-gradient(90deg, var(--fg), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { font-size: 0.7rem; color: var(--muted); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+    .stat-row { display: flex; justify-content: space-between; gap: 16px; font-size: 0.75rem; line-height: 1.8; }
+    .stat-label { color: var(--muted); }
+    .stat-value { font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--fg); text-align: right; }
+    .stat-value.accent { color: var(--accent); }
+    .control-btn { pointer-events: auto; background: var(--card); border: 1px solid var(--border); color: var(--fg); padding: 10px 18px; border-radius: 8px; font-family: inherit; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
+    .control-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--accent), #ff9f1c); opacity: 0; transition: opacity 0.3s; }
+    .control-btn:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-dim); }
+    .control-btn:hover::before { opacity: 0.1; }
+    .control-btn.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 8px 24px var(--accent-dim); }
+    .control-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .slider-group { pointer-events: auto; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .slider-label { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .slider-label span:last-child { color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+    input[type="range"] { width: 100%; height: 4px; -webkit-appearance: none; appearance: none; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 0 0 3px var(--bg); }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); box-shadow: 0 0 0 3px var(--bg), 0 0 12px var(--accent); }
+    input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+    .info-badge { display: inline-block; background: var(--accent-dim); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.05em; }
+    .credits { position: fixed; bottom: 12px; right: 12px; font-size: 0.6rem; color: var(--muted); pointer-events: auto; z-index: 5; }
+    .credits a { color: var(--accent); text-decoration: none; }
+    .credits a:hover { text-decoration: underline; }
+    @media (max-width: 768px) {
+      .top-left, .top-right { top: 12px; left: 12px; right: 12px; min-width: auto; text-align: left; }
+      .top-right { top: auto; bottom: 80px; }
+      .bottom-center { bottom: 12px; }
+      .control-btn { padding: 8px 14px; font-size: 0.65rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div class="ui-layer">
+    <div class="ui-panel top-left">
+      <h1>TON 618</h1>
+      <div class="subtitle">Supermassive Black Hole</div>
+      <div class="stat-row">
+        <span class="stat-label">Mass</span>
+        <span class="stat-value accent">66 Billion M☉</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Schwarzschild Radius</span>
+        <span class="stat-value">~1,300 AU</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Luminosity</span>
+        <span class="stat-value accent">1.4×10⁴¹ W</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Distance</span>
+        <span class="stat-value">10.8 Gly</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Redshift</span>
+        <span class="stat-value">z = 2.219</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Accretion Rate</span>
+        <span class="stat-value accent">~1,000 M☉/yr</span>
+      </div>
+    </div>
+    <div class="ui-panel top-right">
+      <div class="info-badge" id="quality-badge">4K Rendering</div>
+      <div class="stat-row" style="margin-top: 12px;">
+        <span class="stat-label">FPS</span>
+        <span class="stat-value" id="fps">--</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Camera Dist</span>
+        <span class="stat-value" id="cam-dist">--</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Time Scale</span>
+        <span class="stat-value" id="time-scale">1.0×</span>
+      </div>
+    </div>
+    <div class="ui-panel bottom-center">
+      <button class="control-btn" id="btn-pause" title="Pause/Resume (Space)">⏸ Pause</button>
+      <button class="control-btn" id="btn-reset" title="Reset View (R)">⟲ Reset</button>
+      <button class="control-btn" id="btn-info" title="Toggle Info (I)">ℹ Info</button>
+      <button class="control-btn" id="btn-fullscreen" title="Fullscreen (F)">⛶ Fullscreen</button>
+      <button class="control-btn" id="btn-quality" title="Toggle Quality (Q)">🎬 4K</button>
+    </div>
+    <div class="ui-panel bottom-center slider-group" style="bottom: 80px; max-width: 400px;">
+      <div class="slider-label"><span>Time Scale</span><span id="time-scale-val">1.0×</span></div>
+      <input type="range" id="time-scale-slider" min="0" max="5" step="0.1" value="1">
+      <div class="slider-label" style="margin-top: 10px;"><span>Camera Distance</span><span id="cam-dist-val">15 Rs</span></div>
+      <input type="range" id="cam-dist-slider" min="3" max="100" step="1" value="15">
+      <div class="slider-label" style="margin-top: 10px;"><span>Exposure</span><span id="exposure-val">1.0</span></div>
+      <input type="range" id="exposure-slider" min="0.1" max="3" step="0.05" value="1">
+    </div>
+  </div>
+  <div class="credits">Shader by <a href="https://github.com" target="_blank">Procedural</a> · Three.js · Data: NASA/IPAC</div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

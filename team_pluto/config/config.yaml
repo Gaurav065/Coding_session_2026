@@ -1,0 +1,109 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# Charles Schwab Retail Brokerage — Pipeline Configuration
+# Team: team_pluto
+# ═══════════════════════════════════════════════════════════════════════════════
+
+team_name: "team_pluto"
+# Databricks Repos path — update this if your repo is cloned elsewhere
+# (e.g. /Workspace/Repos/john.doe@company.com/team_pluto)
+repo_path: "/Workspace/Users/gaurav.patel@celebaltech.com/Team_pluto/team_pluto"
+
+# ─── Azure Data Lake Storage Gen2 ───────────────────────────────────────────
+# External location — read directly via abfss:// path, NO mounting required.
+# Registered as external location in Databricks; use path as-is.
+storage:
+  account: "schwabdldevsa"
+  container: "raw"
+  base_path: "abfss://raw@schwabdldevsa.dfs.core.windows.net"
+  batch_folders:
+    1: "Batch1"
+    2: "Batch2"
+    3: "Batch3"
+
+# ─── Catalog / Namespace ────────────────────────────────────────────────────
+# Unity Catalog is available — catalog + schemas are pre-created by admin.
+# DO NOT run CREATE CATALOG or CREATE SCHEMA — no permissions.
+catalog:
+  use_unity_catalog: true
+  name: "charles_schwab_retailbrokerage_dev_team_pluto"
+
+# ─── Schema Names ───────────────────────────────────────────────────────────
+schemas:
+  landing: "landing"
+  bronze: "bronze"
+  silver: "silver"
+  staging: "staging"
+  gold: "gold"
+  operations: "operations"
+  quarantine: "quarantine"
+
+# ─── Landing Layer ───────────────────────────────────────────────────────────
+# Written as Parquet (snappy) to the UC Volume landing_team_pluto.
+# Structure: /Volumes/{catalog}/landing/{landing_volume}/batch{N}/{table}/
+# Re-running a batch overwrites only that batch's directory; other batches
+# are untouched. No Delta overhead needed for this intermediate layer.
+landing_volume: "landing_team_pluto"
+
+# ─── Spark Performance Tuning ────────────────────────────────────────────────
+spark:
+  optimize_write: true           # Delta optimizeWrite — merges small files on write
+  auto_compact: true             # Delta autoCompact — background compaction
+  aqe_enabled: true              # Adaptive Query Execution — runtime plan optimization
+  shuffle_partitions: "auto"     # AQE controls; fallback = 200 if AQE off
+  max_partition_bytes: "134217728"   # 128 MB target partition size
+  broadcast_threshold_bytes: "209715200"  # 200 MB — broadcast small lookup tables
+  advisory_partition_bytes: "134217728"   # 128 MB — AQE post-shuffle target partition size
+  local_shuffle_reader: true              # AQE local shuffle reader — skips remote reads after map
+  delta_low_shuffle_merge: true           # Low-shuffle MERGE — only rewrites changed partitions
+  io_cache_enabled: true                  # Databricks IO cache — SSD-backed read cache for Delta
+
+# ─── Pipeline SLA Thresholds (seconds per stage) ────────────────────────────
+sla:
+  integrity: 60
+  landing: 300
+  bronze: 600
+  silver: 1200
+  staging: 300
+  gold: 600
+
+# ─── Files by Batch ─────────────────────────────────────────────────────────
+# Which source files appear in which batches (for skip-logic in notebooks)
+batch_files:
+  1:  # Full historical load
+    - BatchDate.txt
+    - Date.txt
+    - Time.txt
+    - StatusType.txt
+    - TaxRate.txt
+    - Industry.txt
+    - TradeType.txt
+    - FINWIRE          # 203 quarterly files matched by FINWIRE*
+    - DailyMarket.txt
+    - HR.csv
+    - CustomerMgmt.xml
+    - Prospect.json
+    - WatchHistory.txt
+    - CashTransaction.txt
+    - Trade.txt
+    - TradeHistory.txt
+    - HoldingHistory.txt
+  2:  # Incremental CDC
+    - BatchDate.txt
+    - DailyMarket.txt
+    - Customer.txt
+    - Prospect.json
+    - WatchHistory.txt
+    - Account.txt
+    - CashTransaction.txt
+    - Trade.txt
+    - HoldingHistory.txt
+  3:  # Incremental CDC
+    - BatchDate.txt
+    - DailyMarket.txt
+    - Customer.txt
+    - Prospect.json
+    - WatchHistory.txt
+    - Account.txt
+    - CashTransaction.txt
+    - Trade.txt
+    - HoldingHistory.txt

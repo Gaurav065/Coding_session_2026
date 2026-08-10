@@ -1,0 +1,58 @@
+
+bundle:
+  name: sap-dbx-recon
+
+# External resource files — DAB merges these into the bundle at deploy time
+include:
+  - resources/validation_job.yml
+
+variables:
+  uc_catalog:
+    description: Unity Catalog top-level catalog name
+    default: recon_framework
+  sql_warehouse_id:
+    description: SQL Warehouse ID for the Streamlit dashboard app
+    default: ""                          # Set during: databricks bundle deploy -t prod
+  stream_name:
+    description: Default stream name for job widget
+    default: yrforecastn_dc02
+  cluster_node_type:
+    description: Worker node type
+    default: Standard_DS3_v2            # Azure — change to i3.xlarge for AWS
+
+targets:
+  # ── Development target ─────────────────────────────────────────────────────
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: ${workspace.host}
+    variables:
+      uc_catalog: recon_framework_dev
+
+  # ── Production target ──────────────────────────────────────────────────────
+  prod:
+    mode: production
+    workspace:
+      host: ${workspace.host}
+    variables:
+      uc_catalog: recon_framework
+    run_as:
+      service_principal_name: val-framework-sp   # Replace with your SP name
+
+
+# ── Resources ─────────────────────────────────────────────────────────────────
+# Job is fully defined in resources/validation_job.yml (included above).
+# Only the Streamlit App is defined here.
+resources:
+  # ── Databricks Apps: Streamlit Dashboard ──────────────────────────────────
+  apps:
+    validation_dashboard:
+      name: "[${bundle.target}] SAP-DBX Validation Dashboard"
+      description: "Non-technical stakeholder view of validation results"
+      source_code_path: ./apps/dashboard
+      resources:
+        - name: validation-warehouse
+          sql_warehouse:
+            id:         ${var.sql_warehouse_id}
+            permission: CAN_USE

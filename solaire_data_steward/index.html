@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solaire Data Steward</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050510;
+            color: #ffaa00; /* Sunny Orange */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+        #hologram-container {
+            flex: 1;
+            position: relative;
+        }
+        canvas {
+            display: block;
+        }
+        #chat-interface {
+            width: 400px;
+            background: rgba(40, 20, 0, 0.8);
+            border-left: 2px solid #ffaa00;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(255, 170, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        #chat-history {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            line-height: 1.4;
+        }
+        .user-message {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            text-align: right;
+        }
+        .ai-message {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ffaa00;
+        }
+        #input-container {
+            display: flex;
+        }
+        input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ffaa00;
+            color: #ffaa00;
+            padding: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+        button {
+            background: #ffaa00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #fff;
+        }
+        .glitch {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ffaa00;
+            padding-bottom: 10px;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #110; }
+        ::-webkit-scrollbar-thumb { background: #ffaa00; }
+    </style>
+</head>
+<body>
+
+    <div id="hologram-container">
+        <!-- Three.js Canvas will be injected here -->
+    </div>
+
+    <div id="chat-interface">
+        <div class="glitch">SOLAIRE - DATA STEWARD</div>
+        <div id="chat-history">
+            <div class="message ai-message">Praise the Sun! I am online. Awaiting your magnificent telemetry and diagnostic queries.</div>
+        </div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Query pipeline status..." autocomplete="off">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <!-- Load Three.js and GLTFLoader from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        // --- 1. Three.js Hologram Setup ---
+        const container = document.getElementById('hologram-container');
+        const scene = new THREE.Scene();
+        
+        // Camera setup
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 7;
+        camera.position.y = 2;
+
+        // Renderer setup
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Add some lighting for the humanoid
+        const light = new THREE.PointLight(0xffaa00, 2, 100);
+        light.position.set(0, 5, 5);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        // Create a fallback "Solaire" Humanoid out of basic shapes
+        const avatarGroup = new THREE.Group();
+        
+        const hologramMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xffaa00, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.6
+        });
+
+        // Head
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.8, 16, 16), hologramMaterial);
+        head.position.y = 4;
+        avatarGroup.add(head);
+
+        // Body
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 3, 16), hologramMaterial);
+        body.position.y = 2;
+        avatarGroup.add(body);
+
+        // Arms doing the "Praise the Sun" pose \o/
+        const armGeo = new THREE.CylinderGeometry(0.3, 0.3, 3, 16);
+        const leftArm = new THREE.Mesh(armGeo, hologramMaterial);
+        leftArm.position.set(-2, 3, 0);
+        leftArm.rotation.z = Math.PI / 4;
+        avatarGroup.add(leftArm);
+
+        const rightArm = new THREE.Mesh(armGeo, hologramMaterial);
+        rightArm.position.set(2, 3, 0);
+        rightArm.rotation.z = -Math.PI / 4;
+        avatarGroup.add(rightArm);
+
+        scene.add(avatarGroup);
+        
+        // Global variables for procedural animation
+        let gltfModel = null;
+        let bones = {
+            spine: null,
+            neck: null,
+            leftArm: null,
+            rightArm: null,
+            leftForeArm: null,
+            rightForeArm: null
+        };
+
+        // Try to load an actual GLTF model
+        const loader = new THREE.GLTFLoader();
+        loader.load('solaire.glb', function(gltf) {
+            scene.remove(avatarGroup); // Remove the fallback geometry
+            gltfModel = gltf.scene;
+            
+            // Apply hologram material and extract bones
+            gltfModel.traverse((child) => {
+                if (child.isMesh) {
+                    child.material = hologramMaterial;
+                }
+                if (child.isBone) {
+                    // Try to auto-detect common Mixamo/Standard bone names
+                    const name = child.name.toLowerCase();
+                    if (name.includes('spine') && !bones.spine) bones.spine = child;
+                    if (name.includes('neck') || name.includes('head')) bones.neck = child;
+                    if (name.includes('leftarm') || name.includes('arm_l') || name.includes('shoulder_l')) bones.leftArm = child;
+                    if (name.includes('rightarm') || name.includes('arm_r') || name.includes('shoulder_r')) bones.rightArm = child;
+                    if (name.includes('leftforearm') || name.includes('elbow_l')) bones.leftForeArm = child;
+                    if (name.includes('rightforearm') || name.includes('elbow_r')) bones.rightForeArm = child;
+                }
+            });
+            
+            // Adjust position slightly for the model
+            gltfModel.position.y = -2;
+            scene.add(gltfModel);
+            console.log("Procedural Rigging Complete:", bones);
+        }, undefined, function(error) {
+            console.log("No solaire.glb found. Using fallback geometric hologram \o/");
+        });
+
+        // Animation States
+        let isThinking = false;
+        let isExplaining = false;
+        let explainTimer = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = Date.now() * 0.001;
+            
+            // 1. Procedural Bone Animation (if GLB loaded)
+            if (gltfModel) {
+                // Base idle rotation and floating for the whole model
+                gltfModel.rotation.y = Math.sin(time * 0.5) * 0.1;
+                gltfModel.position.y = -2 + Math.sin(time * 2) * 0.1; // Gentle float
+                
+                // If it's a static model with no bones, we can still pulse it
+                if (isThinking) {
+                    // Thinking Pose
+                    hologramMaterial.color.setHex(0xffffff);
+                    hologramMaterial.opacity = 0.8 + Math.sin(time * 10) * 0.2;
+                    gltfModel.scale.setScalar(1 + Math.sin(time * 5) * 0.02); // Subtle pulse
+                    
+                    if (bones.neck) bones.neck.rotation.x = 0.5; // Look down
+                    if (bones.rightArm) bones.rightArm.rotation.z = 1.5; 
+                    if (bones.rightForeArm) bones.rightForeArm.rotation.x = 2.0; 
+                } else if (isExplaining) {
+                    // Explaining Pose
+                    hologramMaterial.color.setHex(0xffaa00);
+                    gltfModel.scale.setScalar(1 + Math.sin(time * 15) * 0.05); // Rapid pulse while talking
+                    
+                    if (bones.neck) bones.neck.rotation.x = 0; // Look up
+                    
+                    // Procedural gesturing based on time
+                    if (bones.rightArm) bones.rightArm.rotation.z = 1.0 + Math.sin(time * 5) * 0.3;
+                    if (bones.leftArm) bones.leftArm.rotation.z = -1.0 - Math.cos(time * 4) * 0.3;
+                    if (bones.rightForeArm) bones.rightForeArm.rotation.x = 0.5 + Math.sin(time * 3) * 0.5;
+                    if (bones.leftForeArm) bones.leftForeArm.rotation.x = 0.5 + Math.cos(time * 3) * 0.5;
+                    
+                    explainTimer -= 0.01;
+                    if (explainTimer <= 0) isExplaining = false;
+                } else {
+                    // Reset to standard Idle
+                    hologramMaterial.color.setHex(0xffaa00);
+                    hologramMaterial.opacity = 0.6;
+                    gltfModel.scale.setScalar(1);
+                    
+                    if (bones.neck) bones.neck.rotation.x = 0;
+                    if (bones.rightArm) bones.rightArm.rotation.z = 2.5; // Praise
+                    if (bones.leftArm) bones.leftArm.rotation.z = -2.5; // Praise
+                    if (bones.rightForeArm) bones.rightForeArm.rotation.x = 0;
+                    if (bones.leftForeArm) bones.leftForeArm.rotation.x = 0;
+                }
+            } else {
+                // 2. Fallback Geometric Animation
+                avatarGroup.rotation.y += 0.005;
+                if (isThinking) {
+                    avatarGroup.scale.setScalar(1 + Math.sin(time * 10) * 0.05);
+                    hologramMaterial.opacity = 0.8 + Math.sin(time * 10) * 0.2;
+                    hologramMaterial.color.setHex(0xffffff); 
+                } else {
+                    avatarGroup.scale.setScalar(1);
+                    hologramMaterial.opacity = 0.6;
+                    hologramMaterial.color.setHex(0xffaa00);
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // --- 2. LLM Chat Logic ---
+        const chatHistory = document.getElementById('chat-history');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // We will call the local Python server, which will proxy to Ollama
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Add user message to UI
+            addMessage(text, 'user-message');
+            userInput.value = '';
+            
+            isThinking = true;
+            
+            // Create a temporary loading message
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = `message ai-message`;
+            loadingDiv.id = 'loading-message';
+            loadingDiv.innerHTML = '<i>Communing with the servers... [Processing Local AI]</i>';
+            chatHistory.appendChild(loadingDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            try {
+                // Call local python backend (which talks to Ollama/Llama.cpp)
+                const response = await fetch('http://localhost:8000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: text })
+                });
+                
+                const data = await response.json();
+                isThinking = false;
+                
+                // Remove loading message
+                const loader = document.getElementById('loading-message');
+                if (loader) loader.remove();
+                
+                // Trigger explaining animation based on response length
+                isExplaining = true;
+                explainTimer = Math.min(data.reply.length * 0.05, 10); // gesture for a few seconds
+                
+                addMessage(data.reply, 'ai-message');
+
+                // Play Voice Audio if available
+                if (data.audio) {
+                    const audio = new Audio(data.audio + "?t=" + new Date().getTime());
+                    audio.play();
+                }
+            } catch (error) {
+                console.error('Error talking to LLM:', error);
+                const loader = document.getElementById('loading-message');
+                if (loader) loader.remove();
+                addMessage('[SYSTEM FAULT]: Unable to connect to inference engine.', 'ai-message');
+            } finally {
+                isThinking = false;
+            }
+        }
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.className = `message ${className}`;
+            div.textContent = text;
+            chatHistory.appendChild(div);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
