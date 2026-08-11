@@ -242,9 +242,15 @@ class Strategy:
 class SimpleController:
     def __init__(self):
         self.market = MarketPredictor()
+        # carrying[agent_id] = {"item": "GOOSE", "target": (x,y), "action": "PLACE"}
+        # action: "PLACE" | "DROP" | None - what to do when at target
+        self.carrying = {}
         
     def get_actions(self, state: GameState, plan: DailyPlan) -> Dict:
         self.market.update(state.obs["market"])
+        
+        if state.hour == 0:
+            self.carrying = {}
         
         actions = {"farmer": ["PASS"], "hands": [], "market": []}
         money = state.money
@@ -306,9 +312,13 @@ class SimpleController:
         
         actions["market"] = actions["market"][:10]
         
-        actions["farmer"] = self._get_farmer_action(state, plan, state.farmer_pos, state.inventories[0])
-        for i in range(len(state.hands)):
-            actions["hands"].append(self._get_hand_action(i, state, plan, state.hands[i], state.inventories[i + 1]))
+        actions["farmer"] = self._get_farmer_action(state, plan, "FARMER", state.farmer_pos, state.inventories[0])
+        
+        if len(state.hands) > 0:
+            actions["hands"].append(self._get_hand0_action(state, plan, "HAND_0", state.hands[0], state.inventories[1]))
+        
+        for i in range(1, len(state.hands)):
+            actions["hands"].append(self._get_wheat_hand_action(i, state, plan, f"HAND_{i}", state.hands[i], state.inventories[i + 1]))
             
         return actions
     
@@ -332,8 +342,22 @@ class SimpleController:
                 if qty >= 3: sell[product] = qty - 2
         return sell
     
-    def _get_farmer_action(self, state: GameState, plan: DailyPlan, pos: Tuple[int, int], inv: Dict) -> List[str]:
+    def _get_farmer_action(self, state: GameState, plan: DailyPlan, agent_id: str, pos: Tuple[int, int], inv: Dict) -> List[str]:
         shed_target = min(SHED_TILES, key=lambda p: manhattan_distance(pos, p))
+        
+        if agent_id not in self.carrying:
+            self.carrying[agent_id] = {"item": None, "target": None, "action": None}
+        carry = self.carrying[agent_id]
+        
+        # Clear carry after successful action
+        if carry["action"] == "PLACE" and pos == carry["target"]:
+            carry["item"] = None
+            carry["target"] = None
+            carry["action"] = None
+        if carry["action"] == "DROP" and pos == shed_target and inv.get(carry["item"], 0) > 0:
+            carry["item"] = None
+            carry["target"] = None
+            carry["action"] = None
         
         # 1. Build coops
         if plan.build_coops > 0 and state.money >= 100:
@@ -357,55 +381,35 @@ class SimpleController:
                 if path and len(path) > 1:
                     return self._move(pos, path[1])
         
-        # 3. Place animals from shed - ONLY if we have the animal in inventory AND at structure
-        for animal in ["GOOSE", "COW", "SHEEP"]:
-            if state.shed.get(animal, 0) > 0:
-                struct_type = "COOP" if animal == "GOOSE" else "PASTURE"
-                empty_structs = state.empty_structures(struct_type)
-                if empty_structs:
-                    target = empty_structs[0]
-                    # If AT structure WITH animal in inventory -> PLACE
-                    if pos == target and inv.get(animal, 0) > 0:
-                        return ["PLACE", animal]
-                    # If AT shed WITHOUT animal -> PICKUP
-                    if pos == shed_target and inv.get(animal, 0) == 0:
-                        return ["PICKUP", animal, "1"]
-                    # If carrying animal -> move to structure
-                    if inv.get(animal, 0) > 0:
-                        path = find_path(pos, target, state)
-                    # Otherwise -> move to shed
-                    else:
-                        path = find_path(pos, shed_target, state)
-                    if path and len(path) > 1:
-                        return self._move(pos, path[1])
-        
-        # 4. Get wheat for feeding
-        if inv.get("WHEAT", 0) == 0 and state.shed.get("WHEAT", 0) > 0:
+        # 3. Get wheat for feeding
+        if inv.get("WHEAT", 0) == 0 and state.shed.get("WHEAT", 0) > 0 and carry["item"] is None:
             if pos == shed_target:
+                carry["item"] = "WHEAT"
+                carry["target"] = shed_target
+                carry["action"] = "DROP"
                 return ["PICKUP", "WHEAT", "10"]
             path = find_path(pos, shed_target, state)
             if path and len(path) > 1:
                 return self._move(pos, path[1])
         
-        # 5. Feed geese FIRST
+        # 4. Feed animals (geese first)
         for p in state.occupied_animal_structures("GOOSE"):
             tile = state.get_tile(*p)
             if tile and not tile.get("fed_today", False):
-                if pos == p and inv.get("WHEAT", 0) > 0:
+                if pos == p and (inv.get("WHEAT", 0) > 0 or carry["item"] == "WHEAT"):
                     return ["FEED"]
                 path = find_path(pos, p, state)
                 if path and len(path) > 1:
                     return self._move(pos, path[1])
         
-        # 6. Feed other animals
         for p in state.animals_needing_feed():
-            if pos == p and inv.get("WHEAT", 0) > 0:
+            if pos == p and (inv.get("WHEAT", 0) > 0 or carry["item"] == "WHEAT"):
                 return ["FEED"]
             path = find_path(pos, p, state)
             if path and len(path) > 1:
                 return self._move(pos, path[1])
         
-        # 7. Care animals
+        # 5. Care animals
         for p in state.animals_needing_care():
             if pos == p:
                 return ["CARE"]
@@ -413,7 +417,7 @@ class SimpleController:
             if path and len(path) > 1:
                 return self._move(pos, path[1])
         
-        # 8. Harvest animals
+        # 6. Harvest animals
         for p in state.animals_ready_to_harvest():
             if pos == p:
                 return ["HARVEST"]
@@ -421,15 +425,21 @@ class SimpleController:
             if path and len(path) > 1:
                 return self._move(pos, path[1])
         
-        # 9. Drop at shed if carrying products
-        if inv.get("EGG", 0) >= 4 or inv.get("WHEAT", 0) >= 10 or inv.get("MILK", 0) >= 4 or inv.get("WOOL", 0) >= 4:
-            if pos == shed_target:
-                return ["DROP"]
-            path = find_path(pos, shed_target, state)
-            if path and len(path) > 1:
-                return self._move(pos, path[1])
+        # 7. Drop at shed
+        for item in ["EGG", "WHEAT", "MILK", "WOOL"]:
+            threshold = 4 if item in ["EGG", "MILK", "WOOL"] else 10
+            if inv.get(item, 0) >= threshold:
+                if pos == shed_target:
+                    return ["DROP"]
+                if carry["item"] is None:
+                    carry["item"] = item
+                    carry["target"] = shed_target
+                    carry["action"] = "DROP"
+                path = find_path(pos, shed_target, state)
+                if path and len(path) > 1:
+                    return self._move(pos, path[1])
         
-        # 10. Water crops
+        # 8. Water crops
         for p in state.crops_needing_water():
             if pos == p:
                 return ["WATER"]
@@ -437,7 +447,7 @@ class SimpleController:
             if path and len(path) > 1:
                 return self._move(pos, path[1])
         
-        # 11. Fertilize
+        # 9. Fertilize
         for p in state.crops_needing_fertilizer():
             if pos == p and inv.get("FERTILIZER", 0) > 0:
                 return ["FERTILIZE"]
@@ -449,7 +459,7 @@ class SimpleController:
             if path and len(path) > 1:
                 return self._move(pos, path[1])
         
-        # 12. Harvest crops
+        # 10. Harvest crops
         for p in state.crops_ready_to_harvest():
             if pos == p:
                 return ["HARVEST"]
@@ -457,7 +467,7 @@ class SimpleController:
             if path and len(path) > 1:
                 return self._move(pos, path[1])
         
-        # 13. Plant WHEAT first
+        # 11. Plant WHEAT first
         if "WHEAT" in plan.crop_targets:
             crop = "WHEAT"
             target = plan.crop_targets[crop]
@@ -486,7 +496,7 @@ class SimpleController:
                     if path and len(path) > 1:
                         return self._move(pos, path[1])
         
-        # 14. Dig weeds
+        # 12. Dig weeds
         for p in state.weed_tiles():
             if pos == p:
                 return ["DIG"]
@@ -496,129 +506,210 @@ class SimpleController:
         
         return ["PASS"]
     
-    def _get_hand_action(self, hand_idx: int, state: GameState, plan: DailyPlan, pos: Tuple[int, int], inv: Dict) -> List[str]:
+    def _get_hand0_action(self, state: GameState, plan: DailyPlan, agent_id: str, pos: Tuple[int, int], inv: Dict) -> List[str]:
+        """Hand 0: Goose specialist - PLACE GEESE, feed, care, harvest eggs"""
         shed_target = min(SHED_TILES, key=lambda p: manhattan_distance(pos, p))
         
-        # Hand 0: Goose management ONLY (feed, care, harvest) - NO placing geese
-        if hand_idx == 0:
-            # Feed geese - HIGHEST PRIORITY
-            for p in state.occupied_animal_structures("GOOSE"):
-                tile = state.get_tile(*p)
-                if tile and not tile.get("fed_today", False):
-                    if pos == p and inv.get("WHEAT", 0) > 0:
-                        return ["FEED"]
-                    if pos == p and inv.get("WHEAT", 0) == 0:
-                        if pos == shed_target and state.shed.get("WHEAT", 0) > 0:
-                            return ["PICKUP", "WHEAT", "10"]
-                        path = find_path(pos, shed_target, state)
-                        if path and len(path) > 1:
-                            return self._move(pos, path[1])
-                    path = find_path(pos, p, state)
+        if agent_id not in self.carrying:
+            self.carrying[agent_id] = {"item": None, "target": None, "action": None}
+        carry = self.carrying[agent_id]
+        
+        # Clear carry AFTER successful PLACE
+        if carry["action"] == "PLACE" and pos == carry["target"]:
+            carry["item"] = None
+            carry["target"] = None
+            carry["action"] = None
+        
+        if carry["action"] == "DROP" and pos == shed_target and inv.get("WHEAT", 0) > 0:
+            carry["item"] = None
+            carry["target"] = None
+            carry["action"] = None
+        
+        # 1. PLACE GEESE FROM SHED - HIGHEST PRIORITY
+        if state.shed.get("GOOSE", 0) > 0:
+            empty_coops = state.empty_structures("COOP")
+            if empty_coops:
+                target = empty_coops[0]
+                
+                # If AT coop with goose -> PLACE (check this FIRST before clearing carry)
+                if pos == target and (carry["item"] == "GOOSE" or inv.get("GOOSE", 0) > 0):
+                    carry["item"] = None
+                    carry["target"] = None
+                    carry["action"] = None
+                    return ["PLACE", "GOOSE"]
+                
+                # If carrying goose -> move to coop
+                if carry["item"] == "GOOSE" and carry["action"] == "PLACE":
+                    path = find_path(pos, target, state)
                     if path and len(path) > 1:
                         return self._move(pos, path[1])
-            
-            # Care geese
-            for p in state.occupied_animal_structures("GOOSE"):
-                tile = state.get_tile(*p)
-                if tile and not tile.get("cared_today", False):
-                    if pos == p:
-                        return ["CARE"]
-                    path = find_path(pos, p, state)
+                
+                # If at shed and not carrying -> pick up
+                if pos == shed_target and carry["item"] is None:
+                    carry["item"] = "GOOSE"
+                    carry["target"] = target
+                    carry["action"] = "PLACE"
+                    return ["PICKUP", "GOOSE", "1"]
+                
+                # If we have goose in inventory -> move to coop
+                if inv.get("GOOSE", 0) > 0 and carry["item"] is None:
+                    carry["item"] = "GOOSE"
+                    carry["target"] = target
+                    carry["action"] = "PLACE"
+                    path = find_path(pos, target, state)
                     if path and len(path) > 1:
                         return self._move(pos, path[1])
-            
-            # Harvest eggs
-            for p in state.occupied_animal_structures("GOOSE"):
-                tile = state.get_tile(*p)
-                if tile and tile.get("yield_units", 0) > 0:
-                    if pos == p:
-                        return ["HARVEST"]
-                    path = find_path(pos, p, state)
-                    if path and len(path) > 1:
-                        return self._move(pos, path[1])
-            
-            # Drop eggs/wheat at shed
-            if inv.get("EGG", 0) >= 4 or inv.get("WHEAT", 0) >= 10:
-                if pos == shed_target:
-                    return ["DROP"]
-                path = find_path(pos, shed_target, state)
-                if path and len(path) > 1:
-                    return self._move(pos, path[1])
-            
-            # Get wheat for feeding
-            if inv.get("WHEAT", 0) == 0 and state.shed.get("WHEAT", 0) > 0:
-                if pos == shed_target:
-                    return ["PICKUP", "WHEAT", "10"]
+                
+                # Otherwise move to shed
                 path = find_path(pos, shed_target, state)
                 if path and len(path) > 1:
                     return self._move(pos, path[1])
         
-        # Hand 1+: Wheat cycle (plant, water, harvest, DROP AT SHED)
-        else:
-            # DROP wheat at shed - HIGHEST PRIORITY
-            if inv.get("WHEAT", 0) > 0:
-                if pos == shed_target:
-                    return ["DROP"]
-                path = find_path(pos, shed_target, state)
+        # 2. Feed geese
+        for p in state.occupied_animal_structures("GOOSE"):
+            tile = state.get_tile(*p)
+            if tile and not tile.get("fed_today", False):
+                if pos == p and (inv.get("WHEAT", 0) > 0 or carry["item"] == "WHEAT"):
+                    return ["FEED"]
+                if pos == p and inv.get("WHEAT", 0) == 0 and carry["item"] != "WHEAT":
+                    if pos == shed_target and state.shed.get("WHEAT", 0) > 0:
+                        carry["item"] = "WHEAT"
+                        carry["target"] = shed_target
+                        carry["action"] = "DROP"
+                        return ["PICKUP", "WHEAT", "10"]
+                    path = find_path(pos, shed_target, state)
+                    if path and len(path) > 1:
+                        return self._move(pos, path[1])
+                path = find_path(pos, p, state)
                 if path and len(path) > 1:
                     return self._move(pos, path[1])
-            
-            # Water wheat
-            for p in state.plant_tiles("WHEAT"):
-                tile = state.get_tile(*p)
-                if tile and not tile.get("watered_today", False):
-                    if pos == p:
-                        return ["WATER"]
-                    path = find_path(pos, p, state)
-                    if path and len(path) > 1:
-                        return self._move(pos, path[1])
-            
-            # Harvest wheat
-            for p in state.plant_tiles("WHEAT"):
-                tile = state.get_tile(*p)
-                if tile and tile.get("yield_units", 0) > 0:
-                    if pos == p:
-                        return ["HARVEST"]
-                    path = find_path(pos, p, state)
-                    if path and len(path) > 1:
-                        return self._move(pos, path[1])
-            
-            # Plant wheat
-            wheat_target = plan.crop_targets.get("WHEAT", 0)
-            planted = len(state.plant_tiles("WHEAT"))
-            need = min(wheat_target - planted, state.seeds.get("WHEAT", 0))
+        
+        # 3. Care geese
+        for p in state.occupied_animal_structures("GOOSE"):
+            tile = state.get_tile(*p)
+            if tile and not tile.get("cared_today", False):
+                if pos == p:
+                    return ["CARE"]
+                path = find_path(pos, p, state)
+                if path and len(path) > 1:
+                    return self._move(pos, path[1])
+        
+        # 4. Harvest eggs
+        for p in state.occupied_animal_structures("GOOSE"):
+            tile = state.get_tile(*p)
+            if tile and tile.get("yield_units", 0) > 0:
+                if pos == p:
+                    return ["HARVEST"]
+                path = find_path(pos, p, state)
+                if path and len(path) > 1:
+                    return self._move(pos, path[1])
+        
+        # 5. Drop eggs at shed
+        if inv.get("EGG", 0) >= 4:
+            if pos == shed_target:
+                return ["DROP"]
+            if carry["item"] is None:
+                carry["item"] = "EGG"
+                carry["target"] = shed_target
+                carry["action"] = "DROP"
+            path = find_path(pos, shed_target, state)
+            if path and len(path) > 1:
+                return self._move(pos, path[1])
+        
+        # 6. Get wheat for feeding
+        if inv.get("WHEAT", 0) == 0 and state.shed.get("WHEAT", 0) > 0 and carry["item"] is None:
+            if pos == shed_target:
+                carry["item"] = "WHEAT"
+                carry["target"] = shed_target
+                carry["action"] = "DROP"
+                return ["PICKUP", "WHEAT", "10"]
+            path = find_path(pos, shed_target, state)
+            if path and len(path) > 1:
+                return self._move(pos, path[1])
+        
+        return ["PASS"]
+    
+    def _get_wheat_hand_action(self, hand_idx: int, state: GameState, plan: DailyPlan, agent_id: str, pos: Tuple[int, int], inv: Dict) -> List[str]:
+        """Hand 1+: Wheat cycle - plant, water, harvest, DROP AT SHED"""
+        shed_target = min(SHED_TILES, key=lambda p: manhattan_distance(pos, p))
+        
+        if agent_id not in self.carrying:
+            self.carrying[agent_id] = {"item": None, "target": None, "action": None}
+        carry = self.carrying[agent_id]
+        
+        if carry["action"] == "DROP" and pos == shed_target and inv.get("WHEAT", 0) > 0:
+            carry["item"] = None
+            carry["target"] = None
+            carry["action"] = None
+        
+        # 1. DROP wheat at shed - ABSOLUTE HIGHEST PRIORITY
+        if inv.get("WHEAT", 0) > 0:
+            if pos == shed_target:
+                return ["DROP"]
+            if carry["item"] is None:
+                carry["item"] = "WHEAT"
+                carry["target"] = shed_target
+                carry["action"] = "DROP"
+            path = find_path(pos, shed_target, state)
+            if path and len(path) > 1:
+                return self._move(pos, path[1])
+        
+        # 2. Water wheat
+        for p in state.plant_tiles("WHEAT"):
+            tile = state.get_tile(*p)
+            if tile and not tile.get("watered_today", False):
+                if pos == p:
+                    return ["WATER"]
+                path = find_path(pos, p, state)
+                if path and len(path) > 1:
+                    return self._move(pos, path[1])
+        
+        # 3. Harvest wheat
+        for p in state.plant_tiles("WHEAT"):
+            tile = state.get_tile(*p)
+            if tile and tile.get("yield_units", 0) > 0:
+                if pos == p:
+                    return ["HARVEST"]
+                path = find_path(pos, p, state)
+                if path and len(path) > 1:
+                    return self._move(pos, path[1])
+        
+        # 4. Plant wheat
+        wheat_target = plan.crop_targets.get("WHEAT", 0)
+        planted = len(state.plant_tiles("WHEAT"))
+        need = min(wheat_target - planted, state.seeds.get("WHEAT", 0))
+        if need > 0:
+            empty = state.empty_unlocked_tiles()
+            for p in empty[:need]:
+                if pos == p:
+                    return ["PLANT", "WHEAT"]
+                path = find_path(pos, p, state)
+                if path and len(path) > 1:
+                    return self._move(pos, path[1])
+        
+        # 5. Help other crops
+        for crop in ["TOMATO", "STRAWBERRY", "CARROT", "MELON"]:
+            target = plan.crop_targets.get(crop, 0)
+            planted = len(state.plant_tiles(crop))
+            need = min(target - planted, state.seeds.get(crop, 0))
             if need > 0:
                 empty = state.empty_unlocked_tiles()
                 for p in empty[:need]:
                     if pos == p:
-                        return ["PLANT", "WHEAT"]
+                        return ["PLANT", crop]
                     path = find_path(pos, p, state)
                     if path and len(path) > 1:
                         return self._move(pos, path[1])
-            
-            # Help other crops
-            for crop in ["TOMATO", "STRAWBERRY", "CARROT", "MELON"]:
-                target = plan.crop_targets.get(crop, 0)
-                planted = len(state.plant_tiles(crop))
-                need = min(target - planted, state.seeds.get(crop, 0))
-                if need > 0:
-                    empty = state.empty_unlocked_tiles()
-                    for p in empty[:need]:
-                        if pos == p:
-                            return ["PLANT", crop]
-                        path = find_path(pos, p, state)
-                        if path and len(path) > 1:
-                            return self._move(pos, path[1])
-            
-            # Water other crops
-            for p in state.crops_needing_water():
-                tile = state.get_tile(*p)
-                if tile and tile.get("crop") != "WHEAT":
-                    if pos == p:
-                        return ["WATER"]
-                    path = find_path(pos, p, state)
-                    if path and len(path) > 1:
-                        return self._move(pos, path[1])
+        
+        # 6. Water other crops
+        for p in state.crops_needing_water():
+            tile = state.get_tile(*p)
+            if tile and tile.get("crop") != "WHEAT":
+                if pos == p:
+                    return ["WATER"]
+                path = find_path(pos, p, state)
+                if path and len(path) > 1:
+                    return self._move(pos, path[1])
         
         return ["PASS"]
     
