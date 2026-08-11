@@ -72,7 +72,7 @@ class KneeMRIDataset(Dataset):
         self.pseudo_labels = pseudo_labels or {}
         
         self.series_by_study = self.series_df.groupby("StudyInstanceUID").apply(
-            lambda x: x.to_dict("records")
+            lambda x: x.to_dict("records"), include_groups=False
         ).to_dict()
     
     def __len__(self) -> int:

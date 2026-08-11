@@ -234,6 +234,9 @@ class Trainer:
         
         total_loss = 0.0
         num_batches = 0
+        accum_steps = self.config.get("accumulation_steps", 1)
+        
+        self.optimizer.zero_grad()
         
         for batch_idx, batch in enumerate(self.train_loader):
             series = batch["series"].to(self.device, non_blocking=True)
@@ -241,46 +244,49 @@ class Trainer:
             slice_masks = batch["slice_masks"].to(self.device, non_blocking=True)
             labels = batch["labels"].to(self.device, non_blocking=True)
             
-            self.optimizer.zero_grad()
-            
             if self.scaler:
                 with torch.amp.autocast('cuda'):
                     logits, _, _ = self.model(series, series_mask, slice_masks)
-                    loss = self.criterion(logits, labels)
+                    loss = self.criterion(logits, labels) / accum_steps
                 
                 self.scaler.scale(loss).backward()
                 
-                if self.config.get("grad_clip"):
-                    self.scaler.unscale_(self.optimizer)
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config["grad_clip"])
-                
-                self.scaler.step(self.optimizer)
-                self.scaler.update()
+                if (batch_idx + 1) % accum_steps == 0 or (batch_idx + 1) == len(self.train_loader):
+                    if self.config.get("grad_clip"):
+                        self.scaler.unscale_(self.optimizer)
+                        torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config["grad_clip"])
+                    
+                    self.scaler.step(self.optimizer)
+                    self.scaler.update()
+                    self.optimizer.zero_grad()
             else:
                 logits, _, _ = self.model(series, series_mask, slice_masks)
-                loss = self.criterion(logits, labels)
+                loss = self.criterion(logits, labels) / accum_steps
                 
                 loss.backward()
                 
-                if self.config.get("grad_clip"):
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config["grad_clip"])
-                
-                self.optimizer.step()
+                if (batch_idx + 1) % accum_steps == 0 or (batch_idx + 1) == len(self.train_loader):
+                    if self.config.get("grad_clip"):
+                        torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.config["grad_clip"])
+                    
+                    self.optimizer.step()
+                    self.optimizer.zero_grad()
             
             if self.config.get("scheduler") == "onecycle":
                 self.scheduler.step()
             
-            if self.ema:
-                self.ema.update(self.model)
+            if (batch_idx + 1) % accum_steps == 0:
+                if self.ema:
+                    self.ema.update(self.model)
             
-            total_loss += loss.item()
+            total_loss += loss.item() * accum_steps  # undo the division for logging
             num_batches += 1
             
             probs = torch.sigmoid(logits).detach()
             self.train_meter.update(probs, labels)
             
             if batch_idx % self.config.get("log_interval", 50) == 0:
-                self.logger.info(f"Epoch {epoch} Batch {batch_idx}/{len(self.train_loader)} Loss: {loss.item():.4f}")
+                self.logger.info(f"Epoch {epoch} Batch {batch_idx}/{len(self.train_loader)} Loss: {loss.item() * accum_steps:.4f}")
         
         if self.config.get("scheduler") != "onecycle":
             self.scheduler.step()

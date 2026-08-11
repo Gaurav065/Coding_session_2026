@@ -66,11 +66,13 @@ class SeriesEncoder(nn.Module):
         feature_dim: int = 512,
         slice_aggregation: str = "attention",
         dropout: float = 0.1,
-        in_channels: int = 3
+        in_channels: int = 3,
+        backbone_chunk_size: int = 6
     ):
         super().__init__()
         self.slice_aggregation = slice_aggregation
         self.feature_dim = feature_dim
+        self.backbone_chunk_size = backbone_chunk_size
         
         self.backbone = timm.create_model(
             backbone, pretrained=pretrained, num_classes=0, global_pool="",
@@ -115,17 +117,24 @@ class SeriesEncoder(nn.Module):
                 slice_mask = slice_mask.unsqueeze(0)
         
         B, N, C, H, W = slices.shape
-        slices_flat = slices.view(B * N, C, H, W)
+        slices_flat = slices.contiguous().reshape(B * N, C, H, W)
         
-        feat = self.backbone(slices_flat)  # [B*N, D_backbone]
+        # Process through backbone in chunks to reduce peak VRAM
+        chunk_size = self.backbone_chunk_size
+        feat_chunks = []
+        for start in range(0, B * N, chunk_size):
+            end = min(start + chunk_size, B * N)
+            chunk_feat = self.backbone(slices_flat[start:end])
+            
+            if isinstance(chunk_feat, dict):
+                chunk_feat = chunk_feat["features"] if "features" in chunk_feat else list(chunk_feat.values())[0]
+            if chunk_feat.dim() == 4:
+                chunk_feat = F.adaptive_avg_pool2d(chunk_feat, 1).flatten(1)
+            
+            feat_chunks.append(chunk_feat)
         
-        if isinstance(feat, dict):
-            feat = feat["features"] if "features" in feat else list(feat.values())[0]
-        
-        if feat.dim() == 4:
-            feat = F.adaptive_avg_pool2d(feat, 1).flatten(1)
-        
-        feat = feat.view(B, N, -1)  # [B, N, D_backbone]
+        feat = torch.cat(feat_chunks, dim=0)
+        feat = feat.reshape(B, N, -1)  # [B, N, D_backbone]
         
         if self.slice_aggregation == "attention":
             agg_feat, _ = self.slice_attention(feat, slice_mask)
