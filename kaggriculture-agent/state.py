@@ -46,6 +46,8 @@ class GameState:
         results = []
         for y in range(BOARD_SIZE):
             for x in range(BOARD_SIZE):
+                if not self.is_unlocked(x, y):
+                    continue
                 tile = self.get_tile(x, y)
                 if predicate(tile):
                     results.append((x, y))
@@ -106,39 +108,34 @@ class GameState:
     def turns_remaining_today(self) -> int:
         return 24 - self.hour
     
-    def wheat_ready_to_harvest(self) -> List[Tuple[int, int]]:
-        """Wheat tiles ready for harvest (age >= 2, yield > 0)."""
+    def crops_ready_to_harvest(self) -> List[Tuple[int, int]]:
+        """Any crop tiles ready for harvest (yield > 0)."""
         res = []
-        for pos in self.plant_tiles("WHEAT"):
+        for pos in self.plant_tiles():
             tile = self.get_tile(*pos)
-            age = self.day - tile["planted_day"]
-            if age >= 2 and tile["yield_units"] > 0:
+            if tile.get("yield_units", 0) > 0:
                 res.append(pos)
         return res
     
-    def wheat_needing_water(self) -> List[Tuple[int, int]]:
-        """Wheat tiles not watered today."""
+    def crops_needing_water(self) -> List[Tuple[int, int]]:
+        """Any crop tiles not watered today."""
         res = []
-        for pos in self.plant_tiles("WHEAT"):
+        for pos in self.plant_tiles():
             tile = self.get_tile(*pos)
-            if not tile["watered_today"]:
+            if not tile.get("watered_today", False):
                 res.append(pos)
         return res
     
-    def tomato_ready_to_harvest(self) -> List[Tuple[int, int]]:
+    def crops_needing_fertilizer(self) -> List[Tuple[int, int]]:
+        """High-value crop tiles not currently fertilized."""
         res = []
-        for pos in self.plant_tiles("TOMATO"):
+        for pos in self.plant_tiles():
             tile = self.get_tile(*pos)
-            if tile["yield_units"] > 0:
-                res.append(pos)
-        return res
-    
-    def tomato_needing_water(self) -> List[Tuple[int, int]]:
-        res = []
-        for pos in self.plant_tiles("TOMATO"):
-            tile = self.get_tile(*pos)
-            if not tile["watered_today"]:
-                res.append(pos)
+            crop = tile.get("crop")
+            # Only prioritize fertilizing Melons and Strawberries for max margin
+            if crop in ("MELON", "STRAWBERRY", "TOMATO"):
+                if tile.get("fertilized_until_day", -1) < self.day:
+                    res.append(pos)
         return res
     
     def animals_needing_feed(self) -> List[Tuple[int, int]]:

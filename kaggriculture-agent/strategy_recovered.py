@@ -9,45 +9,20 @@ from state import GameState
 from market import MarketPredictor
 from pathfinding import find_path, manhattan_distance
 
-import json
-import os
-
-# Default fallback parameters (our previous manual heuristics)
-DEFAULT_PARAMS = {
-    "wheat_ratio": 1.0,
-    "tomato_ratio": 0.0,
-    "melon_ratio": 0.0,
-    "land_buy_threshold": 999999,  # Never buy by default
-    "max_hands": 3,
-    "goose_target": 6
-}
-
-def load_params():
-    try:
-        if os.path.exists('params.json'):
-            with open('params.json', 'r') as f:
-                return json.load(f)
-    except:
-        pass
-    return DEFAULT_PARAMS
-
-GLOBAL_PARAMS = load_params()
-
 @dataclass
 class DailyPlan:
     land_purchase: Optional[str] = None
     target_hands: int = 0
-    crop_targets: Dict[str, int] = field(default_factory=dict)
-    animal_targets: Dict[str, int] = field(default_factory=dict)
+    wheat_target: int = 0
+    goose_target: int = 0
     build_coops: int = 0
-    build_pastures: int = 0
     buy_seeds: Dict[str, int] = field(default_factory=dict)
     buy_animals: Dict[str, int] = field(default_factory=dict)
 
 @dataclass
 class Job:
     id: int
-    type: str  # 'DIG', 'WATER', 'HARVEST', 'FEED', 'CARE', 'PLACE_ANIMAL', 'PLANT', 'PICKUP', 'DROP', 'BUILD_COOP', 'BUILD_PASTURE', 'FERTILIZE'
+    type: str  # 'DIG', 'WATER', 'HARVEST', 'FEED', 'CARE', 'PLACE_ANIMAL', 'PLANT', 'PICKUP', 'DROP', 'BUILD_COOP'
     target_pos: Tuple[int, int]
     priority: int  # lower is higher priority
     args: List[str] = field(default_factory=list)
@@ -67,91 +42,49 @@ class Strategy:
         est_revenue = sum(qty * state.market["prices"].get(p, 1) for p, qty in sell_plan.items())
         budget += est_revenue
         
-        p = GLOBAL_PARAMS
-        stop_day = p.get("stop_investment_day", 26)
+        # Disable land purchasing to save money unless we absolutely need it
+        # Wait, if we cap at 15-20 wheat, we don't need land. The starter farm has 25 tiles.
+        plan.land_purchase = None 
         
-        # 1. Land Purchasing Logic
-        plan.land_purchase = None
-        if state.day < stop_day:
-            empty = len(state.empty_unlocked_tiles())
-            if empty < 15:
-                if "NE" not in state.unlocked and budget > p.get("buy_NE_thresh", 1000):
-                    plan.land_purchase = "NE"
-                elif "SW" not in state.unlocked and budget > p.get("buy_SW_thresh", 2000) and "NE" in state.unlocked:
-                    plan.land_purchase = "SW"
+        if state.day >= 1: plan.target_hands = 1
+        if state.day >= 3: plan.target_hands = 2
+        if state.day >= 8: plan.target_hands = 3
         
-        # 2. Hand Scaling Logic
-        quadrants_active = max(1, len(state.find_tiles(lambda t: isinstance(t, dict) and t.get("kind") in ["PLANT", "WEED", "TREE"])) // 25)
-        desired_hands = 6 * quadrants_active
-        
-        # Never spend more than 10% of current budget on daily hand salaries
-        max_hand_spend = max(30, budget * 0.10)
-        costs = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946]
-        affordable = 0
-        spend = 0
-        for c in costs:
-            if spend + c <= max_hand_spend:
-                spend += c
-                affordable += 1
+        # Wheat and Goose scaling
+        if state.day <= 5:
+            plan.wheat_target = min(20, len(state.empty_unlocked_tiles()))
+            if state.geese_count() < 2:
+                plan.goose_target = 2
+                plan.build_coops = max(0, 2 - sum(1 for row in state.tiles for t in row if isinstance(t, dict) and t.get("kind") == "COOP"))
             else:
-                break
-                
-        plan.target_hands = min(desired_hands, affordable)
-            
-        # 3. Crop Target Logic (Dynamic Rotation)
-        available_tiles = len(state.find_tiles(lambda t: t is None or (isinstance(t, dict) and t.get("kind") in ["PLANT", "TREE", "WEED"])))
-        
-        cash_crops = ["TOMATO", "STRAWBERRY", "CARROT", "MELON"]
-        best_crop = "TOMATO"
-        best_profit = -9999
-        for c in cash_crops:
-            price = state.market["prices"].get(c, MARKET_PARAMS[c]["base"])
-            if price > best_profit:
-                best_profit = price
-                best_crop = c
-                
-        if state.day < stop_day:
-            plan.crop_targets["WHEAT"] = int(available_tiles * 0.25)
-            plan.crop_targets[best_crop] = available_tiles - plan.crop_targets["WHEAT"]
-        else:
-            for c in ["WHEAT", "TOMATO", "CARROT", "STRAWBERRY", "MELON"]:
-                plan.crop_targets[c] = len(state.plant_tiles(c))
-            
-        # 4. Animal Target Logic
-        if state.day < stop_day:
-            plan.animal_targets["GOOSE"] = p.get("goose_target", 6)
+                plan.goose_target = state.geese_count()
+        elif state.day <= 15:
+            plan.wheat_target = min(20, len(state.empty_unlocked_tiles()))
             empty_coops = sum(1 for row in state.tiles for t in row if isinstance(t, dict) and t.get("kind") == "COOP" and t.get("animal") is None)
-            plan.build_coops = max(0, plan.animal_targets["GOOSE"] - state.geese_count() - empty_coops)
+            if state.geese_count() < 6:
+                plan.goose_target = min(6, state.geese_count() + 2)
+                plan.build_coops = max(0, plan.goose_target - state.geese_count() - empty_coops)
+            else:
+                plan.goose_target = state.geese_count()
         else:
-            plan.animal_targets["GOOSE"] = state.geese_count()
+            plan.wheat_target = min(20, len(state.empty_unlocked_tiles()))
+            plan.goose_target = state.geese_count()
             plan.build_coops = 0
             
         self._calc_purchases(state, plan)
         return plan
     
     def _calc_purchases(self, state: GameState, plan: DailyPlan):
-        budget = state.money
-        for c, t in plan.crop_targets.items():
-            have = len(state.plant_tiles(c)) + state.seeds.get(c, 0)
-            if have < t:
-                plan.buy_seeds[c] = t - have
+        planted = len(state.plant_tiles("WHEAT"))
+        in_shed = state.seeds.get("WHEAT", 0)
+        have = planted + in_shed
+        if have < plan.wheat_target:
+            plan.buy_seeds["WHEAT"] = plan.wheat_target - have
         
-        # 1. Budget for Feed (Priority over everything else so animals don't die)
-        cows = len(state.occupied_animal_structures("COW"))
-        sheep = len(state.occupied_animal_structures("SHEEP"))
-        geese = state.geese_count()
-        need_feed = max(0, (geese + cows + sheep) * 2 - state.shed.get("WHEAT", 0))
-        if need_feed > 0:
-            feed_cost_per = state.market["prices"].get("WHEAT", 30)
-            feed_cost = min(need_feed, budget // feed_cost_per) * feed_cost_per
-            budget -= feed_cost
-            
-        for animal, target in plan.animal_targets.items():
-            current = state.geese_count() if animal == "GOOSE" else 0
-            in_shed = state.shed.get(animal, 0)
-            have = current + in_shed
-            if have < target:
-                plan.buy_animals[animal] = target - have
+        if plan.goose_target > state.geese_count():
+            have = state.shed.get("GOOSE", 0) + state.geese_count()
+            if have < plan.goose_target:
+                plan.buy_animals["GOOSE"] = plan.goose_target - have
     
     def _create_sell_plan(self, state: GameState) -> Dict[str, int]:
         sell = {}
@@ -172,22 +105,11 @@ class Strategy:
         return sell
 
 class DynamicController:
-    """
-    The DynamicController implements a decoupled, state-driven Job Queue.
-    Instead of hardcoding action sequences, it scans the game state and generates
-    a list of Jobs based on priority. Agents (Farmer/Hands) are then dynamically
-    assigned the highest priority job that is closest to them.
-    
-    This architecture handles edge cases like getting stuck, animal death, and 
-    excessive walking by automatically re-evaluating the optimal action for each 
-    agent every turn.
-    """
     def __init__(self):
         self.market = MarketPredictor()
         self.jobs: Dict[int, Job] = {}
         self.job_counter = 0
-        # Personal queues allow an agent to inject prerequisites (e.g. going to shed to pick up feed)
-        self.agent_queues: Dict[str, List[Job]] = {} 
+        self.agent_queues: Dict[str, List[Job]] = {} # Personal queue for sub-tasks like PICKUP/DROP
         
     def _add_job(self, job_type: str, target_pos: Tuple[int, int], priority: int, args: List[str] = None):
         for j in self.jobs.values():
@@ -234,27 +156,23 @@ class DynamicController:
             self._add_job("HARVEST", p, priority=6)
             
         # 8. Water Crops (Priority 7)
-        for p in state.crops_needing_water():
+        for p in state.wheat_needing_water():
             self._add_job("WATER", p, priority=7)
             
-        # 8.5. Fertilize Crops (Priority 7)
-        for p in state.crops_needing_fertilizer():
-            self._add_job("FERTILIZE", p, priority=7)
-            
         # 9. Harvest Crops (Priority 8)
-        for p in state.crops_ready_to_harvest():
-            self._add_job("HARVEST", p, priority=8)
+        for p in state.wheat_ready_to_harvest():
+            tile = state.get_tile(*p)
+            age = state.day - tile["planted_day"]
+            if age >= 2 and tile["yield_units"] > 0:
+                self._add_job("HARVEST", p, priority=8)
                 
         # 10. Plant Crops (Priority 9)
-        for crop, target in plan.crop_targets.items():
-            planted = len(state.plant_tiles(crop))
-            need = min(target - planted, state.seeds.get(crop, 0))
-            if need > 0:
-                empty = state.empty_unlocked_tiles()
-                # Ensure we don't assign multiple plants to the same empty tile
-                # _add_job checks for existing jobs on target_pos
-                for i, p in enumerate(empty[:need]):
-                    self._add_job("PLANT", p, priority=9, args=[crop])
+        planted = len(state.plant_tiles("WHEAT"))
+        need = plan.wheat_target - planted
+        if need > 0 and state.seeds.get("WHEAT", 0) > 0:
+            empty = state.empty_unlocked_tiles()
+            for i, p in enumerate(empty[:need]):
+                self._add_job("PLANT", p, priority=9, args=["WHEAT"])
                 
         # Clean up completed or invalid jobs
         to_delete = []
@@ -338,36 +256,17 @@ class DynamicController:
         if job:
             # Pre-requisite checks
             if job.type == 'FEED' and inv.get("WHEAT", 0) == 0:
-                if state.shed.get("WHEAT", 0) > 0:
-                    pickup_job = Job(-1, 'PICKUP', shed_target, -1, ["WHEAT", "10"])
-                    self.agent_queues[agent_id].append(pickup_job)
-                    return self._execute_agent(agent_id, state)
-                else:
-                    job.status = 'COMPLETED'
-                    return ["PASS"]
+                # Add pickup job to personal queue
+                pickup_job = Job(-1, 'PICKUP', shed_target, -1, ["WHEAT", "10"])
+                self.agent_queues[agent_id].append(pickup_job)
+                return self._execute_agent(agent_id, state) # re-evaluate
                 
-            if job.type == 'PLACE_ANIMAL':
-                animal = job.args[0] if job.args else "GOOSE"
-                if inv.get(animal, 0) == 0:
-                    if state.shed.get(animal, 0) > 0:
-                        pickup_job = Job(-1, 'PICKUP', shed_target, -1, [animal, "1"])
-                        self.agent_queues[agent_id].append(pickup_job)
-                        return self._execute_agent(agent_id, state)
-                    else:
-                        job.status = 'COMPLETED'
-                        return ["PASS"]
+            if job.type == 'PLACE_ANIMAL' and inv.get("GOOSE", 0) == 0:
+                pickup_job = Job(-1, 'PICKUP', shed_target, -1, ["GOOSE", "1"])
+                self.agent_queues[agent_id].append(pickup_job)
+                return self._execute_agent(agent_id, state)
                 
-            if job.type == 'FERTILIZE' and inv.get("FERTILIZER", 0) == 0:
-                if state.shed.get("FERTILIZER", 0) > 0:
-                    pickup_job = Job(-1, 'PICKUP', shed_target, -1, ["FERTILIZER", "10"])
-                    self.agent_queues[agent_id].append(pickup_job)
-                    return self._execute_agent(agent_id, state)
-                else:
-                    job.status = 'COMPLETED'
-                    return ["PASS"]
-                    
-            tile_data = state.get_tile(*job.target_pos)
-            if job.type == 'HARVEST' and isinstance(tile_data, dict) and tile_data.get("kind") == "COOP" and inv.get("EGG", 0) >= 4:
+            if job.type == 'HARVEST' and state.get_tile(*job.target_pos).get("kind") == "COOP" and inv.get("EGG", 0) >= 4:
                 drop_job = Job(-1, 'DROP', shed_target, -1, [])
                 self.agent_queues[agent_id].append(drop_job)
                 return self._execute_agent(agent_id, state)
@@ -391,8 +290,6 @@ class DynamicController:
                 return ["PLACE", job.args[0]]
             if job.type in ("PICKUP", "DROP", "BUY_LAND", "HIRE"):
                 return [job.type] + job.args
-            if job.type == "COLLECT_FERTILIZER":
-                return ["CARE"]
             return [job.type]
             
         path = find_path(pos, job.target_pos, state)
@@ -420,59 +317,39 @@ class DynamicController:
             sell = Strategy()._create_sell_plan(state)
             for p, q in sell.items(): actions["market"].append(["SELL", p, q])
             
-        # Generate fibonacci costs for hands
-        costs = [1, 1]
-        for _ in range(18):
-            costs.append(costs[-1] + costs[-2])
-            
-        if getattr(plan, "land_purchase", None):
-            actions["market"].append(["BUY_LAND"])
-
         current = len(state.hands)
+        costs = [1, 1, 2, 3, 5, 8, 13, 21]
         hires = 0
         for i in range(plan.target_hands - current):
             idx = current + i
-            if len(actions["market"]) >= 8: break # Reserve 2 actions for buying feed, animals, seeds
             if idx < len(costs) and money >= costs[idx]:
                 actions["market"].append(["HIRE"])
                 money -= costs[idx]
                 hires += 1
+        plan.target_hands -= hires
         
-        job_counts = {}
-        for j in self.jobs.values():
-            job_counts[j.type] = job_counts.get(j.type, 0) + 1
-        print(f"Day {state.day} Hour {state.hour}: Jobs={job_counts}")
+        if state.hour == 0:
+            need_feed = max(0, state.geese_count() * 2 - state.shed.get("WHEAT", 0))
+            for _ in range(min(10, need_feed)):
+                if money >= state.market["prices"].get("WHEAT", 30):
+                    actions["market"].append(["BUY_PRODUCT", "WHEAT", 1])
+                    money -= state.market["prices"].get("WHEAT", 30)
+                    
+        bought_geese = 0
+        for _ in range(plan.buy_animals.get("GOOSE", 0)):
+            if money >= ANIMAL_COSTS["GOOSE"] + 100 + 30:
+                actions["market"].append(["BUY_ANIMAL", "GOOSE", 1])
+                money -= ANIMAL_COSTS["GOOSE"]
+                bought_geese += 1
+        if "GOOSE" in plan.buy_animals: plan.buy_animals["GOOSE"] -= bought_geese
         
-        if state.hour <= 1:
-            geese = state.geese_count() + plan.buy_animals.get("GOOSE", 0)
-            cows = len(state.occupied_animal_structures("COW")) + plan.buy_animals.get("COW", 0)
-            sheep = len(state.occupied_animal_structures("SHEEP")) + plan.buy_animals.get("SHEEP", 0)
-            need_feed = max(0, (geese + cows + sheep) * 2 - state.shed.get("WHEAT", 0))
-            if need_feed > 0 and money >= state.market["prices"].get("WHEAT", 30) and len(actions["market"]) < 10:
-                cost_per = state.market["prices"].get("WHEAT", 30)
-                affordable_feed = int(min(need_feed, money // cost_per))
-                if affordable_feed > 0:
-                    actions["market"].append(["BUY_PRODUCT", "WHEAT", affordable_feed])
-                    money -= affordable_feed * cost_per
-                    
-        for animal, target_qty in list(plan.buy_animals.items()):
-            if len(actions["market"]) >= 10: break
-            if target_qty > 0 and money >= ANIMAL_COSTS.get(animal, 100):
-                affordable = int(min(target_qty, money // ANIMAL_COSTS.get(animal, 100)))
-                if affordable > 0:
-                    actions["market"].append(["BUY_ANIMAL", animal, affordable])
-                    money -= affordable * ANIMAL_COSTS.get(animal, 100)
-                    plan.buy_animals[animal] -= affordable
-            
-        for crop, target_qty in list(plan.buy_seeds.items()):
-            if len(actions["market"]) >= 10: break
-            if target_qty > 0 and money >= SEED_COSTS.get(crop, 10):
-                affordable = int(min(target_qty, money // SEED_COSTS.get(crop, 10)))
-                if affordable > 0:
-                    actions["market"].append(["BUY_SEED", crop, affordable])
-                    money -= affordable * SEED_COSTS.get(crop, 10)
-                    plan.buy_seeds[crop] -= affordable
-                    
+        bought_seeds = 0
+        for _ in range(plan.buy_seeds.get("WHEAT", 0)):
+            if money >= SEED_COSTS["WHEAT"]:
+                actions["market"].append(["BUY_SEED", "WHEAT", 1])
+                money -= SEED_COSTS["WHEAT"]
+                bought_seeds += 1
+        if "WHEAT" in plan.buy_seeds: plan.buy_seeds["WHEAT"] -= bought_seeds
         actions["market"] = actions["market"][:10]
 
         # Agent Actions

@@ -97,6 +97,8 @@ class Strategy:
                 break
                 
         plan.target_hands = min(desired_hands, affordable)
+        if state.day >= stop_day:
+            plan.target_hands = len(state.hands) # Don't hire more at the end
             
         # 3. Crop Target Logic (Dynamic Rotation)
         available_tiles = len(state.find_tiles(lambda t: t is None or (isinstance(t, dict) and t.get("kind") in ["PLANT", "TREE", "WEED"])))
@@ -131,10 +133,12 @@ class Strategy:
     
     def _calc_purchases(self, state: GameState, plan: DailyPlan):
         budget = state.money
-        for c, t in plan.crop_targets.items():
-            have = len(state.plant_tiles(c)) + state.seeds.get(c, 0)
-            if have < t:
-                plan.buy_seeds[c] = t - have
+        for crop, target in plan.crop_targets.items():
+            planted = len(state.plant_tiles(crop))
+            in_shed = state.seeds.get(crop, 0)
+            have = planted + in_shed
+            if have < target:
+                plan.buy_seeds[crop] = target - have
         
         # 1. Budget for Feed (Priority over everything else so animals don't die)
         cows = len(state.occupied_animal_structures("COW"))
@@ -248,8 +252,8 @@ class DynamicController:
         # 10. Plant Crops (Priority 9)
         for crop, target in plan.crop_targets.items():
             planted = len(state.plant_tiles(crop))
-            need = min(target - planted, state.seeds.get(crop, 0))
-            if need > 0:
+            need = target - planted
+            if need > 0 and state.seeds.get(crop, 0) > 0:
                 empty = state.empty_unlocked_tiles()
                 # Ensure we don't assign multiple plants to the same empty tile
                 # _add_job checks for existing jobs on target_pos
@@ -425,23 +429,15 @@ class DynamicController:
         for _ in range(18):
             costs.append(costs[-1] + costs[-2])
             
-        if getattr(plan, "land_purchase", None):
-            actions["market"].append(["BUY_LAND"])
-
         current = len(state.hands)
         hires = 0
         for i in range(plan.target_hands - current):
             idx = current + i
-            if len(actions["market"]) >= 8: break # Reserve 2 actions for buying feed, animals, seeds
+            if len(actions["market"]) >= 6: break # Reserve 4 actions for buying feed, animals, seeds
             if idx < len(costs) and money >= costs[idx]:
                 actions["market"].append(["HIRE"])
                 money -= costs[idx]
                 hires += 1
-        
-        job_counts = {}
-        for j in self.jobs.values():
-            job_counts[j.type] = job_counts.get(j.type, 0) + 1
-        print(f"Day {state.day} Hour {state.hour}: Jobs={job_counts}")
         
         if state.hour <= 1:
             geese = state.geese_count() + plan.buy_animals.get("GOOSE", 0)
