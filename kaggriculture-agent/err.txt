@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Coding\kaggriculture-agent\test.py", line 17, in wrapped_agent
-    jobs = [j.type for j in _controller.jobs.values()]
-                            ^^^^^^^^^^^^^^^^
-AttributeError: 'SimpleController' object has no attribute 'jobs'
