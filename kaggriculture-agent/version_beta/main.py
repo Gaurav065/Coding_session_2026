@@ -96,29 +96,28 @@ for _p in PRODUCTS:
 # --------------------------------------------------------------------------
 P = {
     # never sell a unit below this price (scaled down over the last days)
-    "res_WHEAT": 20, "res_CARROT": 26, "res_TOMATO": 40, "res_STRAWBERRY": 92,
-    "res_MELON": 150, "res_EGG": 14, "res_MILK": 112, "res_WOOL": 145,
-    "res_FERTILIZER": 55,
+    "res_WHEAT": 16, "res_CARROT": 24, "res_TOMATO": 42, "res_STRAWBERRY": 75,
+    "res_MELON": 160, "res_EGG": 35, "res_MILK": 105, "res_WOOL": 130,
+    "res_FERTILIZER": 65,
 
-    "max_hands": 13,           # hard cap on hands hired per day
-    "hand_budget": 150.0,      # floor on daily hand spend
-    "hand_budget_frac": 0.08,  # plus this fraction of liquid cash
+    "max_hands": 100,           # hard cap on hands hired per day
+    "hand_budget": 200.0,      # floor on daily hand spend
+    "hand_budget_frac": 0.10,  # plus this fraction of liquid cash
     "work_per_hand": 13.0,     # usable actions per hand per day (rest is travel)
 
-    "max_geese": 18,
-    "max_animals": 24,
+    "max_geese": 100,
+    "max_animals": 100,
     "wheat_buffer_days": 1.4,   # days of feed to keep in the shed
     "max_wheat_stock": 55,      # shed only holds 100 items total
-    "feed_reserve_days": 3.5,   # days of feed money held back from all spending
-    "max_wheat_price": 150,     # normal ceiling on bought feed wheat
-    "panic_wheat_price": 260,   # ceiling when animals would otherwise starve
+    "feed_reserve_days": 2.0,   # days of feed money held back from all spending
+    "max_wheat_price": 35,      # normal ceiling on bought feed wheat
+    "panic_wheat_price": 45,    # ceiling when animals would otherwise starve
     "wheat_tiles_per_animal": 1.05,
     "dig_value": 130.0,         # weeds are dead tiles; clearing one is cheap
 
     "stop_animals_day": 25,
-    "opp_share": 0.60,          # share of town drain we assume we can capture
     "yield_haircut": 0.85,      # discount on projected animal revenue
-    "invest_frac": 0.90,        # share of free cash committed per planning pass
+    "invest_frac": 0.98,        # share of free cash committed per planning pass
     "land_slack": 12,           # buy the next quadrant when free tiles drop here
     "dist_pow": 1.45,           # travel penalty exponent in task scoring
     "sticky": 1.6,           # bonus for continuing last turn's target
@@ -322,10 +321,37 @@ def build_plan(st):
     scale = reserve_scale(st.day)
     reserve = {}
     head = {}
+    opp_production = {p: 0 for p in PRODUCTS}
+    if 1 - st.pid < len(st.obs["farms"]):
+        opp_farm = st.obs["farms"][1 - st.pid]
+        for row in opp_farm["tiles"]:
+            for t in row:
+                if not isinstance(t, dict): continue
+                k = t.get("kind")
+                if k == "PLANT":
+                    c = CROPS[t["crop"]]
+                    if c["ongoing"]:
+                        age = st.day - t.get("planted_day", st.day)
+                        done = 0 if age < c["first"] else (age - c["first"]) // c["interval"] + 1
+                        opp_production[t["crop"]] += max(0, c["cap"] - done) * 1.5
+                    else:
+                        opp_production[t["crop"]] += c["cap"]
+                elif k in ("COOP", "PASTURE"):
+                    a = t.get("animal")
+                    if a:
+                        ad = ANIMALS[a]
+                        wait = max(0, ad["first"] - (st.day - t.get("placed_day", st.day)))
+                        left = dl - wait
+                        nprod = 0 if left < 0 else left // ad["interval"] + 1
+                        opp_production[ad["prod"]] += nprod * (1 + ad["interval"])
+
     for p in PRODUCTS:
         r = max(1, int(P["res_" + p] * scale)) if scale > 0 else 1
         reserve[p] = r
-        head[p] = units_sellable(p, st.minv[p], r, 900) + int(rate[p] * dl * P["opp_share"])
+        expected_drain = rate[p] * dl
+        # Be slightly more optimistic about town drain to prevent complete paralysis
+        headroom = max(0, int(expected_drain * 1.5) - int(opp_production[p]))
+        head[p] = units_sellable(p, st.minv[p], r, 900) + headroom
 
     plan = {"reserve": reserve, "head": head, "rate": rate}
 
@@ -381,13 +407,20 @@ def build_plan(st):
     plan["pastures_free"] = pastures_free
     animals_now = counts["GOOSE"] + counts["COW"] + counts["SHEEP"]
     plan["animals"] = animals_now
-    have = dict((k, counts[k] + st.shed.get(k, 0)) for k in ANIMALS)
+    
+    carried = {k: 0 for k in ANIMALS}
+    for inv in st.invs:
+        for k in ANIMALS:
+            carried[k] += inv.get("animal:" + k, 0)
+            carried[k] += inv.get(k, 0)
+            
+    have = dict((k, counts[k] + st.shed.get(k, 0) + carried[k]) for k in ANIMALS)
+    plan["have"] = have
     owned = have["GOOSE"] + have["COW"] + have["SHEEP"]
     
     wheat_price_buy = market_price("WHEAT", st.minv["WHEAT"] - 1)
     feed_reserve = min(2600.0, owned * P["feed_reserve_days"] * wheat_price_buy)
     plan["feed_reserve"] = feed_reserve
-    budget = max(0.0, st.money - feed_reserve) * P["invest_frac"]
 
     nq = len(st.unlocked) - 1
     effective_work_per_hand = P["work_per_hand"] - (nq * 1.5)
@@ -399,7 +432,7 @@ def build_plan(st):
     for crop in CROPS:
         pr = st.prices[crop]
         if crop == "WHEAT":
-            pr = max(pr, min(wheat_price_buy, P["max_wheat_price"]))
+            pr = max(pr, min(wheat_price_buy, 60))
         r = crop_plan_value(crop, st, pr)
         if r is None: continue
         units, occ, acts, profit = r
@@ -422,6 +455,13 @@ def build_plan(st):
         price = max(st.prices[a["prod"]], reserve[a["prod"]])
         gross = per * price * P["yield_haircut"]
         feed = dl * wheat_price_buy
+        
+        # We also need to budget for the hands required to tend this animal.
+        total_hands = 1 + len(st.farm["hands"])
+        added = 2.8 / max(1.0, effective_work_per_hand)
+        if total_hands + added > P["max_hands"]:
+            continue
+            
         net = gross - a["cost"] - feed
         if net <= 0: continue
         
@@ -439,6 +479,9 @@ def build_plan(st):
     pending = coops_free + pastures_free + len(weeds)
     current_work = (animals_now * 2.8 + crop_tiles * 1.5 + pending * 1.7 + 10)
     current_hands = current_work / effective_work_per_hand
+    
+    labor_reserve = get_fib_cost(current_hands) * 5.0
+    budget = max(0.0, st.money - feed_reserve - labor_reserve) * P["invest_frac"]
 
     # ---- dynamic land: evaluate ROI of 25 new tiles ----------------------
     nq = len(st.unlocked) - 1
@@ -448,45 +491,64 @@ def build_plan(st):
         usable_tiles = len(empties) + len(weeds)
         crowded = usable_tiles <= P["land_slack"] or nq == 0
         if crowded and budget >= cost:
-            if cand:
-                _, _, _, _, best_profit, best_occ, best_acts = cand[0]
-                expected_cycles = max(0.5, dl / float(best_occ))
-                marginal_revenue = 25 * best_profit * expected_cycles
-                
-                added_actions_per_day = 25 * (best_acts / float(best_occ))
-                added_hands = added_actions_per_day / effective_work_per_hand
-                
-                current_daily_labor_cost = get_fib_cost(current_hands)
-                new_daily_labor_cost = get_fib_cost(current_hands + added_hands)
-                marginal_labor_cost = (new_daily_labor_cost - current_daily_labor_cost) * dl
-                
-                if marginal_revenue > marginal_labor_cost + cost:
-                    plan["buy_land"] = True
-                    budget -= cost
+            liquidity_buffer = 2000
+            if budget >= cost + liquidity_buffer:
+                plan["buy_land"] = True
+                budget -= cost
             elif nq == 0:
                 plan["buy_land"] = True
                 budget -= cost
 
     # ---- dynamic animal targets ------------------------------------------
+    global_cand = []
+    for item in cand:
+        mav, crop, units, room, prof, occ, acts = item
+        global_cand.append((mav, "CROP", item))
+        
+    if st.day <= P["stop_animals_day"]:
+        for item in animal_cand:
+            action_val, kind, per, a, net = item
+            global_cand.append((action_val, "ANIMAL", item))
+            
+    global_cand.sort(reverse=True, key=lambda z: z[0])
+    
+    crop_targets = {}
     want = dict(have)
     tile_room = len(empties) + coops_free + pastures_free
     total = owned
-    if st.day <= P["stop_animals_day"]:
-        for action_val, kind, per, a, net in animal_cand:
+    
+    structures_can_build = min(sum(st.shed.get(k, 0) for k in ANIMALS) + 4, len(empties))
+    sim_coops_free = coops_free
+    sim_pastures_free = pastures_free
+    sim_shed_used = st.shed_used
+    
+    for entry in global_cand:
+        if entry[1] == "CROP":
+            mav, crop, units, room, prof, occ, acts = entry[2]
+            by_market = int(room // max(1, units)) + 1
+            by_cash = int(budget // CROPS[crop]["seed"])
+            take = min(tile_room, max(min(by_market, by_cash), st.seeds.get(crop, 0)))
+            if take <= 0: continue
+            crop_targets[crop] = take
+            budget -= max(0, take - st.seeds.get(crop, 0)) * CROPS[crop]["seed"]
+            tile_room -= take
+        elif entry[1] == "ANIMAL":
+            action_val, kind, per, a, net = entry[2]
             added_hands_for_animal = 2.8 / effective_work_per_hand
-            marginal_labor_cost_animal = (get_fib_cost(current_hands + added_hands_for_animal) - get_fib_cost(current_hands)) * dl
             
-            # If the animal's net profit over the season doesn't even cover the marginal labor cost, skip it!
-            if net < marginal_labor_cost_animal:
-                continue
-
             room = head[a["prod"]] - pipeline[a["prod"]]
             by_market = int(room // max(1, per))
-            unit_cost = a["cost"] + dl * wheat_price_buy * 0.45
+            unit_cost = a["cost"] + 5 * wheat_price_buy
             by_cash = int(budget // unit_cost)
             
             n = min(by_market, by_cash, tile_room)
+            
+            free_structs = sim_coops_free + structures_can_build if kind == "GOOSE" else sim_pastures_free + structures_can_build
+            n = min(n, free_structs, 100 - sim_shed_used - 1)
+            
             if kind == "GOOSE": n = min(n, P["max_geese"] - have["GOOSE"])
+            if kind == "SHEEP": n = min(n, 4 - have["SHEEP"])
+            n = min(n, P["max_animals"] - total)
             if n <= 0: continue
             
             want[kind] += n
@@ -494,12 +556,38 @@ def build_plan(st):
             tile_room -= n
             total += n
             current_hands += n * added_hands_for_animal
+            
+            if kind == "GOOSE":
+                used_structs = max(0, n - sim_coops_free)
+                sim_coops_free = max(0, sim_coops_free - n)
+            else:
+                used_structs = max(0, n - sim_pastures_free)
+                sim_pastures_free = max(0, sim_pastures_free - n)
+            structures_can_build -= used_structs
+            sim_shed_used += n
+            
+    if total > 0 and dl >= 4 and tile_room > 0:
+        need = int(math.ceil(total * P["wheat_tiles_per_animal"])) - crop_counts.get("WHEAT", 0)
+        n = max(0, min(need, tile_room, int(budget // CROPS["WHEAT"]["seed"])))
+        if n > 0:
+            crop_targets["WHEAT"] = n
+            budget -= n * CROPS["WHEAT"]["seed"]
+            tile_room -= n
+            
+    # WHEAT is now allocated natively via global_cand based on MAV.
+
+    for crop, n in st.seeds.items():
+        if n > 0 and crop not in crop_targets and tile_room > 0:
+            crop_targets[crop] = min(n, tile_room)
+            tile_room -= crop_targets[crop]
+
     plan["want"] = want
+    plan["crop_targets"] = crop_targets
 
     # ---- structures ------------------------------------------------------
     need_coops = max(0, want["GOOSE"] - counts["GOOSE"] - coops_free)
     need_past = max(0, want["COW"] + want["SHEEP"] - counts["COW"] - counts["SHEEP"] - pastures_free)
-    slack = sum(st.shed.get(k, 0) for k in ANIMALS) + 2
+    slack = sum(st.shed.get(k, 0) for k in ANIMALS) + 4
     plan["build_coops"] = min(need_coops, slack, len(empties))
     plan["build_pastures"] = min(need_past, slack, max(0, len(empties) - plan["build_coops"]))
 
@@ -508,44 +596,8 @@ def build_plan(st):
     nb = plan["build_coops"] + plan["build_pastures"]
     plan["coop_sites"] = set(empties[:plan["build_coops"]])
     plan["pasture_sites"] = set(empties[plan["build_coops"]:nb])
-
-    # ---- dynamic crop planting (space filling) ---------------------------
-    free_for_crops = max(0, len(empties) - nb)
-    feed_need = (total + want["GOOSE"] + want["COW"] + want["SHEEP"]) * dl
-    
-    # Re-sort cand by profit/occupancy for space efficiency
-    cand_space = [(prof / float(occ), crop, units, room, prof, occ, acts) for mav, crop, units, room, prof, occ, acts in cand]
-    cand_space.sort(reverse=True, key=lambda z: z[0])
-    
-    crop_targets = {}
-    left = free_for_crops
-    seed_budget = budget
-
-    if total > 0 and dl >= 4 and left > 0:
-        need = int(math.ceil(total * P["wheat_tiles_per_animal"])) - crop_counts.get("WHEAT", 0)
-        n = max(0, min(need, left, int(seed_budget // CROPS["WHEAT"]["seed"])))
-        if n > 0:
-            crop_targets["WHEAT"] = n
-            seed_budget -= n * CROPS["WHEAT"]["seed"]
-            left -= n
-            
-    for _, crop, units, room, prof, occ, acts in cand_space:
-        if left <= 0: break
-        if crop in crop_targets: continue
-        by_market = int(room // max(1, units)) + 1
-        by_cash = int(seed_budget // CROPS[crop]["seed"])
-        take = min(left, max(min(by_market, by_cash), st.seeds.get(crop, 0)))
-        if take <= 0: continue
-        crop_targets[crop] = take
-        seed_budget -= max(0, take - st.seeds.get(crop, 0)) * CROPS[crop]["seed"]
-        left -= take
-        
-    for crop, n in st.seeds.items():
-        if n > 0 and crop not in crop_targets and left > 0:
-            crop_targets[crop] = min(n, left)
-            left -= crop_targets[crop]
-    plan["crop_targets"] = crop_targets
     plan["plant_sites"] = [p for p in empties if p not in plan["coop_sites"] and p not in plan["pasture_sites"]]
+
 
     # ---- dynamic labour budgeting ----------------------------------------
     pending_tasks = plan["build_coops"] + plan["build_pastures"] + len(weeds)
@@ -559,7 +611,7 @@ def build_plan(st):
         if spend + a > hand_cash:
             break
         # DYNAMIC CAP: Does this hand cost more than the value of the actions they provide?
-        if a > MAV * effective_work_per_hand * 0.85: # 15% safety margin on labor value
+        if a > MAV * effective_work_per_hand * 0.95: # 5% safety margin on labor value
             break
         spend += a
         n += 1
@@ -648,7 +700,7 @@ def market_orders(st, plan, bought):
     if st.day <= P["stop_animals_day"]:
         for kind in ("SHEEP", "COW", "GOOSE"):
             a = ANIMALS[kind]
-            owned = plan["counts"][kind] + st.shed.get(kind, 0)
+            owned = plan["have"][kind]
             need = plan["want"][kind] - owned
             free = (plan["coops_free"] + plan["build_coops"]) if kind == "GOOSE" \
                 else (plan["pastures_free"] + plan["build_pastures"])
@@ -798,7 +850,7 @@ def build_tasks(st, plan):
                         if w0 <= age <= c["maxday"] and yu < c["cap"]:
                             v = max(v, price * (2.0 if fert_on else 1.0) * 0.95)
                     if v <= 0.0 and age < c["maxday"] + 2:
-                        v = 9.0
+                        v = max(90.0, 40.0 + 7.0 * price / max(1, c["maxday"]))
                     if v > 0.0:
                         add(T(v, pos, ["WATER"], ("W", x, y)))
 
@@ -1095,6 +1147,9 @@ def agent(obs):
 
     orders = market_orders(st, plan, m["bought"])
     acts = schedule(st, plan, m["sticky"])
+
+    with open("debug.log", "a") as f:
+        f.write(f"Day {st.day} money {st.money}: {orders}\n")
 
     return {"farmer": acts[0] if acts else ["PASS"],
             "hands": acts[1:],
