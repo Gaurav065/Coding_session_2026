@@ -13,7 +13,7 @@ import traceback
 
 from kaggle_environments import make
 
-import main
+import src.main as main
 
 TRACE = False
 _timing = []

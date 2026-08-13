@@ -1,26 +1,66 @@
-# Context Handoff: Kaggriculture Agent
+# Agent Context Handoff — Aug 12, 2026
 
-## Objective
-We are designing a counter-strategy for a 30-day (720 episodes) farming simulation competition. Our agent needs to consistently beat top leaderboard players (who score ~130k vs our ~40k). 
+## 1. Goal and Domain
+We are building an automated agent for the **Kaggriculture** Kaggle competition. The agent operates a farm in a 30-day simulated economic environment with dynamic market pricing, exponential labor scaling (Fibonacci hiring costs), crops, and animals. The goal is to maximise final asset value (money + shed contents + farm value).
 
-## Current Status & Discoveries
-1. **Opponent Strategy**: We discovered that the opponent (HFT-style bot) manipulates market prices. We analyzed their replay (`92023176.json`) and created `replay_opponent.py` to replay their exact actions in our test environment (`test.py`). Despite our agent participating in the environment, the opponent still consistently achieves ~125k rewards while our agent stagnates around 40k.
-2. **Agent Bottlenecks Identified**:
-    * **Hoarding Behavior**: Our agent has hardcoded `reserve` prices in `main.py` (e.g., Milk = 105). If the market price drops below this reserve, the agent refuses to sell and just hoards items until the last few days when `reserve_scale` forces a dump. 
-    * **Scaling Limits**: `main.py` originally capped hiring at 16 hands and 24 animals. 
-    * **Fibonacci Labor Cost Trap**: We attempted to increase the caps to 100 hands/animals, but the agent still didn't scale. Investigation revealed that the game uses a Fibonacci sequence for labor costs (e.g., 20th hand costs 6765/day). The agent's `labor_reserve` calculation uses this exponential cost to hoard cash, which starves the `budget` and permanently prevents it from buying land, hiring more hands, or purchasing animals.
-    * **Land Buying Bug**: `plan["buy_land"]` logic was disjointed, which we patched in `main.py` (via `do_replace_land.py`), but the Fibonacci budget starvation renders the fix moot.
+## 2. Architecture Overview
+- **Single file**: `src/main.py` (~1800 lines)
+- **Key functions**: `build_plan()` → `market_orders()` → tile actions
+- **EV Engine**: `compute_crop_mav_exact()` and `compute_animal_mav_exact()` provide exact expected-value calculations with proper action cost accounting (feed, care, harvest, collect)
+- **Strategic Layer**: `run_strategic_mcts()` + `apply_strategic_action()` adjusts `crop_boost_adj` and `max_animals_adj` multipliers
+- **Market Saturation**: `headroom = max(0, expected_drain * 1.5 - opp_production)` caps production to prevent price crashes
+- **Replay Opponent Analysis**: `REPLAY_DUMP_STATS` tracks average dump quantities/days for known opponent dumping patterns
 
-## Actionable Next Steps
-1. **Revamp Market Orders (Selling)**: The agent must dynamically adjust its reserve prices based on market trends rather than fixed pessimistic limits. If the opponent crashes the market, we need to either dump early (front-run) or switch production entirely.
-2. **Rethink Labor Allocation**: The exponential cost of hiring hands means we cannot rely on a labor-heavy strategy. We must prioritize high ROI actions that require minimal hands (e.g., market trading or low-labor/high-yield animals like Geese/Sheep) instead of blindly increasing `current_hands`.
-3. **Analyze Opponent's Market Actions**: The opponent's replay has structured actions (`farmer`, `hands`, `market`). A script should be written to properly parse `step[winner]['action']['market']` to see exactly what they are buying and selling to achieve 130k with minimal farming. (My previous parsing script checked the dictionary keys instead of the values).
+## 3. Current State (End of Day 2 — Aug 12)
 
-## Files Modified
-* `version_beta/main.py`: Increased max caps, attempted to fix `buy_land` logic, and modified the `reserve_scale` window to start dumping on Day 22 instead of Day 27.
-* `version_beta/test.py` (and multiple debug scripts like `do_analyze.py`, `replay_opponent.py`): Used to replay the top player's JSON and trace agent execution.
+### Score Progression
+| Version | Opponent | Score (us) | Score (opp) | Result |
+|---------|----------|-----------|-------------|--------|
+| Pre-saturation fix | replay_opponent | ~86k | ~110k | Loss |
+| Post-saturation (strict headroom) | replay_opponent | ~37k-50k | ~52k-84k | Loss |
+| With max_animals_adj=1.0 floor | replay_opponent | ~50k-64k | ~65k-82k | Loss |
 
-## To Continue
-1. Fix the opponent action parser in `do_analyze.py` to correctly parse `step[winner]['action']['market']`.
-2. Rewrite the budget allocation (`labor_reserve`) in `main.py` so it doesn't exponentially starve the budget for land/seeds.
-3. Implement a dynamic `reserve` price system to stop the agent from hoarding.
+### What We Fixed Today
+1. **Exact EV Integration**: Replaced heuristic `elastic_mav` with `compute_crop_mav_exact` and `compute_animal_mav_exact` — proper action cost accounting (feed, care, harvest, collect)
+2. **Market Saturation Fix**: Changed `head[p]` to use strict `headroom` (1.5x town drain minus opponent production) instead of adding `units_sellable`, preventing the agent from flooding markets
+3. **Animal Cap Removal**: Set `max_animals_adj` floor to 1.0 (was 0.7), removed penalty in `pivot_to` branch of `apply_strategic_action`
+4. **Dynamic Liquidity Buffer**: Land buying now estimates 25-tile planting cost instead of fixed $2000 buffer
+5. **Debug Cleanup**: Removed all temporary debug file-logging injected during investigation
+
+### The Core Problem Identified
+**"Tragedy of the Commons" in a competitive market:**
+- Both agents prioritise Cows → 25+ Cows combined → Milk price crashes from $200 to $11 by Day 21
+- Our `headroom` logic is **too polite**: when the opponent overplants 41 Strawberry plants, we detect saturation and voluntarily stop planting → opponent monopolises the high-margin crops
+- The opponent sells aggressively on Days 18-20 *before* the crash, banking massive revenue while we're stuck with Wheat
+
+### Known Code Issue
+- Lines ~900 area: Manually deleted 8 lines (an accidentally-injected `for item in CROPS:` debug block) that broke the `elif k in ("COOP", "PASTURE"):` chain in the `opp_production` loop. The deletion was verified correct but could benefit from a manual review to confirm the `opp_production` parsing loop is intact.
+
+## 4. Strategic Bottlenecks (Next Session Priority)
+
+### P0 — Market Competition Strategy
+The agent needs to stop being "polite" to a saturated market. Options:
+1. **Race to sell first**: If opponent is overproducing Strawberries, we should also overproduce and sell *faster* (sell in smaller batches earlier in the day cycle)
+2. **Asymmetric pivot**: If opponent monopolises crop X, pivot hard to crop Y that they're ignoring (Melons, Tomatoes)
+3. **Hybrid**: Match production on the opponent's best crop but sell more aggressively, while also diversifying
+
+### P1 — Sell Timing Optimisation
+Currently the agent sells everything greedily. On shared markets, **timing** is critical — selling at Hour 0 gets a better price than Hour 4 after the opponent has dumped.
+
+### P2 — Late-Game Liquidation
+The agent stops buying animals on Day 25 (`stop_animals_day`), but doesn't aggressively liquidate shed contents. Days 26-28 should focus on converting all inventory to cash.
+
+## 5. Files & Config
+- `src/main.py` — The agent (single file, ~1800 lines)
+- `src/replay_opponent.py` — Replay opponent that mimics top leaderboard agents
+- `test.py` — Test harness: `python test.py -n 3 -o src/replay_opponent.py`
+- `test_replays.py` — Extended benchmark against multiple replay files
+- `replays/` — Directory with replay JSON files from top competitors
+
+## 6. Key Parameters (in `P` dict at top of main.py)
+- `max_animals`: 12 (total animal cap)
+- `stop_animals_day`: 25
+- `invest_frac`: 0.85
+- `feed_reserve_days`: 4
+- `max_geese`: 8
+- `land_slack`: 6
