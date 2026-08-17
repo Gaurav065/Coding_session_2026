@@ -13,7 +13,7 @@ import traceback
 
 from kaggle_environments import make
 
-import src.main as main
+import main
 
 TRACE = False
 _timing = []
@@ -52,6 +52,8 @@ def wrap(fn, pid_watch=0):
         return acts
     return inner
 
+
+import main
 
 def run(seed, opponent):
     env = make("kaggriculture", configuration={"episodeSteps": 720, "seed": seed})

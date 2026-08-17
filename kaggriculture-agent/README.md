@@ -1,20 +1,45 @@
-# Data Stewardship Agent - Project Architecture
+# Kaggriculture agent
 
-Welcome to the automated agent repository for dynamic market stewardship.
+Single-file heuristic agent for the Kaggle Kaggriculture competition.
 
-## Project Structure
+## Layout
 
-*   **`src/`**
-    *   **`main.py`**: The core controller. This houses our current agent logic, which uses a fixed-heuristic Marginal Action Value (MAV) strategy. It is highly optimized for static markets but vulnerable to adversarial price manipulation.
-    *   **`test.py`**: The local evaluation harness (run `python test.py -o opponent_script.py` to benchmark).
-    *   **`run_eval.py`**: Batch evaluation script that pits our agent against all historical adversarial logs in the `replays/` folder.
-    *   **`replay_agent.py`**: A specialized proxy agent used by `run_eval.py` to parse transaction logs and simulate historical opponents in our test harness.
-*   **`replays/`**
-    *   Contains the historical transaction logs (JSON format) of the top-performing adversarial models.
-*   **`context_handoff.md`**
-    *   Detailed architectural findings, constraints, and the roadmap for the next phase of development (moving from fixed heuristics to Reinforcement Learning / Minimax algorithms).
+```
+main.py                # THE submission. Greedy value/(1+distance) task scheduler
+                       # with per-product reserve prices and simple animal EV.
+bench.py               # Measurement harness: N seeds x all opponents in
+                       # `Performance test/`, reports per-opponent + aggregate
+                       # win rate. Run: `python bench.py -n 3`
+test.py                # Single-opponent eval. `python test.py -o pass -n 5`
+sweep.py               # Parameter sweep. `python sweep.py res_MILK 100 130 160`
+replay_opponent.py     # Loads REPLAY_PATH env var, plays back that replay's
+                       # winner actions - used by bench.py as opponent.
+Performance test/      # Primary opponent pool (12 replays). Used by bench.py.
+replays/               # Historical archive; not used by the current harness.
+```
 
-## Current Status & Roadmap
-Our fixed-heuristic approach has reached its ceiling. It is highly efficient at capitalizing on high-yield assets (producing 100k+ value against naive markets). However, batch testing has revealed that top-tier adversaries use aggressive market manipulation (flooding the market to crash our asset prices). 
+## Current baseline
 
-**Next Phase:** Implement an advanced, dynamic algorithmic model (RL, Minimax, or MCTS) in `src/main.py` capable of projecting price elasticity and countering adversarial market dumps. Please read `context_handoff.md` for full details.
+Against `Performance test/` opponent pool (12 replays x 2 seeds = 24 games):
+
+| metric | value |
+|---|---|
+| win rate | 22/24 (92%) |
+| my mean score | $106,822 |
+| opp mean score | $32,287 |
+| mean delta | +$74,535 |
+
+The only reliable loss is `92615092` (-$18k mean).
+
+## Iterating
+
+1. Edit `main.py`.
+2. `python bench.py -n 2` (~3 min) or `python bench.py -n 4` for tighter numbers.
+3. Anything that drops below 22/24 wins gets reverted.
+4. Push to Kaggle only after the aggregate holds or improves.
+
+## What's known
+
+Winners in the replay pool consistently follow this shape: 8-10 cows + 4-7
+sheep, ~30 strawberries mid-game, ~14 melons, 2 land buys (Q2 by day 7-8,
+Q3 by day 11-12), and preserve milk/wool prices by not oversupplying.
