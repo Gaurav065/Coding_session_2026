@@ -1364,6 +1364,7 @@ WITH
                 OurBranchID,
                 ApplicationFileNo,
                 MemberID,
+                MIN(CreatedOn) AS MinCreatedOn,
                 MAX(CreatedOn) AS MaxCreatedOn,
                 MAX(ActionOn)  AS MaxActionOn,
                 COUNT(DISTINCT SendBackRefNo) AS SendbackCount
@@ -1408,12 +1409,33 @@ WITH
                     OurBranchID,
                     ApplicationFileNo,
                     OfficerID AS CPCDoneBy,
+                    StartOn   AS CPCStartedOn,
+                    CASE WHEN ActivityStatusID = 'COMP' THEN StatusOn ELSE NULL END AS CPCCompletedOn,
                     ROW_NUMBER() OVER (
                         PARTITION BY OurBranchID, ApplicationFileNo
                         ORDER BY COALESCE(EndOn, StartOn, ModifiedOn, CreatedOn) DESC
                     ) AS rn
                 FROM stg_brnet.cv_GLOSActivityLog_inc_full
                 WHERE ActivityID = 'CPCV'
+            ) t WHERE t.rn = 1
+        ),
+
+        -- ================================================================
+        -- CTE 73: Member Created Date Resolver (Activity 'MDEN' / 'MEMC')
+        -- ================================================================
+        cte_member_created_date AS (
+            SELECT * FROM (
+                SELECT
+                    OurBranchID,
+                    ApplicationFileNo,
+                    StartOn AS MemberCreatedDate,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY OurBranchID, ApplicationFileNo
+                        ORDER BY COALESCE(StartOn, ModifiedOn, CreatedOn) DESC
+                    ) AS rn
+                FROM stg_brnet.cv_GLOSActivityLog_inc_full
+                WHERE GLOSProcessActivityID IN ('MDEN', 'MEMC')
+                  AND ActivityStatusID IS NOT NULL
             ) t WHERE t.rn = 1
         ),
 
@@ -1730,7 +1752,7 @@ END as CrossVerifyDoneBy,
 
             
             -- ════════════════════════════════════════════════════════════════
-            -- 30 P0 ATTRIBUTES FROM TCL CPC DETAILS REPORT
+            -- 38 ATTRIBUTES FROM TCL CPC DETAILS REPORT
             -- ════════════════════════════════════════════════════════════════
             CAST(cbt.NetDisbursementAmount AS DECIMAL(18,2))                                AS PaymentAmount,
 
@@ -1741,7 +1763,9 @@ END as CrossVerifyDoneBy,
                 ELSE NULL
             END                                                                             AS PaymentStatus,
 
+            cbt.TrxStatusOn                                                                 AS PaymentStatusOn,
             oftl_init.PaymentInitiatedBy                                                    AS PaymentInitiatedBy,
+            oftl_init.PaymentInitiatedOn                                                    AS PaymentInitiatedOn,
             oftl_app.PaymentApprovedBy                                                      AS PaymentApprovedBy,
             oftl_app.PaymentApprovedOn                                                      AS PaymentApprovedOn,
 
@@ -1749,7 +1773,7 @@ END as CrossVerifyDoneBy,
             TRIM(regexp_replace(cbt.ErrorMsg, r'[\t\r\n\"]+', ' '))                     AS HDFCRemarks,
 
             wflb.LoanBookedBy                                                               AS LoanBookedBy,
-            wflb.LoanBookedOn                                                               AS LoanBookedOn,
+            wflb.LoanBookedOn                                                               AS LoanBookedON,
             tl.disbursedby                                                                  AS LoanDisbursedBy,
             tl.FirstDisbursementDate                                                        AS LoanDisbursedOn,
 
@@ -1758,8 +1782,15 @@ END as CrossVerifyDoneBy,
 
             COALESCE(cpc_off.Name, cpc_db.CPCDoneBy)                                        AS OwnerName,
             cpc_db.CPCDoneBy                                                                AS CPCDoneBy,
+            cpc_db.CPCCompletedOn                                                           AS CPCCompletedOn,
+
+            CASE
+                WHEN COALESCE(qa.QueryRaisedCount, 0) = 0 AND (qa.PreviousQueries IS NULL OR TRIM(qa.PreviousQueries) = '') THEN 'FTR'
+                ELSE 'NFTR'
+            END                                                                             AS CPCFTRFlag,
 
             gcba.ModifiedBy                                                                 AS ModifiedBy,
+            gcba.ModifiedOn                                                                 AS Modifiedon,
             bar.PreviousBenecheckRemarks                                                    AS PreviousBenecheckRemarks,
 
             CASE
@@ -1769,9 +1800,12 @@ END as CrossVerifyDoneBy,
 
             COALESCE(qmd.SendbackCount, 0)                                                  AS SendbackCount,
             COALESCE(qa.QueryRaisedCount, 0)                                                AS QueryRaisedCount,
+            date_format(qmd.MinCreatedOn, 'dd/MM/yyyy hh:mm a')                             AS QueryRaisedOn,
             qa.Queries                                                                      AS Queries,
             qa.LiveQueries                                                                  AS LiveQueries,
             qa.LiveRemarks                                                                  AS LiveRemarks,
+            date_format(qmd.MaxCreatedOn, 'dd/MM/yyyy hh:mm a')                             AS LiveCPCQueryRaisedOn,
+            date_format(qmd.MaxActionOn, 'dd/MM/yyyy hh:mm a')                              AS LiveCPCQueryRespondedOn,
             qa.PreviousQueries                                                              AS PreviousQueries,
             qa.PreviousRemarks                                                              AS PreviousRemarks,
             qa.LastCPCQueryRaisedOn                                                         AS LastCPCQueryRaisedOn,
@@ -1799,6 +1833,8 @@ END as CrossVerifyDoneBy,
                          ELSE COALESCE(cstat.Description, 'Not Started')
                      END
             END                                                                             AS MemberCPCStatus,
+
+            date_format(mcd.MemberCreatedDate, 'dd-MMM-yyyy')                               AS MemberCreatedDate,
 
 -- SHA1 hash — append-only. New attributes appended at the END so
             --   previously hashed column positions do not shift. The hash flips
@@ -1971,49 +2007,61 @@ END as CrossVerifyDoneBy,
                 -- ---- appended: Accrued interest (this revision) ----
                 CAST(CAST(COALESCE(acr.AccruedInterest, 0) AS DECIMAL(19,4)) AS STRING)
             
-                -- 30 P0 CPC Attributes in SHA1 Hash
-                COALESCE(CAST(cbt.NetDisbursementAmount AS STRING), ''), '|',
+                -- 38 CPC Attributes in SHA1 Hash
+                COALESCE(CAST(cbt.NetDisbursementAmount AS STRING), ''), '|', -- 1. Payment Amount (PaymentAmount)
                 COALESCE(CAST(
                     CASE
                         WHEN tl.FirstDisbursementDate IS NOT NULL AND cbt.TrxStatusID NOT IN ('COM', 'ERR') THEN 'In-Pending'
                         WHEN tl.FirstDisbursementDate IS NOT NULL AND cbt.TrxStatusID = 'COM' THEN 'Success'
                         WHEN tl.FirstDisbursementDate IS NOT NULL AND cbt.TrxStatusID = 'ERR' THEN 'Error'
                         ELSE NULL
-                    END AS STRING), ''), '|',
-                COALESCE(CAST(oftl_init.PaymentInitiatedBy AS STRING), ''), '|',
-                COALESCE(CAST(oftl_app.PaymentApprovedBy AS STRING), ''), '|',
-                COALESCE(CAST(oftl_app.PaymentApprovedOn AS STRING), ''), '|',
-                COALESCE(CAST(cbt.Score AS STRING), ''), '|',
-                COALESCE(CAST(TRIM(regexp_replace(cbt.ErrorMsg, r'[\t\r\n\"]+', ' ')) AS STRING), ''), '|',
-                COALESCE(CAST(wflb.LoanBookedBy AS STRING), ''), '|',
-                COALESCE(CAST(wflb.LoanBookedOn AS STRING), ''), '|',
-                COALESCE(CAST(tl.disbursedby AS STRING), ''), '|',
-                COALESCE(CAST(tl.FirstDisbursementDate AS STRING), ''), '|',
-                COALESCE(CAST(COALESCE(gcl.LoanSchemeID, wfla.LoanSchemeID) AS STRING), ''), '|',
-                COALESCE(CAST(lo_mob.LOMobile AS STRING), ''), '|',
-                COALESCE(CAST(COALESCE(cpc_off.Name, cpc_db.CPCDoneBy) AS STRING), ''), '|',
-                COALESCE(CAST(cpc_db.CPCDoneBy AS STRING), ''), '|',
-                COALESCE(CAST(gcba.ModifiedBy AS STRING), ''), '|',
-                COALESCE(CAST(bar.PreviousBenecheckRemarks AS STRING), ''), '|',
+                    END AS STRING), ''), '|', -- 2. Payment Status (PaymentStatus)
+                COALESCE(CAST(cbt.TrxStatusOn AS STRING), ''), '|', -- 3. Payment Status On (PaymentStatusOn)
+                COALESCE(CAST(oftl_init.PaymentInitiatedBy AS STRING), ''), '|', -- 4. Payment Initiated by (PaymentInitiatedBy)
+                COALESCE(CAST(oftl_init.PaymentInitiatedOn AS STRING), ''), '|', -- 5. Payment Initiated On (PaymentInitiatedOn)
+                COALESCE(CAST(oftl_app.PaymentApprovedBy AS STRING), ''), '|', -- 6. Payment Approved By (PaymentApprovedBy)
+                COALESCE(CAST(oftl_app.PaymentApprovedOn AS STRING), ''), '|', -- 7. Payment Approved On (PaymentApprovedOn)
+                COALESCE(CAST(cbt.Score AS STRING), ''), '|', -- 8. Name Match Score (NameMatchScore)
+                COALESCE(CAST(TRIM(regexp_replace(cbt.ErrorMsg, r'[\t\r\n\"]+', ' ')) AS STRING), ''), '|', -- 9. HDFC Remarks (HDFCRemarks)
+                COALESCE(CAST(wflb.LoanBookedBy AS STRING), ''), '|', -- 10. Loan Booked By (LoanBookedBy)
+                COALESCE(CAST(wflb.LoanBookedOn AS STRING), ''), '|', -- 11. Loan Booked ON (LoanBookedON)
+                COALESCE(CAST(tl.disbursedby AS STRING), ''), '|', -- 12. Loan Disbursed By (LoanDisbursedBy)
+                COALESCE(CAST(tl.FirstDisbursementDate AS STRING), ''), '|', -- 13. Loan Disbursed On (LoanDisbursedOn)
+                COALESCE(CAST(COALESCE(gcl.LoanSchemeID, wfla.LoanSchemeID) AS STRING), ''), '|', -- 14. Loan Scheme (LoanScheme)
+                COALESCE(CAST(lo_mob.LOMobile AS STRING), ''), '|', -- 15. LO Mobile (LOMobile)
+                COALESCE(CAST(COALESCE(cpc_off.Name, cpc_db.CPCDoneBy) AS STRING), ''), '|', -- 16. Owner Name (OwnerName)
+                COALESCE(CAST(cpc_db.CPCDoneBy AS STRING), ''), '|', -- 17. CPC Done By (CPCDoneBy)
+                COALESCE(CAST(cpc_db.CPCCompletedOn AS STRING), ''), '|', -- 18. CPC Completed On (CPCCompletedOn)
+                COALESCE(CAST(
+                    CASE
+                        WHEN COALESCE(qa.QueryRaisedCount, 0) = 0 AND (qa.PreviousQueries IS NULL OR TRIM(qa.PreviousQueries) = '') THEN 'FTR'
+                        ELSE 'NFTR'
+                    END AS STRING), ''), '|', -- 19. CPC FTR Flag (CPCFTRFlag)
+                COALESCE(CAST(gcba.ModifiedBy AS STRING), ''), '|', -- 20. ModifiedBy (ModifiedBy)
+                COALESCE(CAST(gcba.ModifiedOn AS STRING), ''), '|', -- 21. Modifiedon (Modifiedon)
+                COALESCE(CAST(bar.PreviousBenecheckRemarks AS STRING), ''), '|', -- 22. PreviousBenecheckRemarks (PreviousBenecheckRemarks)
                 COALESCE(CAST(
                     CASE
                         WHEN bar.PreviousBenecheckRemarks IS NULL OR TRIM(bar.PreviousBenecheckRemarks) = '' THEN 0
                         ELSE size(split(bar.PreviousBenecheckRemarks, ','))
-                    END AS STRING), ''), '|',
-                COALESCE(CAST(COALESCE(qmd.SendbackCount, 0) AS STRING), ''), '|',
-                COALESCE(CAST(COALESCE(qa.QueryRaisedCount, 0) AS STRING), ''), '|',
-                COALESCE(CAST(qa.Queries AS STRING), ''), '|',
-                COALESCE(CAST(qa.LiveQueries AS STRING), ''), '|',
-                COALESCE(CAST(qa.LiveRemarks AS STRING), ''), '|',
-                COALESCE(CAST(qa.PreviousQueries AS STRING), ''), '|',
-                COALESCE(CAST(qa.PreviousRemarks AS STRING), ''), '|',
-                COALESCE(CAST(qa.LastCPCQueryRaisedOn AS STRING), ''), '|',
-                COALESCE(CAST(qa.LastCPCQueryRespondedOn AS STRING), ''), '|',
+                    END AS STRING), ''), '|', -- 23. BenecheckSendbackCount (BenecheckSendbackCount)
+                COALESCE(CAST(COALESCE(qmd.SendbackCount, 0) AS STRING), ''), '|', -- 24. Sendback Count (SendbackCount)
+                COALESCE(CAST(COALESCE(qa.QueryRaisedCount, 0) AS STRING), ''), '|', -- 25. Query Raised Count (QueryRaisedCount)
+                COALESCE(CAST(date_format(qmd.MinCreatedOn, 'dd/MM/yyyy hh:mm a') AS STRING), ''), '|', -- 26. Query Raised On (QueryRaisedOn)
+                COALESCE(CAST(qa.Queries AS STRING), ''), '|', -- 27. Queries (Queries)
+                COALESCE(CAST(qa.LiveQueries AS STRING), ''), '|', -- 28. Live Queries (LiveQueries)
+                COALESCE(CAST(qa.LiveRemarks AS STRING), ''), '|', -- 29. Live Remarks (LiveRemarks)
+                COALESCE(CAST(date_format(qmd.MaxCreatedOn, 'dd/MM/yyyy hh:mm a') AS STRING), ''), '|', -- 30. Live CPC Query Raised On (LiveCPCQueryRaisedOn)
+                COALESCE(CAST(date_format(qmd.MaxActionOn, 'dd/MM/yyyy hh:mm a') AS STRING), ''), '|', -- 31. Live CPC Query Responded On (LiveCPCQueryRespondedOn)
+                COALESCE(CAST(qa.PreviousQueries AS STRING), ''), '|', -- 32. Previous Queries (PreviousQueries)
+                COALESCE(CAST(qa.PreviousRemarks AS STRING), ''), '|', -- 33. Previous Remarks (PreviousRemarks)
+                COALESCE(CAST(qa.LastCPCQueryRaisedOn AS STRING), ''), '|', -- 34. Last CPC Query Raised On (LastCPCQueryRaisedOn)
+                COALESCE(CAST(qa.LastCPCQueryRespondedOn AS STRING), ''), '|', -- 35. Last CPC Query Responded On (LastCPCQueryRespondedOn)
                 COALESCE(CAST(
                     CASE
                         WHEN COALESCE(qa.QueryRaisedCount, 0) = 0 AND (qa.PreviousQueries IS NULL OR TRIM(qa.PreviousQueries) = '') THEN 'No'
                         ELSE 'Yes'
-                    END AS STRING), ''), '|',
+                    END AS STRING), ''), '|', -- 36. Is Query Raised & Query Raised (IsQueryRaised, QueryRaised)
                 COALESCE(CAST(
                     CASE
                         WHEN COALESCE(qa.QueryRaisedCount, 0) = 0 AND (qa.PreviousQueries IS NULL OR TRIM(qa.PreviousQueries) = '')
@@ -2026,7 +2074,8 @@ END as CrossVerifyDoneBy,
                                  WHEN 'REJT' THEN 'Rejected'
                                  ELSE COALESCE(cstat.Description, 'Not Started')
                              END
-                    END AS STRING), ''), '|'
+                    END AS STRING), ''), '|', -- 37. Member CPC Status (MemberCPCStatus)
+                COALESCE(CAST(date_format(mcd.MemberCreatedDate, 'dd-MMM-yyyy') AS STRING), ''), '|' -- 38. Member Created Date (MemberCreatedDate)
 )) AS BINARY)                                                                   AS HASHBYTESSHA1
 
         FROM      cte_loan_src         tl
@@ -2240,3 +2289,5 @@ END as CrossVerifyDoneBy,
                                                    AND cpc_db.ApplicationFileNo  = cvgl.ApplicationFileNo
         LEFT JOIN cte_officer_name     cpc_off      ON cpc_off.OfficerID         = cpc_db.CPCDoneBy
         LEFT JOIN cte_lo_mobile        lo_mob       ON lo_mob.OfficerID          = tl.CreditOfficerID
+        LEFT JOIN cte_member_created_date mcd       ON mcd.OurBranchID           = cvgl.OurBranchID
+                                                   AND mcd.ApplicationFileNo     = cvgl.ApplicationFileNo
