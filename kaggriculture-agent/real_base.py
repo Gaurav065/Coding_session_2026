@@ -18,9 +18,9 @@ _TRACE = json.loads(zlib.decompress(base64.b85decode(
 _SELLABLE = ("STRAWBERRY", "MELON", "MILK", "WOOL", "EGG", "TOMATO", "CARROT", "WHEAT", "FERTILIZER")
 
 _FRONT_RUN_HORIZON = 4
-_FRONT_RUN_ITEMS = ("MELON", "STRAWBERRY", "MILK", "WOOL", "WHEAT", "CARROT", "FERTILIZER")
-_BASE_PRICE = {"MELON": 250, "STRAWBERRY": 120, "MILK": 160, "WOOL": 200, "WHEAT": 25, "CARROT": 35, "TOMATO": 60, "EGG": 50, "FERTILIZER": 100}
-_GLUT_WEIGHT = {"MELON": 3.6, "STRAWBERRY": 1.6, "MILK": 1.6, "WOOL": 3.2, "WHEAT": 0.2, "CARROT": 0.7, "TOMATO": 0.6, "EGG": 0.2, "FERTILIZER": 0.4}
+_FRONT_RUN_ITEMS = ("MELON", "STRAWBERRY", "MILK", "WOOL")
+_BASE_PRICE = {"MELON": 250, "STRAWBERRY": 120, "MILK": 160, "WOOL": 200}
+_GLUT_WEIGHT = {"MELON": 3.5, "STRAWBERRY": 2.0, "MILK": 2.0, "WOOL": 3.2}
 _LAST_STEP = -1
 _CLONE_CONFIDENCE = 0
 
@@ -213,53 +213,6 @@ def _observe_h4_meta(obs, step):
             _H4_META_EVIDENCE += 1
             _H4_META_ACTIVE = True
             return
-
-
-
-def _efficiency_overlay(action, obs):
-    my_id = obs.get("player")
-    me = (obs.get("farms") or [])[my_id]
-    tiles = me.get("tiles", [])
-    
-    # We only overwrite PASS actions for hands.
-    hands = action.get("hands", [])
-    hand_positions = me.get("hands", [])
-    
-    for i in range(min(len(hands), len(hand_positions))):
-        if not hands[i] or hands[i][0] != "PASS":
-            continue
-        
-        # This hand is passing. Let's see if we can do a useful IN-PLACE action.
-        hx, hy = hand_positions[i]
-        if hy < 0 or hy >= len(tiles) or hx < 0 or hx >= len(tiles[hy]):
-            continue
-            
-        tile = tiles[hy][hx]
-        if not isinstance(tile, dict):
-            continue
-            
-        # If it's a plant and needs water
-        if tile.get("kind") == "PLANT" and not tile.get("watered_today"):
-            # Avoid watering if it's already past max lifespan and decaying, but watering is generally safe
-            hands[i] = ["WATER"]
-            continue
-            
-        # If it's an animal structure and the animal needs feed
-        if tile.get("kind") in ("COOP", "PASTURE") and "animal" in tile:
-            if not tile.get("fed_today"):
-                # We need wheat to feed! Do we have wheat?
-                my_inv = (obs.get("private") or {}).get("shed", {}).get("WHEAT", 0)
-                if my_inv > 0:
-                    hands[i] = ["FEED"]
-                    continue
-            if not tile.get("cared_today"):
-                hands[i] = ["CARE"]
-                continue
-
-        # If it's a weed, dig it!
-        if tile.get("kind") == "WEED":
-            hands[i] = ["DIG"]
-            continue
 
 
 def _h5_meta_counter(action, obs, step):
@@ -498,9 +451,6 @@ def agent(obs, config=None):
 
     action = copy.deepcopy(_TRACE[step])
     _front_run(action, obs, step)
-
     _terminal_liquidation(action, obs, step)
-    _efficiency_overlay(action, obs)
     _remember_market(obs, step, action)
-
     return action
