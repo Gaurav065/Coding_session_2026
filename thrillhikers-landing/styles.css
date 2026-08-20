@@ -1,0 +1,344 @@
+:root{
+  --ink:#0b1420;
+  --paper:#f6f3ee;
+  --accent:#e8a15c;
+  font-family:'Inter',sans-serif;
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+html{ scroll-behavior:smooth; }
+html,body{
+  background:var(--ink);
+  color:#fff;
+  overflow-x:hidden;
+  width:100%;
+}
+
+/* ============ PAGE SHELL ============ */
+.page{
+  position:relative;
+  height:100vh;
+  width:100%;
+  overflow:hidden;
+}
+
+.bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  background-size:cover;
+  background-position:center 60%;
+  background-repeat:no-repeat;
+  z-index:1;
+  transform:scale(1.02);
+}
+
+.kenburns{
+  animation:kenburns 14s ease-in-out infinite alternate;
+}
+@keyframes kenburns{
+  0%{ transform:scale(1.02) translateY(0); }
+  100%{ transform:scale(1.11) translateY(-1.5%); }
+}
+
+.scrim{
+  position:absolute; inset:0; z-index:2;
+  pointer-events:none;
+  background:linear-gradient(180deg, rgba(6,10,16,0.32) 0%, rgba(6,10,16,0) 28%, rgba(6,10,16,0) 62%, rgba(6,10,16,0.45) 100%);
+}
+
+/* ============ PAGE 1 — CLOUDS ============ */
+.fog-layer{ position:absolute; inset:0; z-index:5; pointer-events:none; }
+.fog{
+  position:absolute;
+  top:-10%;
+  width:65%;
+  height:120%;
+  background:radial-gradient(ellipse at center, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.85) 35%, rgba(255,255,255,0) 72%);
+  filter:blur(6px);
+}
+.fog-left{ left:-8%; }
+.fog-right{ right:-8%; }
+.fog-low{
+  left:-5%;
+  right:-5%;
+  top:auto;
+  bottom:-15%;
+  width:auto;
+  height:55%;
+  background:linear-gradient(0deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 45%, rgba(255,255,255,0) 100%);
+  filter:blur(10px);
+}
+
+.page1-caption{
+  position:absolute;
+  bottom:8%;
+  left:0; right:0;
+  z-index:8;
+  text-align:center;
+  color:#fff;
+  font-size:0.78rem;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  opacity:0;
+  text-shadow:0 2px 12px rgba(0,0,0,0.5);
+}
+
+/* ============ PAGE 2 — HERO UI ============ */
+.hero-ui{
+  position:absolute;
+  top:0; left:0; right:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:2rem 3rem;
+}
+
+.brand{
+  font-size:1rem;
+  letter-spacing:0.12em;
+  font-weight:600;
+  text-transform:lowercase;
+  opacity:0;
+  transform:translateY(-16px);
+  color:#fff;
+  text-shadow:0 1px 8px rgba(0,0,0,0.5);
+}
+
+.topnav{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:2.4rem;
+  z-index:20;
+}
+
+.nav-link{
+  color:#fff;
+  text-decoration:none;
+  font-size:0.78rem;
+  letter-spacing:0.14em;
+  font-weight:600;
+  opacity:0;
+  transform:translateY(-16px);
+  text-shadow:0 1px 8px rgba(0,0,0,0.5);
+}
+
+.cave-nav{ position:absolute; top:0; padding-top:2rem; }
+
+.explore-text{
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  z-index:15;
+  display:flex;
+  gap:0.02em;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:min(16vw,190px);
+  letter-spacing:0.05em;
+  color:#fff;
+  text-shadow:0 6px 40px rgba(0,0,0,0.35);
+}
+.explore-text span{
+  display:inline-block;
+  opacity:0;
+  transform:translateY(50px);
+}
+
+/* ============ PAGE 3 — PARALLAX CAVE REVEAL ============ */
+.cave-pin{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+.cave-bg{ transform-origin:50% 55%; will-change:transform; }
+
+.clouds-faint{
+  position:absolute; inset:0; z-index:4;
+  opacity:0;
+  pointer-events:none;
+  mix-blend-mode:screen;
+}
+.clouds-faint svg{ width:100%; height:100%; display:block; }
+
+.rock{
+  position:absolute;
+  z-index:12;
+  filter:drop-shadow(0 0 40px rgba(0,0,0,0.5));
+}
+.rock-top{ top:0; left:0; width:100%; height:32%; }
+.rock-left{ top:0; left:0; width:26%; height:100%; }
+.rock-right{ top:0; right:0; width:26%; height:100%; }
+.rock-bottom{ bottom:0; left:0; width:100%; height:30%; }
+.rock svg{ width:100%; height:100%; display:block; }
+
+.figure{
+  position:absolute;
+  bottom:15%;
+  left:50%;
+  transform:translateX(-50%);
+  width:13px;
+  height:54px;
+  background:#050607;
+  border-radius:6px 6px 2px 2px;
+  z-index:13;
+  opacity:0;
+}
+.figure::before{
+  content:'';
+  position:absolute;
+  top:-13px; left:50%;
+  transform:translateX(-50%);
+  width:13px; height:13px;
+  border-radius:50%;
+  background:#050607;
+}
+
+.scroll-cue{
+  position:absolute;
+  bottom:5%;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:13;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.5rem;
+  color:#fff;
+  font-size:0.7rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  opacity:0;
+}
+.scroll-dot{
+  width:22px; height:36px;
+  border:2px solid #fff;
+  border-radius:12px;
+  position:relative;
+}
+.scroll-dot::after{
+  content:'';
+  position:absolute;
+  top:6px; left:50%;
+  width:4px; height:8px;
+  background:#fff;
+  border-radius:2px;
+  transform:translateX(-50%);
+  animation:scrollBounce 1.6s ease-in-out infinite;
+}
+@keyframes scrollBounce{
+  0%,100%{ transform:translate(-50%,0); opacity:1; }
+  50%{ transform:translate(-50%,10px); opacity:0.3; }
+}
+
+/* ============ PAGE 4 — CONTENT ============ */
+.page-content{
+  height:auto;
+  min-height:100vh;
+  background:var(--paper);
+  color:var(--ink);
+  padding:8rem 1.5rem 6rem;
+  display:flex;
+  align-items:center;
+}
+
+.content-inner{
+  max-width:980px;
+  margin:0 auto;
+  text-align:center;
+}
+
+.headline{
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:clamp(1.6rem,3.4vw,2.6rem);
+  line-height:1.4;
+}
+.headline .line{ display:block; overflow:hidden; }
+
+.subcopy{
+  margin-top:1.6rem;
+  font-size:1rem;
+  color:#5b6672;
+  max-width:640px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.cards{
+  margin-top:3.5rem;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1.4rem;
+  perspective:1400px;
+}
+
+.card{
+  position:relative;
+  aspect-ratio:4/5;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 14px 30px rgba(11,20,32,0.18);
+  opacity:0;
+}
+
+.card-face{ position:absolute; inset:0; width:100%; height:100%; }
+.card-face img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform 0.5s ease;
+}
+.card:hover .card-face img{ transform:scale(1.06); }
+
+.card-face::after{
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.65) 100%);
+}
+
+.card-label{
+  position:absolute;
+  bottom:0.8rem;
+  left:0.9rem;
+  right:0.9rem;
+  color:#fff;
+  font-size:0.8rem;
+  font-weight:600;
+  text-shadow:0 2px 8px rgba(0,0,0,0.5);
+  z-index:1;
+}
+
+/* ============ PAGE DOTS ============ */
+.page-dots{
+  position:fixed;
+  right:1.8rem;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+  gap:0.9rem;
+}
+.dot{
+  width:8px; height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.4);
+  border:1px solid rgba(255,255,255,0.6);
+  transition:background 0.3s, transform 0.3s;
+}
+.dot.active{ background:#fff; transform:scale(1.35); }
+
+@media (max-width:800px){
+  .cards{ grid-template-columns:repeat(2,1fr); }
+  .topnav{ gap:1.2rem; }
+  .nav-link{ font-size:0.62rem; }
+  .brand{ font-size:0.8rem; }
+  .page-dots{ right:1rem; }
+}

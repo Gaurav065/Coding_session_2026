@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thrillhikers — Explore The Unknown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- page indicator -->
+<nav class="page-dots" aria-hidden="true">
+  <a href="#page-1" class="dot active" data-page="1"></a>
+  <a href="#page-2" class="dot" data-page="2"></a>
+  <a href="#page-3" class="dot" data-page="3"></a>
+  <a href="#page-4" class="dot" data-page="4"></a>
+</nav>
+
+<!-- ============ PAGE 1 — Cloud Parting Establishing Shot ============ -->
+<section class="page" id="page-1">
+  <div class="bg kenburns" style="background-image:url('assets/page1-fog.jpg')"></div>
+  <div class="scrim"></div>
+
+  <div class="fog-layer">
+    <div class="fog fog-left"></div>
+    <div class="fog fog-right"></div>
+    <div class="fog fog-low"></div>
+  </div>
+
+  <div class="page1-caption">
+    <span>thrillhikers presents</span>
+  </div>
+</section>
+
+<!-- ============ PAGE 2 — EXPLORE Hero Reveal ============ -->
+<section class="page" id="page-2">
+  <div class="bg kenburns" style="background-image:url('assets/page2-explore.jpg')"></div>
+  <div class="scrim"></div>
+
+  <header class="hero-ui">
+    <div class="brand" aria-hidden="true"><span>thrillhikers</span></div>
+    <nav class="topnav">
+      <a href="#" class="nav-link">HOME</a>
+      <a href="#" class="nav-link">SERVICES</a>
+      <a href="#" class="nav-link">PRICING PLAN</a>
+    </nav>
+  </header>
+
+  <h1 class="explore-text" aria-label="EXPLORE">
+    <span>E</span><span>X</span><span>P</span><span>L</span><span>O</span><span>R</span><span>E</span>
+  </h1>
+</section>
+
+<!-- ============ PAGE 3 — Parallax Cave Reveal + Zoom ============ -->
+<section class="page" id="page-3">
+  <div class="cave-pin">
+    <div class="bg cave-bg" style="background-image:url('assets/page3-dusk.jpg')"></div>
+    <div class="scrim"></div>
+
+    <div class="clouds-faint">
+      <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <radialGradient id="hazeA" cx="20%" cy="30%" r="42%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="hazeB" cx="62%" cy="22%" r="46%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="hazeC" cx="88%" cy="42%" r="34%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.75"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="1600" height="900" fill="url(#hazeA)"/>
+        <rect width="1600" height="900" fill="url(#hazeB)"/>
+        <rect width="1600" height="900" fill="url(#hazeC)"/>
+      </svg>
+    </div>
+
+    <nav class="topnav cave-nav">
+      <a href="#" class="nav-link">HOME</a>
+      <a href="#" class="nav-link">SERVICES</a>
+      <a href="#" class="nav-link">PRICING PLAN</a>
+    </nav>
+
+    <!-- directional rock silhouettes sliding in from the edges -->
+    <div class="rock rock-top">
+      <svg viewBox="0 0 1600 400" preserveAspectRatio="none">
+        <path d="M0,0 L1600,0 L1600,230 L1400,270 L1250,235 L1120,285 L980,240 L840,300 L700,250 L560,295 L420,245 L280,290 L140,250 L0,275 Z" fill="#060707"/>
+      </svg>
+    </div>
+    <div class="rock rock-left">
+      <svg viewBox="0 0 500 1000" preserveAspectRatio="none">
+        <path d="M0,0 L280,0 L340,120 L300,230 L360,340 L310,450 L370,560 L320,670 L365,780 L300,890 L345,1000 L0,1000 Z" fill="#060707"/>
+      </svg>
+    </div>
+    <div class="rock rock-right">
+      <svg viewBox="0 0 500 1000" preserveAspectRatio="none">
+        <path d="M500,0 L220,0 L160,120 L200,230 L140,340 L190,450 L130,560 L180,670 L135,780 L200,890 L155,1000 L500,1000 Z" fill="#060707"/>
+      </svg>
+    </div>
+    <div class="rock rock-bottom">
+      <svg viewBox="0 0 1600 360" preserveAspectRatio="none">
+        <path d="M0,360 L0,180 L150,140 L300,175 L460,120 L620,165 L780,110 L940,160 L1100,115 L1260,170 L1420,125 L1600,155 L1600,360 Z" fill="#060707"/>
+      </svg>
+    </div>
+
+    <div class="figure"></div>
+    <div class="scroll-cue">
+      <span class="scroll-dot"></span>
+      <span>Scroll</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 4 — Headline + Card Reveal ============ -->
+<section class="page page-content" id="page-4">
+  <div class="content-inner">
+    <h2 class="headline">
+      <span class="line">“Explore The Unknown, Chase New Horizons,</span>
+      <span class="line">And Experience The Extraordinary.”</span>
+    </h2>
+    <p class="subcopy">Curated adventures, breathtaking trails, and unforgettable journeys for those who dare to go beyond the ordinary.</p>
+
+    <div class="cards">
+      <div class="card" data-i="0">
+        <div class="card-face"><img src="assets/card-everest.jpg" alt="Everest Base Camp" loading="lazy"></div>
+        <span class="card-label">Everest Base Camp</span>
+      </div>
+      <div class="card" data-i="1">
+        <div class="card-face"><img src="assets/card-annapurna.jpg" alt="Annapurna Circuit" loading="lazy"></div>
+        <span class="card-label">Annapurna Circuit</span>
+      </div>
+      <div class="card" data-i="2">
+        <div class="card-face"><img src="assets/card-monastery.jpg" alt="Himalayan Monastery" loading="lazy"></div>
+        <span class="card-label">Himalayan Monastery</span>
+      </div>
+      <div class="card" data-i="3">
+        <div class="card-face"><img src="assets/card-sunrise.jpg" alt="Summit Sunrise" loading="lazy"></div>
+        <span class="card-label">Summit Sunrise</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
