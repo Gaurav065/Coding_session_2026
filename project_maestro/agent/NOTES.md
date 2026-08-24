@@ -736,8 +736,11 @@ because it structurally cannot do anything under the current per-species caps (g
 | **vs Wool-Heavy (6C/12S/0G)** | \$56,073.65 | \$45,571.29 | **+\$10,502.36** | +13.87 | **< 1e-15** | **81.5%** | 163W / 37L / 0T ($n=200$) |
 | **vs Balanced Pasture (6C/8S/0G)** | \$56,077.75 | \$47,089.43 | **+\$8,988.32** | +12.78 | **< 1e-15** | **78.5%** | 157W / 43L / 0T ($n=200$) |
 | **vs Old Baseline (Goose-4)** | \$53,777.21 | \$48,766.46 | **+\$5,010.75** | +9.83 | **< 1e-15** | **79.0%** | 158W / 42L / 0T ($n=200$) |
-| **vs Pass Baseline** | \$58,448.97 | \$24,023.45 | **+\$34,425.53** | +5.82 | **9.25e-07** | **76.3%** | 29W / 9L / 2T ($n=40$) |
+| **vs Pass Baseline** | \$73,699.27 | \$3,000.00 | **+\$70,699.27** | +46.90 | **< 1e-15** | **100.0%** | 200W / 0L / 0T ($n=200$) |
 
+- **Standing Canaries Verified in `eval/fast_parallel_benchmark.py`**:
+  - **Canary 1 (Pass Baseline)**: Opponent = \$3,000.00, WR = 100.0% (200W/0L/0T) $\rightarrow$ **PASS**.
+  - **Canary 2 (Identity Control)**: WR = 50.0%, $\Delta = \$0.00$ (74W/74L/52T) $\rightarrow$ **PASS**.
 - **Key Takeaways**:
   1. **Dominant Meta Flipped Decisively**: Against the most common ladder build (37.8% of real trajectories), win rate rose from 50.0% $\rightarrow$ **64.3%** ($t = +4.61, p < 10^{-5}$). When milk demand is weak, the opponent wastes capital and feed maintaining 10 unprofitable cows while our agent saves capital and protects realized AMM prices.
   2. **Zero Free-Rider Exploitation**: Downward gating only fires on weak-demand draws where the opponent cannot benefit from extra cows either.
