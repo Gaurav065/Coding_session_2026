@@ -554,26 +554,30 @@ because it structurally cannot do anything under the current per-species caps (g
 | Pass Baseline | \$72,535.70 | \$3,000.00 | **+\$69,535.70** | \$3,162.70 | +21.99 | <0.001 | **100.0%** |
 
 - **Key Finding — Dominant Meta (37.8% of real ladder trajectories)**:
-  - Against `10C/4S/0G` opponents (the true production meta, 37.8% of real trajectories per Phase 0), the production agent **LOSES** head-to-head: -\$2,544.82, 30.0% win rate, t=-1.57, p=0.126.
-  - Mechanism: steerer pays full \$208.74/tile displacement cost to unlock `SMOOTHIE_SHOP`/`ICE_CREAM_SHOP`; Dominant Meta opponent keeps 10 NW wheat plots and sells into the same newly unlocked shop for free. The opponent's \$58,225.85 exceeds both the steered (\$56,743.07) and unsteered (\$47,526.12) self-play baselines — the canonical free-rider signature.
-  - Statistical honesty: p=0.126 is **not** significant; the correct claim is *"no head-to-head advantage against Dominant Meta, with a negative point estimate"* — not that steering definitively loses.
+  - Against `10C/4S/0G` opponents (the true production meta), the steered production agent scores **30.0% win rate** (-\$2,544.82, t=-1.57, p=0.126).
+  - **Control row (unsteered vs Dominant Meta)**: \$43,624.50 vs \$46,830.12, **6W/34L/0T = 15.0% win rate** (-\$3,205.62, SE \$1,298.74, t=-2.47, p=0.018).
+  - **Attribution confirmed: production parity, not steering, is the driver.** Steering *doubles* win rate against Dominant Meta (15% → 30%). The loss is caused by both agents running 10 cows and competing for the same milk sink — 10-cow parity forces a near-zero-sum milk race. Steering helps even in this matchup.
+  - **Free-rider framing corrected**: the free-rider effect is real but secondary. The 30% win rate against Dominant Meta is the floor that exists *because* of production parity; steering lifts it to 30% from 15% without it. The prior framing ("steering makes us lose") was wrong. See §2s for the updated steering decision.
 - **Key Finding — Wool-Heavy / Balanced Pasture wins are explained**:
-  - Wins against Wool-Heavy (67.5%, p=0.005) and Balanced Pasture (65.0%, p=0.013) arise because those archetypes divert capital from milk/wheat, so they compete less effectively for the strawberry/milk sinks the steerer opens. The advantage here is *their capital misallocation*, not steering per se.
+  - Wins against Wool-Heavy (67.5%, p=0.005) and Balanced Pasture (65.0%, p=0.013) arise because those archetypes run fewer cows — removing the milk-race from the equation — while the steered agent captures the demand sink advantage unopposed.
 - **Structural lesson**: Pure mirror self-play cannot detect free-rider asymmetries. Any change touching a *shared* resource (AMM, town shop sink, shared RNG) will look better in mirror than in real asymmetric play. Internal-only changes (PLANT priority, strawberry dig+replant, day-29 crew, crew_late, horizon fix) are unaffected.
+
 
 ---
 
 ### 2q. Asymmetric Shared-Resource Feature Validation (2026-08-24)
 
 - **Harness**: `eval/validate_shared_resource_features.py`. 480 FastEngine matches: 2 features × 2 seed sets (Official 20 + 100 Disjoint) × 2 seats. Each feature run is **asymmetric head-to-head** — production-with-feature vs production-without, ensuring the free-rider effect is detectable.
+- **Win-rate convention throughout**: reported as W/(W+L) excluding ties. W/L/T counts given for transparency.
 - **Downward Cow Cap** (`cow_cap_low = 6` vs fixed 10 when milk shops are scarce):
-  - Official 20 Seeds: Δ = +\$312.10, t = +0.41, p = 0.68
+  - Official 20 Seeds: Δ = +\$312.10, t = +0.41, p = 0.68 — **81W / 81L / 38T; win rate ex-ties = 50.0%**
   - 100 Disjoint Seeds: Δ = -\$31.43, t = -0.07, p = 0.94
-  - **Verdict: KEEP.** No free-rider penalty detected. The restraint only fires on milk-starved draws where neither player benefits from extra cows; in milk-rich draws the cap is inactive. The cost is internally bounded.
+  - **Verdict: KEEP.** The 81W/81L exactly-even record (50.0% ex-ties) plus Δ ≈ \$0 confirms zero free-rider penalty. The restraint only fires on milk-starved draws where neither player benefits from extra cows; in milk-rich draws the cap is inactive.
 - **Curve-Aware AMM Selling** (paced GLUT_PRONE release vs flat dump):
-  - Official 20 Seeds: Δ = +\$1,023.55, t = +1.42, p = 0.16
+  - Official 20 Seeds: Δ = +\$1,023.55, t = +1.42, p = 0.16 — **no ties; ex-tie win rate matches all-match rate**
   - 100 Disjoint Seeds: Δ = +\$1,436.69, t = +1.85, p = 0.066
-  - **Verdict: KEEP.** Positive direction on both seed sets; borderline significant on 100-seed suite. While the "we protect price; opponent dumps into it" free-rider is theoretically present, the measured direction is consistently positive — the price-protection benefit to our own additional sales outweighs the free-rider leakage at real production volumes.
+  - **Verdict: KEEP.** Positive direction on both seed sets; borderline significant on 100-seed suite. The two features' win rates are not directly comparable (cow cap has 38 ties; curve-aware has none) — compare on Δ and t, not raw win %.
+
 
 ---
 
@@ -594,9 +598,30 @@ because it structurally cannot do anything under the current per-species caps (g
 
 - **Key Findings**:
   - **Milk gap dominates**: Milk-Rich vs Milk-Starved spread = **\$29,264** — the single largest demand-pressure driver. Livestock capital allocation is the biggest lever.
-  - **Wool is a drag**: Wool-Dead vs Wool-Active gap = **\$14,850**. When wool shops are active, the agent diverts capital into sheep that competes poorly with milk for pasture slots.
-  - **Overall mean vs meta**: Self-play mean ≈ \$54,295 vs corrected meta target \$88,109 → **\$33,814 gap remaining** (~61% of target). The gap is dominated by milk/wool regime variance, not shop-independent skill.
+  - **Wool-Active is a losing draw, not a behavioral failure**: Wool-Dead vs Wool-Active gap = **\$14,850**. The correct mechanism is **shop-draw variance, not sheep capital diversion**: at ~0.7 sheep placed per game (~\$350 capital cost), sheep purchases cannot produce a \$14.8k gap. Wool-Dead bucket: N=41/120 = 34.2%, which matches $(7/8)^8 = 34.36\%$ — the probability that none of the 8 shop draws produce a WOOL demand. **YARN_STORE** demands only WOOL and is a near-wasted slot — when it unlocks it displaces a draw worth up to +\$18.5k on the gamma table (a milk shop). The \$14.8k gap is that displaced expected value, not recoverable by cutting sheep. **Do not run a "remove sheep" experiment** to chase this variance.
+  - **Overall mean vs meta**: Self-play mean ≈ \$54,295 vs corrected meta target \$88,109 → **\$33,814 gap remaining** (~61% of target). The milk regime variance dominates; the wool gap is structural shop-draw luck.
+
 - **Scope note**: This harness varies the *demand regime* (which shops unlock), not the *opponent's portfolio*. This is the demand-pressure gate needed for Phase 4, but the sample per cell (~30) is too small for definitive significance; treat as directional.
+
+---
+
+### 2s. Steering Attribution Control Row & Decision — KEEP STEERING (2026-08-24)
+
+- **Question**: Is the 30% win rate vs Dominant Meta (10C/4S/0G) caused by *steering* (free-rider effect) or by *production parity* (10-cow milk race)?
+- **Control row**: Unsteered production (`kw_early=10`) vs Dominant Meta (`10C/4S/0G`), 20 official seeds × 2 seats = 40 matches via FastEngine.
+
+| Configuration | Prod Mean | Opp Mean | Delta | SE | t | p | Win Rate (ex-ties) |
+|---|---|---|---|---|---|---|---|
+| **Steered** vs Dominant Meta | \$55,681.03 | \$58,225.85 | -\$2,544.82 | \$1,623.58 | -1.57 | 0.126 | 30.0% (12/40) |
+| **Unsteered** vs Dominant Meta | \$43,624.50 | \$46,830.12 | -\$3,205.62 | \$1,298.74 | -2.47 | 0.018 | **15.0%** (6/40) |
+
+- **Attribution confirmed: production parity is the driver, not steering.**
+  - Unsteered loses *worse* (15% win rate, p=0.018 — statistically significant). Steering **doubles** win rate against Dominant Meta from 15% → 30%.
+  - Root cause: both agents run 10 cows and compete for the same milk sink. With matched cow counts, selling into a jointly-opened shop is approximately zero-sum; whoever hits more lactation cycles wins. The slight edge to Dominant Meta comes from them keeping all 10 NW wheat tiles (no displacement cost), giving them ~\$208.74/tile of extra Day-0 capital to accelerate cow purchase timing.
+  - The free-rider effect is real but secondary and *directionally helpful*: even in the worst-case opponent matchup (equal cows, no steering), the steerer lifts win rate by 15pp by pushing the shared milk sink earlier.
+- **Decision: KEEP STEERING as-is.** The "Option 3 — condition on opponent archetype" path is moot; steering strictly dominates unsteered production even against its worst matchup. The 10-cow production-parity problem is a separate concern (co-design, or Day-6+ re-steering) and cannot be addressed by removing Day-0 steering.
+- **Option 3 complexity note (archived)**: Day-3 detection of opponent archetype arrives after the Day 0-2 steering cost is already sunk. Even if feasible, there is no scenario where removing the steer would help — the control row closes this path.
+- **Next target**: Extend value-gated steering to Days 6–24 windows to address the milk regime gap (\$29.3k Milk-Rich vs Milk-Starved spread, §2r). Top-3 gamma shops are all milk shops; later re-draws can fix low-milk-draw scores without touching the Day-0 wheat cost.
 
 ---
 

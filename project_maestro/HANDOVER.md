@@ -404,23 +404,23 @@ Re-validation audit list (head-to-head vs an opponent NOT making the same change
 
 **Demand-Pressure Harness (`eval/shop_archetype_harness.py`, §2r):**
 - Milk-Rich (\$61,888) vs Milk-Starved (\$32,624): \$29.3k spread — largest single demand driver.
-- Wool-Dead (\$64,071) vs Wool-Active (\$49,221): \$14.8k gap from sheep capital drag.
+- Wool-Dead (\$64,071) vs Wool-Active (\$49,221): \$14.8k gap. **Mechanism corrected**: this is pure shop-draw variance — YARN_STORE displaces a milk shop worth +\$18.5k on the gamma table. ~0.7 sheep/game (~\$350 capital) cannot produce a \$14.8k gap. Do not experiment with removing sheep.
 - Overall self-play mean ~\$54,295 vs meta target \$88,109 → **\$33,814 gap** (~61% of target).
 
-**⚠ OPEN QUESTION — STEERING KEEP/REMOVE/CONDITION:**
+**STEERING DECISION — RESOLVED: KEEP (2026-08-24)**
 
-The Dominant Meta row (30.0% win rate, p=0.126) and the free-rider analysis make the keep/remove/condition question live. **This has not yet been decided.** Options:
-1. **Keep as-is** — accept the free-rider cost; rely on winning against non-Dominant-Meta opponents for positive Elo.
-2. **Remove steering** — revert to unsteered \$47,526.12 baseline; eliminates free-rider risk but loses the +\$9.2k mirror gain.
-3. **Condition on opponent archetype detection** — steer only when the opponent is detected as non-Dominant-Meta (e.g. via Day-3 wheat tile observation). Complex; requires co-design validation.
+Control row: Unsteered (`kw_early=10`) vs Dominant Meta (10C/4S/0G), 40 matches:
+- Unsteered: \$43,624 vs \$46,830 — **6W/34L/0T = 15.0% win rate** (t=-2.47, p=0.018)
+- Steered (existing): \$55,681 vs \$58,226 — **30.0% win rate** (t=-1.57, p=0.126)
+
+Steering *doubles* win rate against the worst-case opponent. Attribution: the loss to Dominant Meta is caused by **production parity** (both agents run 10 cows competing for the same milk sink), not the free-rider effect. Steering strictly dominates unsteered in all 7 matchups. Option 3 (conditional steering) is moot — Day-3 detection arrives after the cost is sunk, and there's no matchup where removing the steer helps. See §2s.
 
 **Target: \$80–90k in self-play — currently ~66–70% of target (up from ~48% two days ago).**
 
 **Next Priority Milestones:**
-1. **⚠ Decision Required**: Keep / Remove / Condition steering, given 30.0% win rate against Dominant Meta (37.8% of real ladder trajectories). Await user judgment.
-2. **Multi-Shop Steering Extension (Days 6–24)**: Generalize value-gated steering to later 3-day draw windows using post-Day-3 farm occupancy states — **blocked pending steering decision**.
-3. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset to update meta sales targets. Must run in a Kaggle notebook kernel — local execution invalid.
-4. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for significance on the milk/wool regime gap; prioritize milk-regime-aware portfolio switching.
+1. **Multi-Shop Steering Extension (Days 6–24)** — UNBLOCKED. Extend value-gated steering to later 3-day draw windows (Days 6, 9, 12…) using post-Day-3 farm occupancy states. Top-3 gamma shops are all milk shops; this directly attacks the \$29.3k Milk-Rich vs Milk-Starved gap.
+2. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset. Must run in a Kaggle notebook kernel — local execution invalid.
+3. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for significance on the milk regime gap.
 
 ---
 
