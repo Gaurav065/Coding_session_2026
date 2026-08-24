@@ -130,6 +130,70 @@ def dist(p1: Tuple[int, int], p2: Tuple[int, int]) -> int:
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
 
+# Empirical Causal Shop Values & Displacement Cost Model (NOTES.md §2n)
+# Derived under integrated dispatcher (N=100 seeds, 1,100 full games)
+GAMMA_INTEGRATED = {
+    "SMOOTHIE_SHOP":  18469.37,
+    "ICE_CREAM_SHOP": 17190.58,
+    "PIZZA_SHOP":     14724.84,
+    "FARMERS_MARKET":  4047.12,
+    "BRUNCH_SPOT":     2267.06,
+    "PET_CAFE":         979.34,
+    "YARN_STORE":     -1870.32,
+    "BAKERY":             0.00,
+}
+K_COST_CORRECTED = 208.74  # Derived empirical opportunity cost per early NW wheat tile ($208.74/tile)
+STEERING_GAIN_THRESHOLD = 1000.0  # Gain threshold ($1,000) required to clear steering gate
+
+
+def compute_optimal_steering_kw(seed: int) -> int:
+    """Compute optimal Day 0-2 NW wheat tile count (0-10) to steer Day 3 shop unlock.
+    
+    Formula: Gain(S, Kw) = (gamma_S - gamma_S_0) - $208.74 * (10 - Kw)
+    Steers if Gain > $1,000; defaults to Kw=10 (unsteered) otherwise.
+    """
+    from project_maestro.engine.fast_engine import FastGame
+    
+    # 1. Determine natural baseline shop S_0 (Kw=10)
+    game_nat = FastGame(seed=seed)
+    p0_n = MaestroFullPortfolioAgent(kw_early=10)
+    p1_n = MaestroFullPortfolioAgent(kw_early=10)
+    while game_nat.day < 3:
+        p0_n(game_nat.get_observation(0))
+        p1_n(game_nat.get_observation(1))
+        game_nat.step_game(p0_n(game_nat.get_observation(0)), p1_n(game_nat.get_observation(1)))
+    natural_shop = game_nat.unlocked_shops[0] if game_nat.unlocked_shops else "BAKERY"
+
+    # 2. Sweep Kw in 0..10 to map achievable shops
+    achievable = {}
+    for kw in range(11):
+        g = FastGame(seed=seed)
+        p0 = MaestroFullPortfolioAgent(kw_early=kw)
+        p1 = MaestroFullPortfolioAgent(kw_early=10)
+        while g.day < 3:
+            act0 = p0(g.get_observation(0))
+            act1 = p1(g.get_observation(1))
+            g.step_game(act0, act1)
+        if g.unlocked_shops:
+            s = g.unlocked_shops[0]
+            if s not in achievable:
+                achievable[s] = kw
+
+    # 3. Value-gated selection
+    best_shop = natural_shop
+    best_kw = 10
+    best_gain = 0.0
+
+    for shop, kw in achievable.items():
+        gain = (GAMMA_INTEGRATED[shop] - GAMMA_INTEGRATED[natural_shop]) - K_COST_CORRECTED * (10 - kw)
+        if gain > best_gain:
+            best_gain = gain
+            best_shop = shop
+            best_kw = kw
+
+    return best_kw if best_gain > STEERING_GAIN_THRESHOLD else 10
+
+
 DEFAULT_PARAMS = {
     "cow_cap_low": 6,       # cap when milk_shop_count<=1 (day>=15, downward-only, see 2b/2d)
     "cow_cap_base": 10,
@@ -143,12 +207,15 @@ DEFAULT_PARAMS = {
 
 
 class MaestroFullPortfolioAgent:
-    def __init__(self, params=None):
+    def __init__(self, params=None, kw_early: Optional[int] = None, seed: Optional[int] = None):
         self.params = {**DEFAULT_PARAMS, **(params or {})}
+        self.seed = seed
+        self.kw_early = kw_early
+        self._planned_steering = (kw_early is not None)
         self.cow_pastures = list(COW_PASTURES)
         self.goose_coops = list(GOOSE_COOPS)
         self.sheep_pastures = list(SHEEP_PASTURES)
-        self.nw_wheat = list(NW_WHEAT)
+        self.nw_wheat = list(NW_WHEAT[:kw_early]) if kw_early is not None else list(NW_WHEAT)
         self.ne_strawberry = list(NE_STRAWBERRY)
         self.ne_wheat = list(NE_WHEAT)
         self.sw_melon = list(SW_MELON)
@@ -165,6 +232,22 @@ class MaestroFullPortfolioAgent:
         market_prices = obs.get("market", {}).get("prices", {})
         unlocked_shops = obs.get("town", {}).get("unlocked_shops", [])
         has_yarn_store = ("YARN_STORE" in unlocked_shops)
+
+        # Plan / Apply Day 0-2 Value-Gated Shop Steering
+        if not self._planned_steering and day == 0:
+            if self.seed is None and "seed" in obs:
+                self.seed = obs["seed"]
+            if self.seed is not None:
+                self.kw_early = compute_optimal_steering_kw(self.seed)
+            else:
+                self.kw_early = 10
+            self._planned_steering = True
+
+        if day < 3:
+            kw = self.kw_early if self.kw_early is not None else 10
+            self.nw_wheat = list(NW_WHEAT[:kw])
+        else:
+            self.nw_wheat = list(NW_WHEAT)
         # Downward-only: a fast-engine sweep (60 seeds) showed milk_shop_count
         # <=1 is a real disaster zone (~$29-31k avg, vs $61-81k at count>=4),
         # ~15-18% of games. An earlier attempt to also scale UP to 14 cows
@@ -717,6 +800,6 @@ class MaestroFullPortfolioAgent:
             "market": market_orders[:10],
         }
 
-def make_spatial_dispatcher_agent(params=None):
-    agent_instance = MaestroFullPortfolioAgent(params=params)
+def make_spatial_dispatcher_agent(params=None, seed: Optional[int] = None, kw_early: Optional[int] = None):
+    agent_instance = MaestroFullPortfolioAgent(params=params, seed=seed, kw_early=kw_early)
     return lambda obs: agent_instance(obs)

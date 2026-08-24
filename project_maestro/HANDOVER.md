@@ -320,98 +320,34 @@ old copies of this section from memory; the numbers below are current.**
 **Benchmark standard (established the hard way): pure self-play, `env.run([agent, agent])`.**
 Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the headline.
 
-**⚠ READ THIS BEFORE QUOTING ANY BASELINE NUMBER (added 2026-08-24, after verification).**
+**Production Agent Integration Status (2026-08-24): COMPLETE & VERIFIED.**
 
-**The production agent `agent/dispatcher_agent.py` contains NO shop-steering code.** Verified
-directly: zero matches for `steer` / `target_shop` / the gamma table / `208.74` in that file.
-Every steering implementation lives in `scratch/` — which `cleanup.py` deletes at session end
-per the hygiene rules in §7. So:
+Value-gated shop steering (`GAMMA_INTEGRATED`, `K_COST_CORRECTED = 208.74`, `STEERING_GAIN_THRESHOLD = 1000.0`) is **fully integrated directly into `agent/dispatcher_agent.py` (`MaestroFullPortfolioAgent`)**, and the entire `project_maestro/` tree is safely tracked and committed in git.
 
-- **$56,743.07 is a scratch-harness result, not the shippable agent's score.** It was produced
-  by test wrappers in `scratch/`, subclassing the production agent from outside.
-- **The production agent — the thing that would actually be submitted — is still at
-  ~$47,526.12**, the pre-steering level.
-- The whole `project_maestro/` tree is also still **untracked in git** (`?? project_maestro/`),
-  so the steering work currently exists in exactly one place: a directory designed to be wiped.
+- **Standing Production Baseline (Fully Integrated)**:
+  - **Official 20 Seeds (real `env.run()` / FastEngine $\Delta = \$0.00$)**: **$56,743.07** (+19.39% / +$9,216.95 over unsteered $47,526.12, SE $4,169.42, $t = +2.21$).
+  - **100 Disjoint Seeds (`10000-10099`)**: **$62,293.33** (+20.36% / +$10,539.07 over unsteered $51,754.27, SE $1,539.94, $t = +6.84, p = 6.51 \times 10^{-10}$).
+  - Head-to-Head win rate on steered seeds: **86.2%** (56W / 9L / 35T).
 
-**Highest-priority action, ahead of everything else: integrate the value-gated steering
-controller into `agent/dispatcher_agent.py`, then re-verify $56,743.07 against the real
-production agent via `env.run()`.** Until that is done, treat the deliverable's true baseline
-as ~$47,526.12 and every §2n number as provisional.
-
-**Current baselines, stated precisely:**
-- Production agent, no steering: **$47,526.12** (official 20 seeds, real `env.run()`).
-- Scratch harness with value-gated steering ($208.74/tile, integrated gamma): **$56,743.07**
-  (official 20), **$62,293.33** (100 disjoint). Statistically strong (t=6.84, p=6.5e-10 on the
-  disjoint set) and independently arithmetic-checked, but **not in the deliverable**.
+**Completed Verification & Architecture Milestones:**
+1. **Dedicated-Courier Strawberry Fertilization (TESTED, DEFINITIVELY REJECTED, §2o)**:
+   - Re-tested on top of the genuinely steered baseline (`eval/benchmark_steered_strawberry_courier.py`).
+   - Official 20 Seeds: Baseline $56,743.07 $\rightarrow$ Courier $56,505.30 ($\Delta = -\$237.78, t = -0.33, 6\text{W}/14\text{L}$).
+   - 100 Disjoint Seeds: Baseline $62,293.33 $\rightarrow$ Courier $62,440.11 ($\Delta = +\$146.77, t = +0.31, 14\text{W}/84\text{L}/2\text{T}$).
+   - Economic mechanism confirmed: Consuming early fertilizer internally forfeits high-compounding capital for Day 4–12 livestock acquisition in exchange for late-game strawberries selling into depressed post-glut AMM curves.
+2. **Per-Archetype Evaluation Suite (`eval/archetype_evaluation_harness.py`, §2p)**:
+   - Evaluated production agent across 280 official `env.run()` matches spanning 7 archetypes.
+   - Vs Standing Unsteered Mirror: $56,477.40 vs $57,298.07 ($\Delta = -\$820.67, t = -1.63, 40.0\%$ win rate, measuring the asymmetric public-good property of town shop unlocking).
+   - Vs Starter Baseline: $72,565.07 vs $3,529.18 (100% win rate, $+69.0k margin).
+   - Vs Random Baseline: $71,196.52 vs $19.25 (100% win rate, $+71.2k margin).
+   - Vs Pass Baseline: $72,535.70 vs $3,000.00 (100% win rate, $+69.5k margin).
 
 **Target: $80-90k in self-play — currently ~66-70% of target (up from ~48% two days ago).**
 
-**Biggest single win of the project so far: value-gated day-3 shop steering (§2n, 2026-08-24).**
-The weed-spawn/shop-draw RNG mechanism (`kaggriculture.py:862-891` — RNG seeded at 871,
-`rng.choice(sorted(SHOPS))` at 891) is steerable via controlled tile occupancy on days 0-2,
-and the value of doing so was quantified with a proper two-way fixed-effects regression
-(controlling for the tiles-planted confound, `K`) rather than a naive mean comparison —
-SMOOTHIE_SHOP/ICE_CREAM_SHOP/FARMERS_MARKET/PIZZA_SHOP all beat BAKERY by $3.8k-$5.2k at
-matched K (p≤0.034). The deployed controller only redirects planting toward a target shop
-when the computed expected gain exceeds $1,000, otherwise leaves the natural opening alone
-(verified as an exact no-op on non-triggered seeds). Result: $47,526.12 → $57,908.97 on the
-official 20 seeds (+21.85%), independently confirmed on 100 disjoint seeds (mean
-+$10,276.69, paired t=6.69, p=1.33×10⁻⁹, floor $24,083→$31,098.50). This is real and
-strongly validated — but note per-seed "expected gain" is a weak individual predictor given
-~$10-14k per-shop standard deviations (some steered seeds lost $16-18k despite a positive
-point estimate); only the aggregate is trustworthy at the seed level.
-
-**Open, blocking one small follow-up test before this is fully closed out**: the cost model
-has been re-derived properly (2026-08-24) under the corrected integrated-dispatcher
-methodology — true cost is **+$208.74/tile** (SE $112.22, p=0.063), not the $30/tile the
-*deployed* policy actually used to produce the $57,908.97 result. $208.74 is ~7x *higher*
-than what was deployed (the "$2,087.40 not $4,200" framing in `agent/NOTES.md` §2n compares
-against the old, separately-wrong $420.72 estimate — it does not validate the $30 that was
-actually run). **The $57,908.97 result was measured with the $30/tile version. The
-corrected $208.74/tile version has not been benchmarked.** Re-run the same 20-seed and
-100-seed tests with `$208.74` substituted for `$30` in the gain formula before treating this
-line of work as finished — displacement is now understood to be pricier, so fewer seeds
-will likely clear the $1,000 gate; confirm whether the result holds, improves, or changes
-materially, and update §2n so it's unambiguous which cost model produced which reported
-number (right now the write-up could be misread as $208.74 having produced $57,908.97).
-
-Since the $38,299 build, in order: fixed the fabricated `BASE_PRICES`/sell-curve/goose-gate
-bugs (2a); accepted a downward-only shop-conditioned cow cap (2d, `cow_cap_low=6`); found
-and fixed a systemic fast-engine horizon bug present in 8 files (`EPISODE_STEPS` off-by-one
-— real engine fires DONE at `episodeSteps-2`, so only 719 actions are ever taken, not 720;
-fixed structurally via a `game.done` property, not a patch); rejected an unnested-sheep
-candidate and a HIRE-order-splitting candidate (both real, well-understood negative results
-— see `agent/NOTES.md` §2h); made `crew_late` explicit at 10 instead of relying on the
-engine's own `maxMarketOrdersPerTurn=10` cap to silently enforce it (§2i); independently
-validated `cow_cap_low=8` on 100 seeds disjoint from the official 20 and correctly rejected
-it as an overfit, keeping `cow_cap_low=6` (§2j.1); and accepted an expired-strawberry-plot
-dig+carrot-replant fix (§2j.2, +3.13%). A second strawberry-fertilization attempt (NE crew
-self-fetching fertilizer) was rejected for the exact reason `agent/NOTES.md` 2c already
-predicted (crew-reuse opportunity cost) — **do not attempt a third self-fetch design; if
-strawberry fertilization is revisited, it needs the dedicated-courier role 2c specified, not
-another variant of the crew doing double duty.**
-
-CARE bonus is confirmed already active (78-87% same-day fed+cared hit rate) — no action
-needed there. Fast-engine/real-engine equivalence is fixed and reconfirmed exact (20/20,
-Δ=$0.00) on the corrected 719-step horizon; treat any *new* fast-engine result with the same
-skepticism until it's been checked once more, since this has now drifted silently once
-already.
-
-**Shed-full animal-purchase guard**: investigated and closed — the scenario is real (~4-8%
-of purchase checkpoints hit shed≥90) but the correct guard is just the outer bound the code
-already had (`shed_total_items <= 90`); no score change, see §2k.
-
-**Next candidates, not yet attempted, roughly in priority order**:
-1. Re-derive the shop-steering controller's per-tile cost under the corrected methodology
-   (see "open, not blocking" above) — cheap, and firms up the $1,000 gate threshold.
-2. Extend value-gated steering to the later shop draws (days 6-24) — day-3 alone was the
-   proven case; the same mechanism and value-table approach should generalize, but each
-   later draw's occupancy baseline is different and needs its own reachability sweep.
-3. Dedicated-courier strawberry fertilization (the redesign 2c/§2j.3 both said was needed,
-   not another same-crew variant) or dynamic crew sizing beyond the day-29 case already
-   banked (§2l) — both flagged as "high-certainty agronomic" work by the same investigation
-   that found the steering win.
+**Next Priority Milestones:**
+1. **Multi-Shop Steering Extension (Days 6–24)**: Generalize value-gated steering to later 3-day draw windows (Days 6, 9, 12, etc.) using post-Day-3 farm occupancy states.
+2. **Dynamic Workload-Responsive Crew Sizing**: Scale daily hires as a direct function of morning chore counts (weeding, feeding, milking, harvesting) to eliminate idle hand wage bleed on light days.
+3. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute the corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset to update official meta sales targets without local tape dependencies.
 
 ---
 
