@@ -792,18 +792,43 @@ because it structurally cannot do anything under the current per-species caps (g
 
 | Archetype / Metric | Prod Mean | Opp Mean | Delta | t | p | WR (ex-ties) | W / L / T |
 |---|---|---|---|---|---|---|---|
-| **Official 20 Self-Play** | **\$49,777.00** | — | **+\$2,552.07** | — | — | — | (Min: \$32.3k vs \$28.5k) |
-| **Disjoint 100 Self-Play** | **\$54,692.83** | — | **+\$2,634.67** | — | — | — | (Min: \$26.9k vs \$19.5k, Max: **\$100,935.00**) |
+| **Official 20 Self-Play** | **\$49,777.00** | — | **+\$2,552.07** | — | — | — | (Min: \$32,290 vs \$34,398 [§2w] vs \$28,464 [raw]) |
+| **Disjoint 100 Self-Play** | **\$54,692.83** | — | **+\$2,634.67** | — | — | — | (Min: \$26,916 vs \$24,501 [§2w] vs \$19,507 [raw], Max: **\$100,935.00**) |
 | **vs Dominant Meta (10C/4S/0G)** | \$55,039.21 | \$52,788.48 | **+\$2,250.74** | +7.21 | **1.16e-11** | **73.4%** | 135W / 49L / 16T ($n=200$) |
 | **vs Wool-Heavy (6C/12S/0G)** | \$58,908.71 | \$46,846.48 | **+\$12,062.23** | +12.93 | **< 1e-15** | **80.5%** | 161W / 39L / 0T ($n=200$) |
 | **vs Balanced Pasture (6C/8S/0G)** | \$58,598.34 | \$47,842.33 | **+\$10,756.01** | +11.74 | **< 1e-15** | **79.0%** | 158W / 42L / 0T ($n=200$) |
 | **vs Old Baseline (Goose-4)** | \$57,076.22 | \$51,890.58 | **+\$5,185.64** | +8.62 | **< 1e-15** | **81.0%** | 162W / 38L / 0T ($n=200$) |
 | **vs Pass Baseline** | \$76,186.60 | \$3,000.00 | **+\$73,186.60** | +47.12 | **< 1e-15** | **100.0%** | 200W / 0L / 0T ($n=200$) |
 
-- **Key Insights**:
-  1. **Zero Morning Travel Penalty**: When idle crop workers stay in place rather than returning to the shed, they start every morning (hour 0) directly on crop tiles, executing immediate watering and harvesting on tick 0.
-  2. **Direct H2H Dominance**: In direct match against §2w Production, Pure Field Retention wins **82.5%** of games (+4.3k net delta, $p < 10^{-13}$).
-  3. **New Standing Production Baseline**: **\$49,777.00** (Official 20) / **\$54,692.83** (100 Disjoint).
+- **Mechanism Clarification**:
+  - Farm hands do not persist overnight: `farm["hands"] = []` (`kaggriculture.py:880`) destroys all hands at midnight, and daily hires respawn at shed-access tiles `(4,4)`..`(5,5)` on Hour 0.
+  - The throughput gain comes purely from **eliminating the evening commute** during hours 18–23: rather than abandoning field work to walk back to the shed, crop workers continue active watering, harvesting, and planting until Hour 23, and `_drop_inventories_to_shed` (`engine:843`) banks all produce into the shed at midnight. This recovers ~6 turns $\times$ 9 workers $\times$ 30 days $\approx$ 1,620 worker-turns of productive labor over the season.
+- **Direct Candidate Head-to-Head ($n=200$ matches on 100 Disjoint Seeds)**:
+  - **Cand 2 (Pure Field Retention) vs Cand 1 (Task Priority / Drop when idle)**: Cand 2 wins **63.5%** (127W / 73L / 0T), with Cand 2 scoring \$52,492 vs Cand 1's \$52,480 in head-to-head competition.
+  - Cand 2 also dominates Cand 1 against Dominant Meta (73.4% WR vs 53.5% WR). Cand 2 adopted as permanent baseline.
+- **New Standing Production Baseline**: **\$49,777.00** (Official 20) / **\$54,692.83** (100 Disjoint).
+
+---
+
+### §3a — Commute Optimization & Outermost Tile Pruning Sweep
+
+- **Hypothesis**: The morning commute (walking from shed `(4,4)` out to `(0,9)` or `(9,0)`) consumes 8–9 turns (33–37% of daily turn budget). Outermost tiles might be net-negative if the commute cost exceeds the lifetime margin of the plot.
+- **Harness**: `eval/test_commute_and_tile_pruning.py` ($n=200$ matches per arm).
+- **Results**:
+
+| Configuration | SP Official 20 | SP Disjoint 100 | vs Dominant Meta (WR / Delta) | vs §2y Baseline (WR / Delta) | Verdict |
+|---|---|---|---|---|---|
+| **Baseline (§2y Full Plots)** | **\$49,777.00** | **\$54,692.83** | **73.4%** / **+\$2,250.74** | 50.0% / \$0.00 | **Standard** |
+| **SW Prune 4 Farthest Tiles** | \$49,634.32 | \$54,684.14 | 71.5% / +\$1,916.62 | 58.5% / -\$112.07 | ❌ Minor Regression |
+| **SW Prune 6 Farthest Tiles** | \$49,035.97 | \$52,820.79 | 66.5% / +\$2,305.79 | 52.0% / +\$57.45 | ❌ Net Loss (-\$1.87k SP) |
+| **NE Prune 2 Strawberry Tiles** | \$47,539.55 | \$50,330.82 | 38.5% / -\$1,177.76 | 20.0% / -\$2,924.83 | ❌ Catastrophic Loss |
+| **Crew Late = 11** | \$49,777.00 | \$54,692.83 | 73.4% / +\$2,250.74 | 50.0% / \$0.00 | ⚪ Identical (10 order cap) |
+| **Crew Late = 12** | \$49,777.00 | \$54,692.83 | 73.4% / +\$2,250.74 | 50.0% / \$0.00 | ⚪ Identical (10 order cap) |
+
+- **Key Takeaways**:
+  1. **All Plots are Net-Positive**: Even with an 8-turn morning commute, 16 turns of daily tending over a crop's growth cycle generate substantially more revenue than the travel cost. Pruning strawberry tiles `(9,0)`, `(9,1)` reduces strawberry volume, collapsing Dominant Meta WR to 38.5% and self-play by -\$4.4k.
+  2. **10-Order Hire Ceiling**: Single-turn morning hiring is capped at 10 orders per turn (`kaggriculture.py:619`). Requests for `crew_late = 11 / 12` are silently dropped at Hour 0. `crew_late = 10` is optimal.
+  3. **Full 24-plot layouts retained in both NE and SW quadrants.**
 
 ---
 
