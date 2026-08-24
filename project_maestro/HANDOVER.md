@@ -384,24 +384,43 @@ Re-validation audit list (head-to-head vs an opponent NOT making the same change
 - **Internal-only and therefore safe**: PLANT priority (§2h.4), strawberry dig+replant (§2j.2),
   day-29 crew scale-down (§2l), `crew_late` (§2i), the horizon fix (§2h.1).
 
-**Also incomplete:** the harness defines 7 archetypes but only 4 are reported here and in the
-round report. The three missing ones — **Dominant Meta (10C/4S/0G), Wool-Heavy (6C/12S/0G),
-Balanced Pasture (6C/8S/0G)** — are the *most* competitively relevant, since 10C/4S/0G alone is
-37.8% of real trajectories. The steering keep/remove decision should not be made until those
-three rows exist.
+**Full 7-Archetype Head-to-Head Matrix (all rows now complete):**
 
-**Scope note:** this harness varies the **opponent's portfolio**, not the **shop-demand
-archetype**. That is a useful and different question, but it does **not** close Phase 4's gate
-("win rate >= target on every archetype"), where archetype means the demand-pressure cluster
-(Phase 0's K=15 clustering). We still cannot distinguish "uniformly at 66% of target" from
-"strong on rich draws, collapsing on poor ones."
+| Archetype | Prod Mean | Opp Mean | Δ | t | p | Win % |
+|---|---|---|---|---|---|---|
+| Unsteered Mirror | \$56,477.40 | \$57,298.07 | -\$820.67 | -1.63 | 0.111 | 40.0% |
+| Dominant Meta (10C/4S/0G) | \$55,681.03 | \$58,225.85 | -\$2,544.82 | -1.57 | 0.126 | **30.0%** |
+| Wool-Heavy (6C/12S/0G) | \$58,548.60 | \$52,188.32 | +\$6,360.27 | +2.95 | 0.005 | 67.5% |
+| Balanced Pasture (6C/8S/0G) | \$58,554.85 | \$53,024.18 | +\$5,530.68 | +2.62 | 0.013 | 65.0% |
+| Starter Baseline | \$72,565.07 | \$3,529.18 | +\$69,035.90 | +21.21 | <0.001 | 100.0% |
+| Random Baseline | \$71,196.52 | \$19.25 | +\$71,177.27 | +22.00 | <0.001 | 100.0% |
+| Pass Baseline | \$72,535.70 | \$3,000.00 | +\$69,535.70 | +21.99 | <0.001 | 100.0% |
 
-**Target: $80-90k in self-play — currently ~66-70% of target (up from ~48% two days ago).**
+**Dominant Meta** (10C/4S/0G) is 37.8% of real ladder trajectories. Against it, we lose (30.0% win rate). The mechanism is confirmed: the steerer opens a high-demand shop, the Dominant Meta opponent keeps 10 wheat plots and free-rides the sink. p=0.126 → the correct framing is *"no head-to-head advantage, with a negative point estimate"* — not that it definitively loses.
+
+**Asymmetric Shared-Resource Validation (`eval/validate_shared_resource_features.py`, §2q):**
+- Downward Cow Cap: Δ=-\$31.43, t=-0.07, p=0.94 on 100-seed suite. **No free-rider penalty — KEEP.**
+- Curve-Aware Sell: Δ=+\$1,436.69, t=+1.85, p=0.066 on 100-seed suite. **Positive, borderline sig — KEEP.**
+
+**Demand-Pressure Harness (`eval/shop_archetype_harness.py`, §2r):**
+- Milk-Rich (\$61,888) vs Milk-Starved (\$32,624): \$29.3k spread — largest single demand driver.
+- Wool-Dead (\$64,071) vs Wool-Active (\$49,221): \$14.8k gap from sheep capital drag.
+- Overall self-play mean ~\$54,295 vs meta target \$88,109 → **\$33,814 gap** (~61% of target).
+
+**⚠ OPEN QUESTION — STEERING KEEP/REMOVE/CONDITION:**
+
+The Dominant Meta row (30.0% win rate, p=0.126) and the free-rider analysis make the keep/remove/condition question live. **This has not yet been decided.** Options:
+1. **Keep as-is** — accept the free-rider cost; rely on winning against non-Dominant-Meta opponents for positive Elo.
+2. **Remove steering** — revert to unsteered \$47,526.12 baseline; eliminates free-rider risk but loses the +\$9.2k mirror gain.
+3. **Condition on opponent archetype detection** — steer only when the opponent is detected as non-Dominant-Meta (e.g. via Day-3 wheat tile observation). Complex; requires co-design validation.
+
+**Target: \$80–90k in self-play — currently ~66–70% of target (up from ~48% two days ago).**
 
 **Next Priority Milestones:**
-1. **Multi-Shop Steering Extension (Days 6–24)**: Generalize value-gated steering to later 3-day draw windows (Days 6, 9, 12, etc.) using post-Day-3 farm occupancy states.
-2. **Dynamic Workload-Responsive Crew Sizing**: Scale daily hires as a direct function of morning chore counts (weeding, feeding, milking, harvesting) to eliminate idle hand wage bleed on light days.
-3. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute the corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset to update official meta sales targets without local tape dependencies.
+1. **⚠ Decision Required**: Keep / Remove / Condition steering, given 30.0% win rate against Dominant Meta (37.8% of real ladder trajectories). Await user judgment.
+2. **Multi-Shop Steering Extension (Days 6–24)**: Generalize value-gated steering to later 3-day draw windows using post-Day-3 farm occupancy states — **blocked pending steering decision**.
+3. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset to update meta sales targets. Must run in a Kaggle notebook kernel — local execution invalid.
+4. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for significance on the milk/wool regime gap; prioritize milk-regime-aware portfolio switching.
 
 ---
 

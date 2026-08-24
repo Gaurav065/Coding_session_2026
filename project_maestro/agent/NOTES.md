@@ -538,15 +538,65 @@ because it structurally cannot do anything under the current per-species caps (g
 
 ---
 
-### 2p. Per-Archetype Evaluation Suite — BENCHMARK COMPLETE (2026-08-24)
+### 2p. Per-Archetype Evaluation Suite — FULL 7-ARCHETYPE MATRIX COMPLETE (2026-08-24)
 
-- **Harness Architecture**: Evaluated the Production Dispatcher Agent (with integrated value-gated steering) across 280 full official Kaggle environment matches (`env.run()`) spanning 7 archetypes $\times$ 20 official seeds $\times$ 2 seats (Seat 0 & Seat 1).
-- **Summary Results Matrix (40 matches per archetype in official `env.run()`)**:
-  - **Standing Baseline (Unsteered Mirror)**: Prod Mean = **$56,477.40**, Opp Mean = **$57,298.07**, Net Delta = **-$820.67** ($\text{SE} = \$504.29, t = -1.63, p = 0.1117$), Win Rate = **40.0%** (16/40 matches won).
-    - *Economic Mechanism*: Confirms the asymmetric public-good property of shop steering. When Player 0 pays the $K_w$ displacement cost to open a high-value town shop (e.g. `SMOOTHIE_SHOP`), both players sell into the newly unlocked shop, giving the unsteered Player 1 (who maintained 10 wheat plots) a slight free-rider benefit in head-to-head asymmetric play.
-  - **Starter Baseline**: Prod Mean = **$72,565.07**, Opp Mean = **$3,529.18**, Net Delta = **+$69,035.90** ($\text{SE} = \$3,255.42, t = +21.21$), Win Rate = **100.0%** (40/40 matches won).
-  - **Random Baseline**: Prod Mean = **$71,196.52**, Opp Mean = **$19.25**, Net Delta = **+$71,177.27** ($\text{SE} = \$3,235.06, t = +22.00$), Win Rate = **100.0%** (40/40 matches won).
-  - **Pass Baseline**: Prod Mean = **$72,535.70**, Opp Mean = **$3,000.00**, Net Delta = **+$69,535.70** ($\text{SE} = \$3,162.70, t = +21.99$), Win Rate = **100.0%** (40/40 matches won).
+- **Harness Architecture**: Evaluated the Production Dispatcher Agent (with integrated value-gated steering) across 280 full official Kaggle environment matches (`env.run()`) spanning 7 archetypes $\times$ 20 official seeds $\times$ 2 seats (Seat 0 & Seat 1). Harness: `eval/archetype_evaluation_harness.py`.
+- **Full 7-Archetype Results Matrix (40 matches per archetype)**:
+
+| Archetype | Prod Mean | Opp Mean | Δ | SE | t | p | Win % |
+|---|---|---|---|---|---|---|---|
+| Unsteered Mirror | \$56,477.40 | \$57,298.07 | **-\$820.67** | \$504.29 | -1.63 | 0.111 | **40.0%** |
+| Dominant Meta (10C/4S/0G) | \$55,681.03 | \$58,225.85 | **-\$2,544.82** | \$1,623.58 | -1.57 | 0.126 | **30.0%** |
+| Wool-Heavy (6C/12S/0G) | \$58,548.60 | \$52,188.32 | **+\$6,360.27** | \$2,156.72 | +2.95 | 0.005 | **67.5%** |
+| Balanced Pasture (6C/8S/0G) | \$58,554.85 | \$53,024.18 | **+\$5,530.68** | \$2,110.65 | +2.62 | 0.013 | **65.0%** |
+| Starter Baseline | \$72,565.07 | \$3,529.18 | **+\$69,035.90** | \$3,255.42 | +21.21 | <0.001 | **100.0%** |
+| Random Baseline | \$71,196.52 | \$19.25 | **+\$71,177.27** | \$3,235.06 | +22.00 | <0.001 | **100.0%** |
+| Pass Baseline | \$72,535.70 | \$3,000.00 | **+\$69,535.70** | \$3,162.70 | +21.99 | <0.001 | **100.0%** |
+
+- **Key Finding — Dominant Meta (37.8% of real ladder trajectories)**:
+  - Against `10C/4S/0G` opponents (the true production meta, 37.8% of real trajectories per Phase 0), the production agent **LOSES** head-to-head: -\$2,544.82, 30.0% win rate, t=-1.57, p=0.126.
+  - Mechanism: steerer pays full \$208.74/tile displacement cost to unlock `SMOOTHIE_SHOP`/`ICE_CREAM_SHOP`; Dominant Meta opponent keeps 10 NW wheat plots and sells into the same newly unlocked shop for free. The opponent's \$58,225.85 exceeds both the steered (\$56,743.07) and unsteered (\$47,526.12) self-play baselines — the canonical free-rider signature.
+  - Statistical honesty: p=0.126 is **not** significant; the correct claim is *"no head-to-head advantage against Dominant Meta, with a negative point estimate"* — not that steering definitively loses.
+- **Key Finding — Wool-Heavy / Balanced Pasture wins are explained**:
+  - Wins against Wool-Heavy (67.5%, p=0.005) and Balanced Pasture (65.0%, p=0.013) arise because those archetypes divert capital from milk/wheat, so they compete less effectively for the strawberry/milk sinks the steerer opens. The advantage here is *their capital misallocation*, not steering per se.
+- **Structural lesson**: Pure mirror self-play cannot detect free-rider asymmetries. Any change touching a *shared* resource (AMM, town shop sink, shared RNG) will look better in mirror than in real asymmetric play. Internal-only changes (PLANT priority, strawberry dig+replant, day-29 crew, crew_late, horizon fix) are unaffected.
+
+---
+
+### 2q. Asymmetric Shared-Resource Feature Validation (2026-08-24)
+
+- **Harness**: `eval/validate_shared_resource_features.py`. 480 FastEngine matches: 2 features × 2 seed sets (Official 20 + 100 Disjoint) × 2 seats. Each feature run is **asymmetric head-to-head** — production-with-feature vs production-without, ensuring the free-rider effect is detectable.
+- **Downward Cow Cap** (`cow_cap_low = 6` vs fixed 10 when milk shops are scarce):
+  - Official 20 Seeds: Δ = +\$312.10, t = +0.41, p = 0.68
+  - 100 Disjoint Seeds: Δ = -\$31.43, t = -0.07, p = 0.94
+  - **Verdict: KEEP.** No free-rider penalty detected. The restraint only fires on milk-starved draws where neither player benefits from extra cows; in milk-rich draws the cap is inactive. The cost is internally bounded.
+- **Curve-Aware AMM Selling** (paced GLUT_PRONE release vs flat dump):
+  - Official 20 Seeds: Δ = +\$1,023.55, t = +1.42, p = 0.16
+  - 100 Disjoint Seeds: Δ = +\$1,436.69, t = +1.85, p = 0.066
+  - **Verdict: KEEP.** Positive direction on both seed sets; borderline significant on 100-seed suite. While the "we protect price; opponent dumps into it" free-rider is theoretically present, the measured direction is consistently positive — the price-protection benefit to our own additional sales outweighs the free-rider leakage at real production volumes.
+
+---
+
+### 2r. Shop-Archetype / Demand-Pressure Harness (2026-08-24)
+
+- **Harness**: `eval/shop_archetype_harness.py`. 120 FastEngine self-play matches. Results saved to `results/demand_archetype_performance.csv`.
+- **Classification**: Each match post-classified by `game.unlocked_shops` after game completion into demand regimes: Milk Regime (Rich/Starved), Strawberry Regime (Active/Dead), Wool Regime (Active/Dead), Demand Diversity (High/Low).
+- **Key Results**:
+
+| Regime Category | Archetype | n | Mean Score |
+|---|---|---|---|
+| Milk Regime | Milk-Rich | ~30 | \$61,888 |
+| Milk Regime | Milk-Starved | ~30 | \$32,624 |
+| Strawberry Regime | Strawberry-Active | ~30 | ~\$54k |
+| Strawberry Regime | Strawberry-Dead | ~30 | ~\$46k |
+| Wool Regime | Wool-Dead | ~30 | \$64,071 |
+| Wool Regime | Wool-Active | ~30 | \$49,221 |
+
+- **Key Findings**:
+  - **Milk gap dominates**: Milk-Rich vs Milk-Starved spread = **\$29,264** — the single largest demand-pressure driver. Livestock capital allocation is the biggest lever.
+  - **Wool is a drag**: Wool-Dead vs Wool-Active gap = **\$14,850**. When wool shops are active, the agent diverts capital into sheep that competes poorly with milk for pasture slots.
+  - **Overall mean vs meta**: Self-play mean ≈ \$54,295 vs corrected meta target \$88,109 → **\$33,814 gap remaining** (~61% of target). The gap is dominated by milk/wool regime variance, not shop-independent skill.
+- **Scope note**: This harness varies the *demand regime* (which shops unlock), not the *opponent's portfolio*. This is the demand-pressure gate needed for Phase 4, but the sample per cell (~30) is too small for definitive significance; treat as directional.
 
 ---
 
