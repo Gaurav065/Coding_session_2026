@@ -310,6 +310,69 @@ re-verified by Claude from those CSVs.
 
 ## 4. Current agent state — where you are picking up
 
+### 🛑 BLOCKING DEFECT: shop steering cannot function in competition (verified 2026-08-24)
+
+**`compute_optimal_steering_kw(seed)` requires the RNG seed. The engine does not give agents
+the seed.** Verified by direct execution against the real environment:
+
+```
+OBS KEYS: ['day','farms','hour','market','player','private','remainingOverageTime','step','town']
+seed in obs? False        env.info: {'seed': 42}
+```
+
+The seed lives only in `env.info` (`kaggriculture.py:870`, `seed = env.info.get("seed", 0)`),
+which is interpreter-side state. So in `dispatcher_agent.py`:
+
+```python
+if self.seed is None and "seed" in obs:   # never fires -- obs has no "seed" key
+    self.seed = obs["seed"]
+if self.seed is not None: self.kw_early = compute_optimal_steering_kw(self.seed)
+else:                     self.kw_early = 10        # <-- always taken on the real ladder
+```
+
+**Consequence: on Kaggle the agent always falls through to `kw_early = 10`, i.e. fully
+unsteered. Every steering result in §2n / §2p / §2s was obtained only because the eval
+harnesses inject `seed=` into the constructor, which Kaggle will never do.**
+
+**The shippable agent's true baseline is therefore ~$47,526.12 (official 20 seeds), NOT
+$56,743.07.** Progress against the $80-90k target is ~53-59%, not ~66-70%.
+
+**Is it salvageable?** Not as designed. Predicting which `Kw` yields which shop requires
+running the RNG, which requires the seed. Recovering the seed from observed draws is not
+viable: each draw reveals ~3 bits (1 of 8 shops), so even all eight draws leave the seed
+massively underdetermined — and the information arrives far too late to act on. The same
+objection applies to extending steering to days 6-24. **Do not build the multi-shop steering
+extension.**
+
+**What survives and is genuinely valuable:** the `GAMMA_INTEGRATED` value table is real,
+independently derived, and still tells us which shop draws matter
+(SMOOTHIE +$18.5k / ICE_CREAM +$17.2k / PIZZA +$14.7k down to YARN_STORE -$1.9k). The
+strategic pivot is **from controlling the draw to adapting to it** — which is exactly what the
+§2r demand-regime data points at (milk-rich $61.9k vs milk-starved $32.6k, a $29.3k spread
+across 41/120 seeds sitting at or below $42.6k). That is the real remaining lever.
+
+### Secondary defects in `compute_optimal_steering_kw` (found in the same read)
+
+These matter for interpreting §2t's goose result even though steering is inert in production:
+
+1. **The Kw sweep hardcodes default params**: `MaestroFullPortfolioAgent(kw_early=kw)` is
+   constructed with no `params`, so it always simulates `goose_cap=4`. Under `goose_cap=0` the
+   four coop tiles per farm stay EMPTY, and `_spawn_weeds` consumes one `rng.random()` per
+   empty tile across BOTH farms *before* `rng.choice(sorted(SHOPS))` (`kaggriculture.py:877`,
+   `:891`). So the lookup table is simply wrong whenever params differ from the defaults.
+   **§2t's -$9,976 "self-play collapse" therefore measures a broken controller, not the value
+   of geese.** The additive-vs-substitutive question is NOT closed.
+2. **The sweep models the opponent as unsteered** (`p1 = MaestroFullPortfolioAgent(kw_early=10)`).
+   In self-play the opponent steers too, so real combined occupancy differs from the simulated
+   occupancy. This explains the otherwise-inexplicable asymmetry in §2t: goose-0 scored $46,767
+   in self-play (both steer -> opponent model wrong on Kw *and* geese) versus $57,510 against
+   unsteered Dominant Meta (opponent model wrong on geese only) — a $10,743 swing driven by
+   model error, while the goose-4 equivalents differed by only $1,062.
+3. **The natural-baseline loop calls each agent four times per step** and discards the first two
+   results, while the sweep loop calls each once. `natural_shop` is thus derived under a
+   different procedure than the `achievable` map it is compared against.
+
+
 `agent/dispatcher_agent.py` (`make_spatial_dispatcher_agent()`), a spatial task dispatcher.
 
 **⚠ Everything in this section describes the build as of 2026-08-24. The version of this
@@ -320,113 +383,32 @@ old copies of this section from memory; the numbers below are current.**
 **Benchmark standard (established the hard way): pure self-play, `env.run([agent, agent])`.**
 Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the headline.
 
-**Production Agent Integration Status (2026-08-24): COMPLETE & VERIFIED.**
+**Production Agent Status (2026-08-24): `goose_cap=0`, Unsteered in Competition.**
 
-Value-gated shop steering (`GAMMA_INTEGRATED`, `K_COST_CORRECTED = 208.74`, `STEERING_GAIN_THRESHOLD = 1000.0`) is **fully integrated directly into `agent/dispatcher_agent.py` (`MaestroFullPortfolioAgent`)**, and the entire `project_maestro/` tree is safely tracked and committed in git.
-
-- **Standing Production Baseline (Fully Integrated)**:
-  - **Official 20 Seeds (real `env.run()` / FastEngine $\Delta = \$0.00$)**: **$56,743.07** (+19.39% / +$9,216.95 over unsteered $47,526.12, SE $4,169.42, $t = +2.21$).
-  - **100 Disjoint Seeds (`10000-10099`)**: **$62,293.33** (+20.36% / +$10,539.07 over unsteered $51,754.27, SE $1,539.94, $t = +6.84, p = 6.51 \times 10^{-10}$).
-  - Head-to-Head win rate on steered seeds: **86.2%** (56W / 9L / 35T).
+- **Standing Shippable Production Baseline (No Seed Injected, `goose_cap=0`)**:
+  - **Official 20 Seeds (real `env.run()` / FastEngine)**: **$44,743.35** (Median: $42,030.50, Min: $28,464.00, Max: $92,837.00, SE: $2,151.13).
+  - **100 Disjoint Seeds (`10000-10099`)**: **$49,613.06** (Median: $47,144.00, Min: $19,507.00, Max: $91,494.00, SE: $1,072.56).
+  - *Harness-Only Reference Note*: The prior $56,743.07 / $62,293.33 numbers were seed-injected diagnostic runs. In real competition execution (`obs` has no `seed`), the agent runs naturally at `kw_early = 10`.
 
 **Completed Verification & Architecture Milestones:**
-1. **Dedicated-Courier Strawberry Fertilization (TESTED, DEFINITIVELY REJECTED, §2o)**:
-   - Re-tested on top of the genuinely steered baseline (`eval/benchmark_steered_strawberry_courier.py`).
-   - Official 20 Seeds: Baseline $56,743.07 $\rightarrow$ Courier $56,505.30 ($\Delta = -\$237.78, t = -0.33, 6\text{W}/14\text{L}$).
-   - 100 Disjoint Seeds: Baseline $62,293.33 $\rightarrow$ Courier $62,440.11 ($\Delta = +\$146.77, t = +0.31, 14\text{W}/84\text{L}/2\text{T}$).
-   - Economic mechanism confirmed: Consuming early fertilizer internally forfeits high-compounding capital for Day 4–12 livestock acquisition in exchange for late-game strawberries selling into depressed post-glut AMM curves.
-2. **Per-Archetype Evaluation Suite (`eval/archetype_evaluation_harness.py`, §2p)**:
-   - Evaluated production agent across 280 official `env.run()` matches spanning 7 archetypes.
-   - Vs Standing Unsteered Mirror: $56,477.40 vs $57,298.07 ($\Delta = -\$820.67, t = -1.63, 40.0\%$ win rate, measuring the asymmetric public-good property of town shop unlocking).
-   - Vs Starter Baseline: $72,565.07 vs $3,529.18 (100% win rate, $+69.0k margin).
-   - Vs Random Baseline: $71,196.52 vs $19.25 (100% win rate, $+71.2k margin).
-   - Vs Pass Baseline: $72,535.70 vs $3,000.00 (100% win rate, $+69.5k margin).
+1. **Dedicated-Courier Strawberry Fertilization (REJECTED, §2o)**:
+   - Official 20 Seeds: Δ = -$237.78 (t = -0.33); 100 Disjoint: Δ = +$146.77 (t = +0.31). No evidence of benefit. Consuming early fertilizer internally forfeits high-compounding capital for early livestock.
+2. **Goose Cap Elimination (ADOPTED `goose_cap=0`, §2t/§2v)**:
+   - Clean Confirmation at production settings (n=200, 100 disjoint seeds): `goose_cap=4` unsteered vs Dominant Meta `goose_cap=0` unsteered results in **28.5% win rate** (57W/143L), Δ = **-$3,836.91**, $t = -6.81, p = 1.10 \times 10^{-10}$.
+   - Geese represent a massive competitive drag against the 92.7% goose-free ladder population. `DEFAULT_PARAMS["goose_cap"] = 0` is the permanent default.
+3. **Asymmetric Shared-Resource Validation (§2q)**:
+   - Downward Cow Cap: Δ = -$31.43 ($t = -0.07, p = 0.94$). No free-rider penalty; **KEEP**.
+   - Curve-Aware AMM Selling: Δ = +$1,436.69 ($t = +1.85, p = 0.066$). Positive direction; **KEEP**.
+4. **Demand-Pressure Analysis (§2r)**:
+   - Milk-Rich ($61,888) vs Milk-Starved ($32,624): $29.3k spread — largest single performance driver.
+   - Overall self-play mean ~$44.7k–$49.6k vs meta target $88,109 (50–55% of target).
 
-**⚠ CRITICAL CAVEAT ON THE STEERING RESULT (Claude, verification pass 2026-08-24) — read
-before treating $56,743.07 as the agent's competitive strength.**
-
-The archetype harness produced one result that is far more consequential than its placement
-above suggests: **against an unsteered copy of itself, the steered production agent LOSES
-head-to-head — 40.0% win rate (16/40), margin -$820.67.**
-
-The mechanism Gemini identified is correct and important: **steering produces a public good.**
-The steerer pays the full early-wheat displacement cost ($208.74/tile) to unlock a
-high-demand shop, but that shop is a *shared* market sink — the opponent gets the same
-price support for free while keeping all 10 NW wheat tiles. The free-rider profits more than
-the payer. Note the opponent's $57,298.07 in that matchup exceeds **both** mirror baselines
-($47,526.12 unsteered mirror, $56,743.07 steered mirror), which is exactly the free-rider
-signature.
-
-**Why this matters more than the mirror number:** this competition is an **Elo ladder**, and
-§3 of this file already records the governing principle — "since the ladder scores wins not
-margin, the win-rate signal is the one that matters." The +19.39% mirror gain was measured in
-the one configuration where the public-good cost is symmetric and therefore invisible. Against
-a ladder full of agents that do not steer, we would be paying to raise our opponents' scores.
-
-**Statistical honesty:** -$820.67 with SE $504.29 (t=-1.63, p=0.11) and 16/40 wins are **not**
-significant. The correct claim is *"steering shows no head-to-head advantage, with a negative
-point estimate"* — not that it definitively loses. But it can no longer be described as the
-project's biggest win without this qualifier.
-
-**Systematic methodological consequence — this is the durable lesson.** Pure self-play mirror
-benchmarking has a structural blind spot: **it cannot detect public-good / free-rider
-asymmetries, because both seats make identical moves and so pay identical costs.** Any change
-touching a *shared* resource (the AMM, the town shop sink, the shared weed/shop RNG) will look
-better in mirror than it performs in real asymmetric play. Changes that are purely internal to
-our own farm are unaffected.
-
-Re-validation audit list (head-to-head vs an opponent NOT making the same change):
-- **Shop steering (§2n)** — confirmed affected; see above.
-- **Downward-only cow cap (§2d)** — suspect. We cut milk supply on weak-demand draws; an
-  opponent who does not cut enjoys the firmer price we paid for. Same free-rider shape.
-- **Curve-aware sell logic (§2a.2)** — suspect. We trickle GLUT_PRONE goods to protect price;
-  an opponent who dumps sells into the price we protected.
-- **Internal-only and therefore safe**: PLANT priority (§2h.4), strawberry dig+replant (§2j.2),
-  day-29 crew scale-down (§2l), `crew_late` (§2i), the horizon fix (§2h.1).
-
-**Full 7-Archetype Head-to-Head Matrix (all rows now complete):**
-
-| Archetype | Prod Mean | Opp Mean | Δ | t | p | Win % |
-|---|---|---|---|---|---|---|
-| Unsteered Mirror | \$56,477.40 | \$57,298.07 | -\$820.67 | -1.63 | 0.111 | 40.0% |
-| Dominant Meta (10C/4S/0G) | \$55,681.03 | \$58,225.85 | -\$2,544.82 | -1.57 | 0.126 | **30.0%** |
-| Wool-Heavy (6C/12S/0G) | \$58,548.60 | \$52,188.32 | +\$6,360.27 | +2.95 | 0.005 | 67.5% |
-| Balanced Pasture (6C/8S/0G) | \$58,554.85 | \$53,024.18 | +\$5,530.68 | +2.62 | 0.013 | 65.0% |
-| Starter Baseline | \$72,565.07 | \$3,529.18 | +\$69,035.90 | +21.21 | <0.001 | 100.0% |
-| Random Baseline | \$71,196.52 | \$19.25 | +\$71,177.27 | +22.00 | <0.001 | 100.0% |
-| Pass Baseline | \$72,535.70 | \$3,000.00 | +\$69,535.70 | +21.99 | <0.001 | 100.0% |
-
-**Dominant Meta** (10C/4S/0G) is 37.8% of real ladder trajectories. Against it, we lose (30.0% win rate). The mechanism is confirmed: the steerer opens a high-demand shop, the Dominant Meta opponent keeps 10 wheat plots and free-rides the sink. p=0.126 → the correct framing is *"no head-to-head advantage, with a negative point estimate"* — not that it definitively loses.
-
-**Asymmetric Shared-Resource Validation (`eval/validate_shared_resource_features.py`, §2q):**
-- Downward Cow Cap: Δ=-\$31.43, t=-0.07, p=0.94 on 100-seed suite. **No free-rider penalty — KEEP.**
-- Curve-Aware Sell: Δ=+\$1,436.69, t=+1.85, p=0.066 on 100-seed suite. **Positive, borderline sig — KEEP.**
-
-**Demand-Pressure Harness (`eval/shop_archetype_harness.py`, §2r):**
-- Milk-Rich (\$61,888) vs Milk-Starved (\$32,624): \$29.3k spread — largest single demand driver.
-- Wool-Dead (\$64,071) vs Wool-Active (\$49,221): \$14.8k gap. **Mechanism corrected**: this is pure shop-draw variance — YARN_STORE displaces a milk shop worth +\$18.5k on the gamma table. ~0.7 sheep/game (~\$350 capital) cannot produce a \$14.8k gap. Do not experiment with removing sheep.
-- Overall self-play mean ~\$54,295 vs meta target \$88,109 → **\$33,814 gap** (~61% of target).
-
-**STEERING DECISION — RESOLVED: KEEP (2026-08-24)**
-
-Control row: Unsteered (`kw_early=10`) vs Dominant Meta (10C/4S/0G), 40 matches:
-- Unsteered: \$43,624 vs \$46,830 — **6W/34L/0T = 15.0% win rate** (t=-2.47, p=0.018)
-- Steered (existing): \$55,681 vs \$58,226 — **30.0% win rate** (t=-1.57, p=0.126)
-
-Steering *doubles* win rate against the worst-case opponent. Attribution: the loss to Dominant Meta is caused by **production parity** (both agents run 10 cows competing for the same milk sink), not the free-rider effect. Free-riding is real (+\$11,396 captured by opponent) but not disqualifying (we gain +\$12,056, net +\$660, win rate doubles). Steering strictly dominates unsteered in all 7 matchups. See §2s.
-
-**Goose Cap Experiment (`eval/goose_cap_experiment.py`, §2t) — COMPLETE, goose_cap=4 RETAINED:**
-- Self-play regression: -\$9,976 (Official 20), -\$7,442 (Disjoint 100). Geese are genuinely additive (~\$10k/season symmetric revenue) — not a free-rider problem.
-- vs Dominant Meta: 40% WR (up from 30%) — improved, but prediction of "flip to winning record" did not materialize. 10-cow production parity is the ceiling, not geese.
-- vs Wool-Heavy: 82.5% WR (+15pp); vs Balanced Pasture: 82.5% WR (+17.5pp) — both dramatic, but don't compensate the self-play floor collapse.
-- **Verdict**: KEEP goose_cap=4 in DEFAULT_PARAMS. Additive-vs-substitutive question (§2a.3) closed: **geese are additive**. Do not move geese to "Closed Doors" (§6).
-
-**Target: \$80–90k in self-play — currently ~66–70% of target (up from ~48% two days ago).**
+**Target: $80–90k in self-play — currently ~50–55% of target.**
 
 **Next Priority Milestones:**
-1. **Multi-Shop Steering Extension (Days 6–24)** — PRIMARY. Extend value-gated steering to later 3-day draw windows (Days 6, 9, 12…) using post-Day-3 farm occupancy states. Top-3 gamma shops are all milk shops; this directly attacks the \$29.3k Milk-Rich vs Milk-Starved gap (\$61.9k vs \$32.6k from §2r).
+1. **Shop-Adaptive Production (§2r)** — PRIMARY. Build behavior that dynamically responds to observed `unlocked_shops` (available in observation) rather than attempting to control draws. Attack the $29.3k Milk-Rich vs Milk-Starved spread ($61.9k vs $32.6k) by dynamically reallocating pasture/crop investments toward revealed demand sinks, keeping §2b/§2e in mind (favor reallocation over expansion to avoid escalation).
 2. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset. Must run in a Kaggle notebook kernel — local execution invalid.
-3. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for significance on the milk regime gap.
+3. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for higher precision on demand-regime responses.
 
 ---
 
@@ -447,6 +429,15 @@ Steering *doubles* win rate against the worst-case opponent. Attribution: the lo
 
 ## 6. Closed doors — do not re-attempt these
 
+- **Shop steering and draw prediction.** Closed (2026-08-24). Requires RNG seed which is
+  absent from competition observations (present only in interpreter-side `env.info`). Seed
+  cannot be recovered from 8 shop draws (underdetermined and arrives too late). Multi-shop
+  steering extensions (Days 6–24) are likewise closed. Pivot to shop-adaptive production.
+- **Geese and coop building.** Closed (2026-08-24). Geese yield a modest ~$2.8k in symmetric
+  self-play but impose a severe competitive drag against realistic goose-free ladder opponents:
+  28.5% WR (57W/143L), -$3,837, t=-6.81, p=1.10e-10 vs Dominant Meta (10C/4S/0G) in unsteered
+  play at n=200. Phase 0 shows 92.7% of ladder opponents are goose-free. `goose_cap=0` is the
+  permanent default.
 - **The analytical valuation model.** It was recalibrated twice; each time the error
   *moved* rather than shrank (first understating the reference build by 4.4x, then
   overshooting the previously-correct clusters by +32% while still being -39% on

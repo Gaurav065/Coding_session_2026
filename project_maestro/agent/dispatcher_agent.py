@@ -198,7 +198,7 @@ DEFAULT_PARAMS = {
     "cow_cap_low": 6,       # cap when milk_shop_count<=1 (day>=15, downward-only, see 2b/2d)
     "cow_cap_base": 10,
     "sheep_cap": 4,
-    "goose_cap": 4,
+    "goose_cap": 0,
     "melon_seed_target": 6,
     "strawberry_target": 16,
     "crew_late": 10,        # target_crew once SW is unlocked (capped at 10 to match optimal single-turn HIRE ceiling)

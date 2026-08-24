@@ -680,22 +680,41 @@ because it structurally cannot do anything under the current per-species caps (g
 
 **Comparison with goose_cap=4 (current default) head-to-head results:**
 
-| Archetype | WR with geese (§2p) | WR without geese (§2u) | Change |
+| Archetype | WR with geese (§2p, n=40, seed-injected) | WR without geese (§2u, n=200, seed-injected) | Change |
 |---|---|---|---|
 | Dominant Meta | 30.0% | **53.7%** | **+23.7pp** |
 | Wool-Heavy | 67.5% | **85.5%** | **+18.0pp** |
 | Balanced Pasture | 65.0% | **83.5%** | **+18.5pp** |
 | Self-play mean | \$56,743 | \$46,767 | -\$9,976 |
 
-**Verdict: GOVERNING METRIC IS WIN RATE (HANDOVER §3). goose_cap=0 WINS on all three competitive matchups. §2t verdict was wrong — it used self-play mean as the decision criterion, which HANDOVER §3 explicitly overrides.**
+*(Note on §2u results: These runs evaluated steered agents where `seed` was injected by the harness. As established in HANDOVER §4, Kaggle does not supply `seed` in `obs`, so steering is inert in competition. Furthermore, the delta comparisons above contrasted n=40 against n=200. See §2v below for the clean, unsteered confirmation at n=200 and the honest shippable baseline.)*
 
-- Dominant Meta is 37.8% of real ladder trajectories; geese appear in only 7.3%. Against the realistic ladder population (92.7% no-goose opponents), goose_cap=0 gains +18–24pp win rate across all tested archetypes.
-- Self-play mean drops -\$9,976 because egg revenue (~\$10k) is lost in the symmetric mirror. That drop is irrelevant on a win-rate Elo ladder where both self-play players are penalized equally; what matters is head-to-head against the real opponent distribution.
-- Dominant Meta result (53.7%, p=0.058) is borderline — "slim winning majority, not yet significant." The Wool-Heavy and Balanced Pasture results are unambiguous (p<0.001).
+---
 
-**Recommended action: Set `DEFAULT_PARAMS["goose_cap"] = 0`, re-run production baseline on Official 20 + 100 Disjoint seeds, update §2v. Then close geese in HANDOVER §6.**
+### 2v. Goose Confirmation (n=200) & Honest Production Re-baseline — OFFICIAL (2026-08-24)
 
-- Updated 7-archetype table (replacing §2p values with goose_cap=0 results) should be done after the baseline run.
+- **1. Confirmation Run at Production Settings (Unsteered, n=200 matches across 100 disjoint seeds)**:
+  - `eval/confirm_goose_and_rebaseline.py`.
+  - **Matchup**: `goose_cap=4, kw_early=10` vs `Dominant Meta (10C/4S/0G, goose_cap=0, kw_early=10)`.
+  - **Results**:
+    - **Production Mean (goose=4)**: \$48,285.59
+    - **Opponent Mean (goose=0)**: \$52,122.50
+    - **Net Delta**: **-\$3,836.91** ($\text{SE} = \$563.06, t = -6.81, p = 1.10 \times 10^{-10}$)
+    - **W/L/T**: **57W / 143L / 0T** $\rightarrow$ **Win Rate = 28.5%**
+  - **Conclusion**: Geese represent a massive competitive drag ($t = -6.81, p < 10^{-9}$) against the dominant meta (92.7% of real ladder opponents are goose-free). `DEFAULT_PARAMS["goose_cap"] = 0` is definitively adopted. Geese are moved to Closed Doors.
+
+- **2. Self-Play Cost of Geese Corrected**:
+  - In symmetric unsteered self-play:
+    - `goose_cap=4`: **\$47,526.12**
+    - `goose_cap=0`: **\$44,743.35**
+  - The symmetric self-play value of geese is ~**+\$2,783** (not +\$10k; the larger number was an artifact of comparing steered runs with a corrupted lookup table). This +\$2.8k symmetric egg margin is heavily outweighed by the −21.5pp win-rate penalty against real opponents.
+
+- **3. Honest Shippable Production Baseline (No Seed Injected, `goose_cap=0`)**:
+  - Exactly matches competition execution where `seed` is not in `obs` (`self.kw_early = 10`).
+  - **Official 20 Seeds Self-Play**: **\$44,743.35** (Median: \$42,030.50, Min: \$28,464.00, Max: \$92,837.00, SE: \$2,151.13)
+  - **100 Disjoint Seeds Self-Play (`10000-10099`)**: **\$49,613.06** (Median: \$47,144.00, Min: \$19,507.00, Max: \$91,494.00, SE: \$1,072.56)
+  - **True Progress vs Target**: Current standing is ~\$44.7k–\$49.6k, which is ~50–55% of the \$80k–\$90k meta target.
+  - **Harness-Only Annotation**: All prior steering results in §2n (\$56,743.07 / \$62,293.33), §2p, §2s, and §2u are marked as **Harness-Only Diagnostic Ceilings** because `compute_optimal_steering_kw` relied on seed injection.
 
 ---
 
