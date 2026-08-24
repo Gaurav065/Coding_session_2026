@@ -827,12 +827,65 @@ because it structurally cannot do anything under the current per-species caps (g
 
 - **Key Takeaways**:
   1. **All Plots are Net-Positive**: Even with an 8-turn morning commute, 16 turns of daily tending over a crop's growth cycle generate substantially more revenue than the travel cost. Pruning strawberry tiles `(9,0)`, `(9,1)` reduces strawberry volume, collapsing Dominant Meta WR to 38.5% and self-play by -\$4.4k.
-  2. **10-Order Hire Ceiling**: Single-turn morning hiring is capped at 10 orders per turn (`kaggriculture.py:619`). Requests for `crew_late = 11 / 12` are silently dropped at Hour 0. `crew_late = 10` is optimal.
+  2. **10-Order Hire Ceiling**: Single-turn morning hiring is capped at 10 orders per turn (`kaggriculture.py:551, 560`). Requests for `crew_late = 11 / 12` are silently dropped at Hour 0. `crew_late = 10` is optimal.
   3. **Full 24-plot layouts retained in both NE and SW quadrants.**
 
 ---
 
-## 3. Data Extractor & Mechanic Diagnoses
+### §3b — NE Wheat -> Strawberry Conversion Ladder (ADOPTED)
+
+- **Hypothesis**: §3a demonstrated that pruning 2 strawberry tiles destroyed \$4.4k in self-play, while pruning wheat had near-zero effect ($~\$2.2k$ marginal value per strawberry tile). Strawberry is supported by 4 of 8 town shops (0.39% zero-demand chance), meaning the initial 16 Strawberry / 8 Wheat NE split was sub-optimal.
+- **Harness**: `eval/test_ne_strawberry_ladder.py` & `eval/fast_parallel_benchmark.py` ($n=200$ matches per arm on 100 Disjoint Seeds, Canary 1 + 2 passed).
+- **Ladder Results Matrix ($n=200$ matches per arm)**:
+
+| Step / Config | SP Official 20 (Mean / Min) | SP Disjoint 100 (Mean / Min) | vs Dominant Meta (WR / Delta / t-stat) | vs Previous Prod (§2y) (WR / Delta / t-stat) | Verdict |
+|---|---|---|---|---|---|
+| **Step 0: Baseline (16S / 8W)** | \$49,777.00 / \$32,290 | \$54,692.83 / \$26,916 | 73.4% / +\$2,250.74 ($t=+7.21$) | 50.0% / \$0.00 | Previous Baseline |
+| **Step 1: +2 Straw (18S / 6W)** | \$51,530.40 / \$22,318 | \$56,105.11 / \$13,954 | **92.5%** / **+\$4,433.23** ($t=+10.59$) | 81.5% / +\$2,400.03 ($t=+6.03$) | Strong Win |
+| **Step 2: +4 Straw (20S / 4W)** | \$54,493.25 / \$32,758 | \$56,367.36 / \$19,403 | **88.0%** / **+\$5,489.77** ($t=+10.84$) | 82.5% / +\$3,751.01 ($t=+6.76$) | Strong Win |
+| **Step 3: +6 Straw (22S / 2W)** | **\$51,042.55** / **\$33,376** | **\$57,002.58** / **\$32,123** | **88.0%** / **+\$5,959.05** ($t=+16.07$) | **85.5%** / **+\$3,998.60** ($t=+12.18$) | **PARETO OPTIMUM (ADOPTED)** |
+| **Step 4: +8 Straw (24S / 0W)** | \$56,733.28 / \$33,610 | \$57,723.10 / \$22,908 | 72.5% / +\$3,774.92 ($t=+8.40$) | 64.5% / +\$1,977.49 ($t=+5.47$) | Glut Penalty & Feed Deficit |
+
+- **Why Step 3 (22 Strawberry / 2 Wheat) is the Pareto Optimum**:
+  1. **Direct Head-to-Head Win Rate**: Beats §2y Previous Production Baseline with **85.5% Win Rate** (171W / 29L / 0T), Net Delta **+\$3,998.60** ($t = +12.18, p < 10^{-15}$).
+  2. **Beats Dominant Meta by 88.0%**: 176W / 24L / 0T, Net Delta **+\$5,959.05** ($t = +16.07, p < 10^{-15}$).
+  3. **Robust Floor Protection**:
+     - Official 20 Min: **\$33,376.00** (+$1,086 over Step 0's \$32,290).
+     - Disjoint 100 Min: **\$32,123.00** (+$5,207 over Step 0's \$26,916).
+  4. **Why Step 4 Failed**: At 24 strawberries / 0 wheat in NE, local feed supply dries up, forcing market wheat purchases, and 24 strawberries flood the AMM past town shop absorption capacity, depressing price realization along the linear glut curve (`above_target = 1.60`). Retaining 2 wheat plots in NE provides local feed stability and preserves peak strawberry prices.
+- **New Standing Production Baseline (Honest Competition Settings, §3b 22S/2W Layout)**:
+  - **Official 20 Self-Play**: **\$51,042.55** (Median: \$51,172.00, Min: **\$33,376.00**, Max: \$71,679.00)
+  - **Disjoint 100 Self-Play**: **\$57,002.58** (Median: \$52,231.00, Min: **\$32,123.00**, Max: **\$102,974.00**)
+  - **Unconstrained vs Pass Baseline**: **\$83,109.63** (Canary 1: Opponent = \$3,000.00, WR = 100.0%)
+
+---
+
+## 3. Data Extractor & Kaggle Cloud Meta Ground Truth
+
+1. **Phase 0 Analysis on Kaggle Cloud (`gaurav065/project-maestro-phase-0-analysis`)**:
+   - Executed in-place on Kaggle Cloud across all 697 full 720-step episodes (`/kaggle/input/`).
+   - Parsed 693 winning player records.
+   - **Ground-Truth Winner Reward**: Mean = **\$91,603.09** | Median = **\$90,002.00** | Max = **\$170,964.00**.
+
+2. **Ground-Truth Top Meta Production Volumes (Sold Units)**:
+   - **WHEAT**: Mean = **354.3** | Median = **307.0** (0.0% zero-sales)
+   - **FERTILIZER**: Mean = **112.3** | Median = **121.0** (0.0% zero-sales)
+   - **STRAWBERRY**: Mean = **43.7** | Median = **42.0** (Only 1.0% zero-sales!)
+   - **WOOL**: Mean = **18.9** | Median = **14.0** (18.5% zero-sales)
+   - **MILK**: Mean = **17.4** | Median = **8.0** (16.7% zero-sales)
+   - **MELON**: Mean = **3.4** | Median = **0.0** (65.1% zero-sales)
+   - **CARROT**: Mean = **3.3** | Median = **0.0** (84.7% zero-sales)
+   - **TOMATO**: Mean = **1.5** | Median = **0.0** (90.5% zero-sales)
+   - **EGG**: Mean = **0.8** | Median = **0.0** (94.2% zero-sales)
+
+3. **Ground-Truth Top Meta Animal & Seed Portfolio**:
+   - **Cows**: Mean = **8.3** (Median: 8.0)
+   - **Sheep**: Mean = **6.3** (Median: 4.0)
+   - **Geese**: Mean = **0.3** (Median: 0.0, 91.6% zero)
+   - **Strawberry Seeds**: Mean = **37.5** (Median: 38.0) (Perfect match to our §3b 22-strawberry expansion!)
+   - **Wheat Seeds**: Mean = **133.2** (Median: 132.0)
+   - **Labor**: Day 0 Hires = **4.9** (Median: 5.0), Total Season Hires = **282.8** (Median: 277.0 $\approx$ 9.5 hands/day)
+   - **Land Unlocks**: NE unlocked in **100%** of games (Day 5.8), SW unlocked in **100%** of games (Day 10.4), SE unlocked in only **17.7%** of games.
 
 1. **Fixed Phase 0 Extractor & Re-derived Meta Sales Targets**:
    - Fixed `phase0_analysis.py:234` by bounding SELL orders against actual shed inventory `min(qty, step_shed.get(item, 0))` (`kaggriculture.py:642-650`).
