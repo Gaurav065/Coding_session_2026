@@ -195,8 +195,11 @@ def compute_optimal_steering_kw(seed: int) -> int:
 
 
 DEFAULT_PARAMS = {
-    "cow_cap_low": 6,       # cap when milk_shop_count<=1 (day>=15, downward-only, see 2b/2d)
+    "cow_cap_low": 6,       # cap when milk_shop_count<=1 on day>=10 (downward-only, see 2b/2d/2w)
     "cow_cap_base": 10,
+    "cow_gate_day_early": 10, # check on Day 10 for 0 milk shops -> cap at cow_cap_zero (4)
+    "cow_cap_zero": 4,        # cow cap when 0 milk shops revealed by Day 10
+    "cow_gate_day_mid": 10,   # check on Day 10 for <=1 milk shops -> cap at cow_cap_low (6)
     "sheep_cap": 4,
     "goose_cap": 0,
     "melon_seed_target": 6,
@@ -367,8 +370,14 @@ class MaestroFullPortfolioAgent:
                     if buy_g > 0:
                         market_orders.append(["BUY_ANIMAL", "GOOSE", min(2, buy_g)])
 
-                cow_cap = (self.params["cow_cap_low"] if (day >= 15 and milk_shop_count <= 1)
-                           else self.params["cow_cap_base"])
+                if day >= self.params.get("cow_gate_day_early", 99) and milk_shop_count == 0:
+                    cow_cap = self.params.get("cow_cap_zero", 4)
+                elif day >= self.params.get("cow_gate_day_mid", 99) and milk_shop_count <= 1:
+                    cow_cap = self.params.get("cow_cap_low", 6)
+                elif day >= 15 and milk_shop_count <= 1:
+                    cow_cap = self.params["cow_cap_low"]
+                else:
+                    cow_cap = self.params["cow_cap_base"]
                 if total_c < cow_cap and money >= 700 and shed_total_items <= 90 and day < 18:
                     buy_c = min(cow_cap - total_c, int((money - 300) // 400))
                     if buy_c > 0:

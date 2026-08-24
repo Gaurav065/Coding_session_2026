@@ -718,6 +718,34 @@ because it structurally cannot do anything under the current per-species caps (g
 
 ---
 
+### 2w. Shop-Adaptive Cow-Cap Gating — TESTED, INTEGRATED INTO PRODUCTION (2026-08-24)
+
+- **Motivation**: Demand-pressure analysis (§2r) revealed a massive \$29.3k spread between Milk-Rich (\$61.9k) and Milk-Starved (\$32.6k) draws. By Day 10, 3 town shops are revealed. If 0 or 1 milk shops have unlocked, purchasing 10 cows floods the shared AMM into the \$1 floor. Waiting until Day 15 to reduce `cow_cap` is too late because cows 5–10 are already purchased during Days 9–14.
+- **Adaptive Mechanism**:
+  - `cow_gate_day_early = 10, cow_cap_zero = 4`: If `milk_shop_count == 0` on Day $\ge 10$, freeze cow count at 4 (the opening cows).
+  - `cow_gate_day_mid = 10, cow_cap_low = 6`: If `milk_shop_count <= 1` on Day $\ge 10$, cap cows at 6.
+  - Requires zero seed knowledge; responds dynamically to `obs["town"]["unlocked_shops"]`.
+- **Harness**: `eval/fast_parallel_benchmark.py` (multi-process FastEngine suite, 960 matches).
+- **Benchmark Results Matrix (Honest Competition Settings, No Seed Injected)**:
+
+| Archetype / Metric | Prod Mean | Opp Mean | Delta | t | p | WR (ex-ties) | W / L / T |
+|---|---|---|---|---|---|---|---|
+| **Official 20 Self-Play** | **\$47,224.93** | — | **+\$2,481.58** | — | — | — | (Min: \$34.4k vs \$28.5k) |
+| **Disjoint 100 Self-Play** | **\$52,058.16** | — | **+\$2,445.10** | — | — | — | (Min: \$24.5k vs \$19.5k) |
+| **vs Dominant Meta (10C/4S/0G)** | \$51,298.74 | \$49,680.88 | **+\$1,617.86** | +4.61 | **7.18e-06** | **64.3%** | 117W / 65L / 18T ($n=200$) |
+| **vs Wool-Heavy (6C/12S/0G)** | \$56,073.65 | \$45,571.29 | **+\$10,502.36** | +13.87 | **< 1e-15** | **81.5%** | 163W / 37L / 0T ($n=200$) |
+| **vs Balanced Pasture (6C/8S/0G)** | \$56,077.75 | \$47,089.43 | **+\$8,988.32** | +12.78 | **< 1e-15** | **78.5%** | 157W / 43L / 0T ($n=200$) |
+| **vs Old Baseline (Goose-4)** | \$53,777.21 | \$48,766.46 | **+\$5,010.75** | +9.83 | **< 1e-15** | **79.0%** | 158W / 42L / 0T ($n=200$) |
+| **vs Pass Baseline** | \$58,448.97 | \$24,023.45 | **+\$34,425.53** | +5.82 | **9.25e-07** | **76.3%** | 29W / 9L / 2T ($n=40$) |
+
+- **Key Takeaways**:
+  1. **Dominant Meta Flipped Decisively**: Against the most common ladder build (37.8% of real trajectories), win rate rose from 50.0% $\rightarrow$ **64.3%** ($t = +4.61, p < 10^{-5}$). When milk demand is weak, the opponent wastes capital and feed maintaining 10 unprofitable cows while our agent saves capital and protects realized AMM prices.
+  2. **Zero Free-Rider Exploitation**: Downward gating only fires on weak-demand draws where the opponent cannot benefit from extra cows either.
+  3. **Worst-Case Floor Raised by >20%**: The minimum score across the Official 20 seeds rose from \$28,464 $\rightarrow$ \$34,398 (+20.8%), and across the 100 Disjoint suite from \$19,507 $\rightarrow$ \$24,501 (+25.6%).
+- **New Standing Production Baseline**: **\$47,224.93** (Official 20) / **\$52,058.16** (100 Disjoint).
+
+---
+
 ## 3. Data Extractor & Mechanic Diagnoses
 
 1. **Fixed Phase 0 Extractor & Re-derived Meta Sales Targets**:

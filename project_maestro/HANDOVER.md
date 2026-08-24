@@ -383,12 +383,11 @@ old copies of this section from memory; the numbers below are current.**
 **Benchmark standard (established the hard way): pure self-play, `env.run([agent, agent])`.**
 Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the headline.
 
-**Production Agent Status (2026-08-24): `goose_cap=0`, Unsteered in Competition.**
+**Production Agent Status (2026-08-24): `goose_cap=0`, Shop-Adaptive Cow-Cap Gating, Unsteered in Competition.**
 
-- **Standing Shippable Production Baseline (No Seed Injected, `goose_cap=0`)**:
-  - **Official 20 Seeds (real `env.run()` / FastEngine)**: **$44,743.35** (Median: $42,030.50, Min: $28,464.00, Max: $92,837.00, SE: $2,151.13).
-  - **100 Disjoint Seeds (`10000-10099`)**: **$49,613.06** (Median: $47,144.00, Min: $19,507.00, Max: $91,494.00, SE: $1,072.56).
-  - *Harness-Only Reference Note*: The prior $56,743.07 / $62,293.33 numbers were seed-injected diagnostic runs. In real competition execution (`obs` has no `seed`), the agent runs naturally at `kw_early = 10`.
+- **Standing Shippable Production Baseline (No Seed Injected, Fully Honest)**:
+  - **Official 20 Seeds (real `env.run()` / FastEngine)**: **$47,224.93** (Median: $44,367.00, Min: $34,398.00, Max: $92,837.00, SE: $2,012.30) — *+$2,481.58 (+5.5%) lift with floor +20.8%*.
+  - **100 Disjoint Seeds (`10000-10099`)**: **$52,058.16** (Median: $49,065.50, Min: $24,501.00, Max: $91,494.00, SE: $1,028.45) — *+$2,445.10 (+4.9%) lift with floor +25.6%*.
 
 **Completed Verification & Architecture Milestones:**
 1. **Dedicated-Courier Strawberry Fertilization (REJECTED, §2o)**:
@@ -401,12 +400,16 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
    - Curve-Aware AMM Selling: Δ = +$1,436.69 ($t = +1.85, p = 0.066$). Positive direction; **KEEP**.
 4. **Demand-Pressure Analysis (§2r)**:
    - Milk-Rich ($61,888) vs Milk-Starved ($32,624): $29.3k spread — largest single performance driver.
-   - Overall self-play mean ~$44.7k–$49.6k vs meta target $88,109 (50–55% of target).
+   - Overall self-play mean ~$47.2k–$52.1k vs meta target $88,109 (53–59% of target).
+5. **Shop-Adaptive Cow-Cap Gating (ADOPTED, §2w)**:
+   - Dynamic early gating on Day 10 (3 revealed shops): if `milk_shop_count == 0`, cap cows at 4; if `milk_shop_count <= 1`, cap cows at 6.
+   - **Head-to-Head vs Dominant Meta (10C/4S/0G, n=200)**: **64.3% Win Rate** (117W / 65L / 18T), Δ = **+$1,617.86**, $t = +4.61, p = 7.18 \times 10^{-6}$.
+   - Dominates all ladder archetypes: Wool-Heavy (**81.5% WR**, $p < 10^{-15}$), Balanced Pasture (**78.5% WR**, $p < 10^{-15}$), Old Baseline (**79.0% WR**, $p < 10^{-15}$).
 
-**Target: $80–90k in self-play — currently ~50–55% of target.**
+**Target: $80–90k in self-play — currently ~53–59% of target (up from ~48% at project start).**
 
 **Next Priority Milestones:**
-1. **Shop-Adaptive Production (§2r)** — PRIMARY. Build behavior that dynamically responds to observed `unlocked_shops` (available in observation) rather than attempting to control draws. Attack the $29.3k Milk-Rich vs Milk-Starved spread ($61.9k vs $32.6k) by dynamically reallocating pasture/crop investments toward revealed demand sinks, keeping §2b/§2e in mind (favor reallocation over expansion to avoid escalation).
+1. **Dynamic Crop & Pasture Reallocation on Revealed Demand (Days 10–18)** — PRIMARY. Reallocate capital and worker capacity saved by early cow gating into active shop sinks (expanding Strawberry/Melon planting or Sheep when respective shops unlock).
 2. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset. Must run in a Kaggle notebook kernel — local execution invalid.
 3. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for higher precision on demand-regime responses.
 
