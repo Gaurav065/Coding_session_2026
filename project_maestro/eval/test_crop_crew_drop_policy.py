@@ -1,230 +1,48 @@
-"""Master Scaled Crew & 850+ Wheat Engine Agent - Project Maestro
+"""Throughput Experiment §2y: Crop Crew Auto-Flush Field Retention
 
-Throughput & Capital Optimization:
-1. Dynamic Seed Order Sizing:
-   - Strawberry: `buy_n = min(16 - planted, int((money - 200) // 300))`, smooth accumulation across Days 3-6 up to 16 full ongoing plants.
-   - Melon: `buy_n = min(6 - planted, int((money - 200) // 100))`, 6 plants on Day 8.
-   - Wheat: continuous bulk replenishment (40 seeds whenever bank >= $400).
-2. 16 Full Ongoing Strawberries:
-   - Produces 300+ strawberries per player across Days 7-30.
-3. 33 Scaled Wheat Plots:
-   - 18 SW + 8 NE + 7 NW generating 850+ wheat sold.
-4. Immediate Same-Tile Water-After-Plant.
-5. 13-Worker Labor Allocation:
-   - Units 0-3: Animal Sweep & Care Lock.
-   - Units 4-5: NW Wheat Engine.
-   - Units 6-8: NE Strawberry & Wheat.
-   - Units 9-12: SW Wheat & Melon.
+Tests removing the hour >= 16/18 and carrying_produce >= 15 walk-to-shed interruption
+for crop crews (units 4..12), relying on engine:843 _drop_inventories_to_shed auto-flush.
+
+Evaluates:
+- Candidate 0: Baseline (current production behavior)
+- Candidate 1: Task Priority (work sector tasks first; only walk to shed if idle with produce)
+- Candidate 2: Pure Field Retention (never walk to shed on days < 29; opportunistic drop if adjacent; auto-flush at midnight)
+- Candidate 3: High Capacity Buffer (only walk to shed if carrying >= 50 items or idle)
+
+Tested with standing canaries (Pass Baseline and Identity Control).
 """
 
-from typing import Dict, List, Tuple, Optional, Any, Set
+import sys
+import os
+import time
+import numpy as np
+from scipy import stats
+from typing import Tuple, List, Dict, Any, Optional
+from concurrent.futures import ProcessPoolExecutor
 
-MOVES = {
-    (0, -1): "NORTH",
-    (0, 1):  "SOUTH",
-    (1, 0):  "EAST",
-    (-1, 0): "WEST",
-}
+sys.path.insert(0, r"C:\Coding")
 
-SHED_ACCESS_TILES_LIST = [(4, 4), (5, 4), (4, 5), (5, 5)]
-SHED_ACCESS_TILES = set(SHED_ACCESS_TILES_LIST)
+from project_maestro.engine.fast_engine import FastGame
+from project_maestro.agent.dispatcher_agent import (
+    MaestroFullPortfolioAgent, make_spatial_dispatcher_agent,
+    COW_PASTURES, SHEEP_PASTURES, GOOSE_COOPS, NW_WHEAT, NE_STRAWBERRY, NE_WHEAT, SW_MELON, SW_WHEAT,
+    GLUT_RESISTANT, GLUT_PRONE, BASE_PRICES
+)
 
-COW_PASTURES = [
-    (4, 3), (3, 4),
-    (4, 2), (3, 3), (2, 4),
-    (4, 1), (3, 2), (2, 3), (1, 4),
-    (4, 0)
-]
-
-GOOSE_COOPS = [
-    (3, 1), (2, 2), (1, 3), (0, 4)
-]
-
-SHEEP_PASTURES = [
-    (3, 1), (2, 2), (1, 3), (0, 4)
-]
-
-NW_WHEAT = [
-    (0, 0), (1, 0), (2, 0), (3, 0),
-    (0, 1), (1, 1), (2, 1),
-    (0, 2), (1, 2),
-    (0, 3)
-]
-
-NE_STRAWBERRY = [
-    (5, 0), (6, 0), (7, 0), (8, 0), (9, 0),
-    (5, 1), (6, 1), (7, 1), (8, 1), (9, 1),
-    (5, 2), (6, 2), (7, 2), (8, 2), (9, 2),
-    (5, 3)
-]
-
-NE_WHEAT = [
-    (6, 3), (7, 3), (8, 3), (9, 3),
-    (6, 4), (7, 4), (8, 4), (9, 4)
-]
-
-SW_MELON = [
-    (0, 6), (1, 6), (2, 6),
-    (0, 7), (1, 7), (2, 7)
-]
-
-SW_WHEAT = [
-    (0, 5), (1, 5), (2, 5), (3, 5),
-    (0, 8), (1, 8), (2, 8), (3, 8),
-    (0, 9), (1, 9), (2, 9), (3, 9),
-    (4, 6), (4, 7), (4, 8), (4, 9),
-    (3, 6), (3, 7)
-]
-
-# Verified against kaggriculture.py MARKET_PARAMS (engine:41-51). The previous
-# table here was fabricated (wrong on 7/8 products) and was driving the sell
-# threshold below, so the agent was dumping steep-glut-curve products (MILK,
-# WOOL, MELON, STRAWBERRY -- above_target 1.6-3.6) into a shared, contention-
-# sensitive market far too early, crashing its own realized price. WHEAT and
-# EGG (above_target 0.20) barely move under glut and can be sold freely.
-BASE_PRICES = {
-    "WHEAT": 25,
-    "CARROT": 35,
-    "TOMATO": 60,
-    "STRAWBERRY": 120,
-    "MELON": 250,
-    "EGG": 50,
-    "MILK": 160,
-    "WOOL": 200,
-    "FERTILIZER": 100,
-}
-
-# above_target from MARKET_PARAMS: how punishing oversupply is for this
-# product. FERTILIZER has zero drain of any kind -- no shop demands it and it
-# is explicitly excluded from TOWN_CENTER_PRODUCTS -- so its market inventory
-# only ever rises (both players sell into it) and price never recovers.
-# Trickling it just delays into a strictly worse price later; sell it as fast
-# as possible instead. Every other product gets some relief from shop and/or
-# town-center drain, so trickling to let price recover is worthwhile there.
-ABOVE_TARGET = {
-    "WHEAT": 0.20, "EGG": 0.20,
-    "TOMATO": 0.60, "CARROT": 0.70, "FERTILIZER": 0.40,
-    "STRAWBERRY": 1.60, "MILK": 1.60, "WOOL": 3.20, "MELON": 3.60,
-}
-GLUT_RESISTANT = {"WHEAT", "EGG"}
-GLUT_PRONE = {"STRAWBERRY", "MILK", "WOOL", "MELON"}
-
-def get_step_towards(curr: Tuple[int, int], target: Tuple[int, int]) -> str:
-    cx, cy = curr
-    tx, ty = target
-    if cx == tx and cy == ty:
-        return "PASS"
-
-    dx = tx - cx
-    dy = ty - cy
-
-    if abs(dx) >= abs(dy) and dx != 0:
-        step = (1 if dx > 0 else -1, 0)
-        return MOVES.get(step, "PASS")
-    elif dy != 0:
-        step = (0, 1 if dy > 0 else -1)
-        return MOVES.get(step, "PASS")
-    return "PASS"
-
-def dist(p1: Tuple[int, int], p2: Tuple[int, int]) -> int:
-    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+OFFICIAL_20 = [10, 20, 30, 42, 55, 77, 99, 100, 123, 200,
+               250, 300, 333, 404, 500, 600, 700, 777, 888, 999]
+DISJOINT_100 = list(range(10000, 10100))
 
 
-# Empirical Causal Shop Values & Displacement Cost Model (NOTES.md §2n)
-# Derived under integrated dispatcher (N=100 seeds, 1,100 full games)
-GAMMA_INTEGRATED = {
-    "SMOOTHIE_SHOP":  18469.37,
-    "ICE_CREAM_SHOP": 17190.58,
-    "PIZZA_SHOP":     14724.84,
-    "FARMERS_MARKET":  4047.12,
-    "BRUNCH_SPOT":     2267.06,
-    "PET_CAFE":         979.34,
-    "YARN_STORE":     -1870.32,
-    "BAKERY":             0.00,
-}
-K_COST_CORRECTED = 208.74  # Derived empirical opportunity cost per early NW wheat tile ($208.74/tile)
-STEERING_GAIN_THRESHOLD = 1000.0  # Gain threshold ($1,000) required to clear steering gate
-
-
-def compute_optimal_steering_kw(seed: int) -> int:
-    """Compute optimal Day 0-2 NW wheat tile count (0-10) to steer Day 3 shop unlock.
-    
-    Formula: Gain(S, Kw) = (gamma_S - gamma_S_0) - $208.74 * (10 - Kw)
-    Steers if Gain > $1,000; defaults to Kw=10 (unsteered) otherwise.
-    """
-    from project_maestro.engine.fast_engine import FastGame
-    
-    # 1. Determine natural baseline shop S_0 (Kw=10)
-    game_nat = FastGame(seed=seed)
-    p0_n = MaestroFullPortfolioAgent(kw_early=10)
-    p1_n = MaestroFullPortfolioAgent(kw_early=10)
-    while game_nat.day < 3:
-        p0_n(game_nat.get_observation(0))
-        p1_n(game_nat.get_observation(1))
-        game_nat.step_game(p0_n(game_nat.get_observation(0)), p1_n(game_nat.get_observation(1)))
-    natural_shop = game_nat.unlocked_shops[0] if game_nat.unlocked_shops else "BAKERY"
-
-    # 2. Sweep Kw in 0..10 to map achievable shops
-    achievable = {}
-    for kw in range(11):
-        g = FastGame(seed=seed)
-        p0 = MaestroFullPortfolioAgent(kw_early=kw)
-        p1 = MaestroFullPortfolioAgent(kw_early=10)
-        while g.day < 3:
-            act0 = p0(g.get_observation(0))
-            act1 = p1(g.get_observation(1))
-            g.step_game(act0, act1)
-        if g.unlocked_shops:
-            s = g.unlocked_shops[0]
-            if s not in achievable:
-                achievable[s] = kw
-
-    # 3. Value-gated selection
-    best_shop = natural_shop
-    best_kw = 10
-    best_gain = 0.0
-
-    for shop, kw in achievable.items():
-        gain = (GAMMA_INTEGRATED[shop] - GAMMA_INTEGRATED[natural_shop]) - K_COST_CORRECTED * (10 - kw)
-        if gain > best_gain:
-            best_gain = gain
-            best_shop = shop
-            best_kw = kw
-
-    return best_kw if best_gain > STEERING_GAIN_THRESHOLD else 10
-
-
-DEFAULT_PARAMS = {
-    "cow_cap_low": 6,       # cap when milk_shop_count<=1 on day>=10 (downward-only, see 2b/2d/2w)
-    "cow_cap_base": 10,
-    "cow_gate_day_early": 10, # check on Day 10 for 0 milk shops -> cap at cow_cap_zero (4)
-    "cow_cap_zero": 4,        # cow cap when 0 milk shops revealed by Day 10
-    "cow_gate_day_mid": 10,   # check on Day 10 for <=1 milk shops -> cap at cow_cap_low (6)
-    "sheep_cap": 4,
-    "goose_cap": 0,
-    "melon_seed_target": 6,
-    "strawberry_target": 16,
-    "crew_late": 10,        # target_crew once SW is unlocked (capped at 10 to match optimal single-turn HIRE ceiling)
-    "crew_mid": 9,          # target_crew day>=8, SW not yet unlocked
-}
-
-
-class MaestroFullPortfolioAgent:
-    def __init__(self, params=None, kw_early: Optional[int] = None, seed: Optional[int] = None):
-        self.params = {**DEFAULT_PARAMS, **(params or {})}
-        self.seed = seed
-        self.kw_early = kw_early
-        self._planned_steering = (kw_early is not None)
-        self.cow_pastures = list(COW_PASTURES)
-        self.goose_coops = list(GOOSE_COOPS)
-        self.sheep_pastures = list(SHEEP_PASTURES)
-        self.nw_wheat = list(NW_WHEAT[:kw_early]) if kw_early is not None else list(NW_WHEAT)
-        self.ne_strawberry = list(NE_STRAWBERRY)
-        self.ne_wheat = list(NE_WHEAT)
-        self.sw_melon = list(SW_MELON)
-        self.sw_wheat = list(SW_WHEAT)
+class ThroughputCropAgent(MaestroFullPortfolioAgent):
+    def __init__(self,
+                 crop_drop_mode: str = "baseline", # "baseline", "task_first", "pure_field", "high_cap"
+                 **kwargs):
+        super().__init__(**kwargs)
+        self.crop_drop_mode = crop_drop_mode
 
     def __call__(self, obs: Dict[str, Any]) -> Dict[str, Any]:
+        # Exact copy of production __call__ with parameterized crop crew drop logic
         player = obs["player"]
         me = obs["farms"][player]
         private = obs["private"]
@@ -236,12 +54,11 @@ class MaestroFullPortfolioAgent:
         unlocked_shops = obs.get("town", {}).get("unlocked_shops", [])
         has_yarn_store = ("YARN_STORE" in unlocked_shops)
 
-        # Plan / Apply Day 0-2 Value-Gated Shop Steering
         if not self._planned_steering and day == 0:
             if self.seed is None and "seed" in obs:
                 self.seed = obs["seed"]
             if self.seed is not None:
-                self.kw_early = compute_optimal_steering_kw(self.seed)
+                self.kw_early = 10  # unsteered
             else:
                 self.kw_early = 10
             self._planned_steering = True
@@ -251,22 +68,12 @@ class MaestroFullPortfolioAgent:
             self.nw_wheat = list(NW_WHEAT[:kw])
         else:
             self.nw_wheat = list(NW_WHEAT)
-        # Downward-only: a fast-engine sweep (60 seeds) showed milk_shop_count
-        # <=1 is a real disaster zone (~$29-31k avg, vs $61-81k at count>=4),
-        # ~15-18% of games. An earlier attempt to also scale UP to 14 cows
-        # when demand was high regressed badly (-4.8%) via mutual escalation
-        # -- both players scale together and flood the shared market harder.
-        # Scaling DOWN has no such trap: cutting your own bad-bet exposure
-        # doesn't race the opponent into anything. Never scale above the
-        # baseline 10.
+
         MILK_SHOPS = {"PIZZA_SHOP", "ICE_CREAM_SHOP", "SMOOTHIE_SHOP"}
         milk_shop_count = sum(1 for s in unlocked_shops if s in MILK_SHOPS)
 
         market_orders = []
 
-        # Dynamic Crew Sizing: Scale down on season finale (Day 29) where
-        # watering and planting are inactive, saving wages while retaining
-        # full harvesting and shed dump throughput.
         if day >= 29:
             target_crew = 7
         elif day < 3:
@@ -310,27 +117,22 @@ class MaestroFullPortfolioAgent:
             for _ in range(needed_hires):
                 market_orders.append(["HIRE"])
 
-            # Day 0 Opening: 4 Cows + 1 Sheep + 10 Wheat Seeds + 10 Feed
             if day == 0:
                 market_orders.append(["BUY_SEED", "WHEAT", 10])
                 market_orders.append(["BUY_PRODUCT", "WHEAT", 10])
                 market_orders.append(["BUY_ANIMAL", "COW", 4])
                 market_orders.append(["BUY_ANIMAL", "SHEEP", 1])
 
-        # Emergency Feed Guard
         if day < 29 and shed_wheat == 0 and money >= 120:
             if len(market_orders) < 8:
                 market_orders.append(["BUY_PRODUCT", "WHEAT", 6])
 
-        # Expansion Pipeline: Smooth Capital Batching
         if len(market_orders) < 8:
-            # 1. Land Unlock Priority
             if "NE" not in unlocked_quads and money >= 1000:
                 market_orders.append(["BUY_LAND"])
             elif "NE" in unlocked_quads and "SW" not in unlocked_quads and money >= 2000 and day >= 6:
                 market_orders.append(["BUY_LAND"])
 
-            # 2. Strawberry Seeds: Smooth Batched Purchases (up to 16 total seeds/plants)
             if "NE" in unlocked_quads and day < 20:
                 strawberry_plants = 0
                 for sx, sy in self.ne_strawberry:
@@ -344,26 +146,18 @@ class MaestroFullPortfolioAgent:
                     if buy_straw > 0:
                         market_orders.append(["BUY_SEED", "STRAWBERRY", min(4, buy_straw)])
 
-            # 3. Melon Seeds
             melon_target = self.params["melon_seed_target"]
             if "SW" in unlocked_quads and private["seeds"].get("MELON", 0) < melon_target and money >= 300 and day < 16:
                 market_orders.append(["BUY_SEED", "MELON", melon_target])
 
-            # 4. Wheat Seeds (Continuous Supply)
             if private["seeds"].get("WHEAT", 0) < 40 and money >= 300 and day < 28:
                 market_orders.append(["BUY_SEED", "WHEAT", 40])
 
-            # 5. Carrot Replanting Pipeline (Days 18-27)
             if day >= 18 and day < 27 and private["seeds"].get("CARROT", 0) < 16 and money >= 350:
                 market_orders.append(["BUY_SEED", "CARROT", 16])
 
-            # 6. Additive Animals only after SW land is secured
             allow_animal_expansion = ("SW" in unlocked_quads or day >= 10)
             if allow_animal_expansion:
-                # NOTE: previously gated on "not has_yarn_store", which is a
-                # wool signal with no bearing on eggs -- looked like a
-                # copy-paste leftover from the sheep condition below. Removed;
-                # geese are additive to the cow/sheep core and unconditional.
                 goose_cap = self.params["goose_cap"]
                 if total_g < goose_cap and money >= 600 and shed_total_items <= 90 and day < 16:
                     buy_g = min(goose_cap - total_g, int((money - 300) // 300))
@@ -390,9 +184,8 @@ class MaestroFullPortfolioAgent:
                         if buy_s > 0:
                             market_orders.append(["BUY_ANIMAL", "SHEEP", min(2, buy_s)])
 
-        # 2. Adaptive AMM Selling -- curve-aware, using verified real base
-        # prices and above_target (see ABOVE_TARGET comment above).
-        shed_near_overflow = shed_total_items >= 85  # cap is 100, combined, silent discard on overflow
+        # 2. Adaptive AMM Selling
+        shed_near_overflow = shed_total_items >= 85
         for prod in ["EGG", "MILK", "WOOL", "STRAWBERRY", "MELON", "FERTILIZER", "CARROT", "TOMATO"]:
             qty = shed.get(prod, 0)
             if qty <= 0:
@@ -402,25 +195,12 @@ class MaestroFullPortfolioAgent:
             price_ratio = cur_price / base_price if base_price else 1.0
 
             if day >= 28:
-                # Endgame: no days left for price to recover. Confirmed via
-                # instrumentation that the trickle throttle below was leaving
-                # large unsold balances at game end (e.g. 60 MILK, ~$9.6k,
-                # trapped on seed 20) -- any nonzero price beats zero.
                 sell_qty = qty
             elif prod == "FERTILIZER":
-                # No shop or town-center drain ever removes fertilizer supply
-                # (TOWN_CENTER_PRODUCTS excludes it): price can only fall over
-                # the season, never recover. Sell all of it immediately.
                 sell_qty = qty
             elif prod in GLUT_RESISTANT:
-                # above_target 0.20: barely moves even under heavy glut.
                 sell_qty = min(qty, 20)
             elif prod in GLUT_PRONE:
-                # above_target >= 1.60: each unit sold moves price sharply,
-                # and both players dump into the same book (engine:596-597
-                # interleaves orders unit by unit). Trickle to preserve
-                # realized price and let shop/town-center drain recover it,
-                # unless the shed is close to silently discarding overflow.
                 if shed_near_overflow:
                     sell_qty = min(qty, 20)
                 elif price_ratio >= 0.55:
@@ -428,8 +208,6 @@ class MaestroFullPortfolioAgent:
                 else:
                     sell_qty = 0
             else:
-                # Moderate curve (CARROT, TOMATO): hold for a decent price,
-                # otherwise trickle rather than dump.
                 if price_ratio >= 0.65:
                     sell_qty = min(qty, 10)
                 else:
@@ -438,7 +216,6 @@ class MaestroFullPortfolioAgent:
             if len(market_orders) < 10 and sell_qty > 0:
                 market_orders.append(["SELL", prod, sell_qty])
 
-        # Sell surplus wheat beyond 10 units
         wheat_qty = shed.get("WHEAT", 0)
         if day >= 29 and hour >= 18 and wheat_qty > 0:
             if len(market_orders) < 10:
@@ -485,7 +262,6 @@ class MaestroFullPortfolioAgent:
                         if yields > 0:
                             ne_tasks.append({"target": (sx, sy), "action": "HARVEST", "priority": 98})
                         elif mls >= 0:
-                            # Expired strawberry plant: dig up so plot can be replanted
                             ne_tasks.append({"target": (sx, sy), "action": "DIG", "priority": 94})
                         elif not t.get("watered_today", False):
                             ne_tasks.append({"target": (sx, sy), "action": "WATER", "priority": 96})
@@ -542,6 +318,7 @@ class MaestroFullPortfolioAgent:
         unit_actions = []
         claimed_targets = set()
         is_endgame_flush = (day >= 29 and hour >= 18)
+        SHED_ACCESS_TILES = [(4, 4), (5, 4), (4, 5), (5, 5)]
 
         avail_seeds = dict(private.get("seeds", {}))
 
@@ -583,7 +360,7 @@ class MaestroFullPortfolioAgent:
                 if pos in SHED_ACCESS_TILES:
                     action = ["DROP"]
                 else:
-                    action = [get_step_towards(pos, default_drop_tile)]
+                    action = [self._get_step_towards(pos, default_drop_tile)]
                 unit_actions.append(action)
                 continue
 
@@ -652,11 +429,11 @@ class MaestroFullPortfolioAgent:
                             elif isinstance(t, dict) and t.get("kind") == req_struct:
                                 action = ["PLACE", carrying_animal, 1]
                         else:
-                            action = [get_step_towards(pos, target_spot)]
+                            action = [self._get_step_towards(pos, target_spot)]
 
                 if action == ["PASS"] and not carrying_animal:
                     if day < 18 and (shed_c > 0 or shed_g > 0 or shed_s > 0) and pos not in SHED_ACCESS_TILES and hour < 14:
-                        action = [get_step_towards(pos, default_drop_tile)]
+                        action = [self._get_step_towards(pos, default_drop_tile)]
                     else:
                         best_target = None
                         best_score = -1e9
@@ -673,7 +450,7 @@ class MaestroFullPortfolioAgent:
 
                                 if (is_unfed and wheat_count > 0) or is_uncared or has_fert or has_yield:
                                     priority = 100 if is_unfed else (90 if is_uncared else 80)
-                                    score = priority * 10 - dist(pos, (px, py))
+                                    score = priority * 10 - self._dist(pos, (px, py))
                                     if score > best_score:
                                         best_score = score
                                         best_target = (px, py)
@@ -694,7 +471,7 @@ class MaestroFullPortfolioAgent:
                                     is_uncared = (not t.get("cared_today", False))
                                     if (is_unfed and wheat_count > 0) or is_uncared:
                                         priority = 95 if is_unfed else 85
-                                        score = priority * 10 - dist(pos, (px, py))
+                                        score = priority * 10 - self._dist(pos, (px, py))
                                         if score > best_score:
                                             best_score = score
                                             best_target = (px, py)
@@ -719,12 +496,12 @@ class MaestroFullPortfolioAgent:
                                     elif t.get("yield_units", 0) >= 1:
                                         action = ["HARVEST"]
                             else:
-                                action = [get_step_towards(pos, best_target)]
+                                action = [self._get_step_towards(pos, best_target)]
                         else:
                             if (carrying_produce - wheat_count) > 0 and hour >= 16:
-                                action = [get_step_towards(pos, default_drop_tile)]
+                                action = [self._get_step_towards(pos, default_drop_tile)]
                             elif wheat_count == 0 and shed_wheat > 0 and hour < 14:
-                                action = [get_step_towards(pos, default_drop_tile)]
+                                action = [self._get_step_towards(pos, default_drop_tile)]
                             else:
                                 action = ["PASS"]
 
@@ -736,64 +513,85 @@ class MaestroFullPortfolioAgent:
                 if isinstance(current_tile, dict) and current_tile.get("kind") == "PLANT" and not current_tile.get("watered_today", False):
                     action = ["WATER"]
 
-                # High-Throughput Batch Drop
+                # Opportunistic Batch Drop if already adjacent to shed
                 elif pos in SHED_ACCESS_TILES and carrying_produce > 0:
                     action = ["DROP"]
 
                 if action == ["PASS"]:
-                    sector_tasks = []
-                    if u_idx in (4, 5):
-                        sector_tasks = nw_wheat_tasks_p1 or nw_wheat_tasks_p2 or ne_tasks or sw_tasks
-                    elif u_idx in (6, 7, 8):
-                        sector_tasks = ne_tasks or nw_wheat_tasks_p1 or nw_wheat_tasks_p2 or sw_tasks
+                    # Mode dispatch for walk-to-shed interruption
+                    walk_to_shed_now = False
+                    if self.crop_drop_mode == "baseline":
+                        if carrying_produce >= 15 or (carrying_produce > 0 and hour >= 18):
+                            walk_to_shed_now = True
+                    elif self.crop_drop_mode == "high_cap":
+                        if carrying_produce >= 50:
+                            walk_to_shed_now = True
+                    elif self.crop_drop_mode in ("task_first", "pure_field"):
+                        walk_to_shed_now = False
+
+                    if walk_to_shed_now:
+                        action = [self._get_step_towards(pos, default_drop_tile)]
                     else:
-                        sector_tasks = sw_tasks or ne_tasks or nw_wheat_tasks_p1 or nw_wheat_tasks_p2
-
-                    best_task = None
-                    best_score = -1e9
-
-                    for t in sector_tasks:
-                        target = t["target"]
-                        if target in claimed_targets:
-                            continue
-                        if "crop" in t and avail_seeds.get(t["crop"], 0) <= 0:
-                            continue
-
-                        d = dist(pos, target)
-                        score = t["priority"] * 10 - d + (500 if d == 0 else 0)
-                        if score > best_score:
-                            best_score = score
-                            best_task = t
-
-                    if best_task:
-                        target = best_task["target"]
-                        claimed_targets.add(target)
-                        tx, ty = target
-
-                        if pos == target:
-                            tact = best_task["action"]
-                            if tact == "HARVEST":
-                                action = ["HARVEST"]
-                            elif tact == "WATER":
-                                action = ["WATER"]
-                            elif tact == "PLANT_WHEAT" and avail_seeds.get("WHEAT", 0) > 0:
-                                action = ["PLANT", "WHEAT"]
-                                avail_seeds["WHEAT"] -= 1
-                            elif tact == "PLANT_STRAWBERRY" and avail_seeds.get("STRAWBERRY", 0) > 0:
-                                action = ["PLANT", "STRAWBERRY"]
-                                avail_seeds["STRAWBERRY"] -= 1
-                            elif tact == "PLANT_MELON" and avail_seeds.get("MELON", 0) > 0:
-                                action = ["PLANT", "MELON"]
-                                avail_seeds["MELON"] -= 1
-                            elif tact == "PLANT_CARROT" and avail_seeds.get("CARROT", 0) > 0:
-                                action = ["PLANT", "CARROT"]
-                                avail_seeds["CARROT"] -= 1
-                            elif tact == "DIG":
-                                action = ["DIG"]
+                        sector_tasks = []
+                        if u_idx in (4, 5):
+                            sector_tasks = nw_wheat_tasks_p1 or nw_wheat_tasks_p2 or ne_tasks or sw_tasks
+                        elif u_idx in (6, 7, 8):
+                            sector_tasks = ne_tasks or nw_wheat_tasks_p1 or nw_wheat_tasks_p2 or sw_tasks
                         else:
-                            action = [get_step_towards(pos, target)]
-                    else:
-                        action = ["PASS"]
+                            sector_tasks = sw_tasks or ne_tasks or nw_wheat_tasks_p1 or nw_wheat_tasks_p2
+
+                        best_task = None
+                        best_score = -1e9
+
+                        for t in sector_tasks:
+                            target = t["target"]
+                            if target in claimed_targets:
+                                continue
+                            if "crop" in t and avail_seeds.get(t["crop"], 0) <= 0:
+                                continue
+
+                            d = self._dist(pos, target)
+                            score = t["priority"] * 10 - d + (500 if d == 0 else 0)
+                            if score > best_score:
+                                best_score = score
+                                best_task = t
+
+                        if best_task:
+                            target = best_task["target"]
+                            claimed_targets.add(target)
+                            tx, ty = target
+
+                            if pos == target:
+                                tact = best_task["action"]
+                                if tact == "HARVEST":
+                                    action = ["HARVEST"]
+                                elif tact == "WATER":
+                                    action = ["WATER"]
+                                elif tact == "PLANT_WHEAT" and avail_seeds.get("WHEAT", 0) > 0:
+                                    action = ["PLANT", "WHEAT"]
+                                    avail_seeds["WHEAT"] -= 1
+                                elif tact == "PLANT_STRAWBERRY" and avail_seeds.get("STRAWBERRY", 0) > 0:
+                                    action = ["PLANT", "STRAWBERRY"]
+                                    avail_seeds["STRAWBERRY"] -= 1
+                                elif tact == "PLANT_MELON" and avail_seeds.get("MELON", 0) > 0:
+                                    action = ["PLANT", "MELON"]
+                                    avail_seeds["MELON"] -= 1
+                                elif tact == "PLANT_CARROT" and avail_seeds.get("CARROT", 0) > 0:
+                                    action = ["PLANT", "CARROT"]
+                                    avail_seeds["CARROT"] -= 1
+                                elif tact == "DIG":
+                                    action = ["DIG"]
+                            else:
+                                action = [self._get_step_towards(pos, target)]
+                        else:
+                            # Idle fallback when no tasks available in sector
+                            if self.crop_drop_mode == "pure_field":
+                                action = ["PASS"]
+                            elif self.crop_drop_mode in ("baseline", "task_first", "high_cap"):
+                                if carrying_produce > 0:
+                                    action = [self._get_step_towards(pos, default_drop_tile)]
+                                else:
+                                    action = ["PASS"]
 
             unit_actions.append(action)
 
@@ -803,6 +601,152 @@ class MaestroFullPortfolioAgent:
             "market": market_orders[:10],
         }
 
-def make_spatial_dispatcher_agent(params=None, seed: Optional[int] = None, kw_early: Optional[int] = None):
-    agent_instance = MaestroFullPortfolioAgent(params=params, seed=seed, kw_early=kw_early)
-    return lambda obs: agent_instance(obs)
+    def _get_step_towards(self, curr: Tuple[int, int], target: Tuple[int, int]) -> str:
+        cx, cy = curr
+        tx, ty = target
+        if cx == tx and cy == ty:
+            return "PASS"
+        dx = tx - cx
+        dy = ty - cy
+        if abs(dx) >= abs(dy) and dx != 0:
+            return "EAST" if dx > 0 else "WEST"
+        elif dy != 0:
+            return "SOUTH" if dy > 0 else "NORTH"
+        return "PASS"
+
+    def _dist(self, p1: Tuple[int, int], p2: Tuple[int, int]) -> int:
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+
+def _build_agent(kind: str, mode: str):
+    if kind == "pass":
+        return lambda obs: {"farmer": ["PASS"], "hands": [], "market": []}
+    elif mode == "dominant_meta":
+        return make_spatial_dispatcher_agent(params={"cow_gate_day_early": 99, "cow_gate_day_mid": 99}, kw_early=10)
+    elif mode == "dispatcher":
+        return make_spatial_dispatcher_agent(kw_early=10)
+    else:
+        return ThroughputCropAgent(crop_drop_mode=mode, kw_early=10)
+
+
+def _worker_match(task: Tuple[str, str, str, str, int]) -> Tuple[float, float]:
+    p0_kind, p0_mode, p1_kind, p1_mode, seed = task
+    a0 = _build_agent(p0_kind, p0_mode)
+    a1 = _build_agent(p1_kind, p1_mode)
+    game = FastGame(seed=seed)
+    while not game.done:
+        game.step_game(a0(game.get_observation(0)), a1(game.get_observation(1)))
+    return float(game.farms[0].money), float(game.farms[1].money)
+
+
+def run_self_play(mode: str, seeds: List[int], max_workers: int = 8) -> Tuple[float, float, float, float]:
+    tasks = [("dispatcher", mode, "dispatcher", mode, s) for s in seeds]
+    with ProcessPoolExecutor(max_workers=max_workers) as ex:
+        results = list(ex.map(_worker_match, tasks))
+    all_scores = [r[0] for r in results] + [r[1] for r in results]
+    return float(np.mean(all_scores)), float(np.median(all_scores)), float(np.min(all_scores)), float(np.max(all_scores))
+
+
+def run_h2h(cand_mode: str, opp_mode: str, opp_kind: str, seeds: List[int], max_workers: int = 8) -> Dict[str, Any]:
+    tasks = []
+    for s in seeds:
+        # Seat 0: Cand is P0, Opp is P1
+        tasks.append(("dispatcher", cand_mode, opp_kind, opp_mode, s))
+        # Seat 1: Opp is P0, Cand is P1
+        tasks.append((opp_kind, opp_mode, "dispatcher", cand_mode, s))
+        
+    with ProcessPoolExecutor(max_workers=max_workers) as ex:
+        results = list(ex.map(_worker_match, tasks))
+        
+    diffs, prod_sc, opp_sc = [], [], []
+    wins = losses = ties = 0
+    for i in range(0, len(results), 2):
+        r_c0, r_o1 = results[i]
+        d0 = r_c0 - r_o1; diffs.append(d0); prod_sc.append(r_c0); opp_sc.append(r_o1)
+        if d0 > 0: wins += 1
+        elif d0 < 0: losses += 1
+        else: ties += 1
+        
+        r_o0, r_c1 = results[i+1]
+        d1 = r_c1 - r_o0; diffs.append(d1); prod_sc.append(r_c1); opp_sc.append(r_o0)
+        if d1 > 0: wins += 1
+        elif d1 < 0: losses += 1
+        else: ties += 1
+        
+    n = len(diffs)
+    mean_d = float(np.mean(diffs))
+    se_d = float(np.std(diffs, ddof=1) / np.sqrt(n))
+    t_stat = mean_d / se_d if se_d > 0 else 0.0
+    p_val = 2 * (1 - stats.t.cdf(abs(t_stat), df=n - 1))
+    wr = (wins / (wins + losses)) * 100.0 if (wins + losses) > 0 else 0.0
+    return {
+        "prod_mean": float(np.mean(prod_sc)), "opp_mean": float(np.mean(opp_sc)),
+        "delta": mean_d, "se": se_d, "t": t_stat, "p": p_val,
+        "wr": wr, "W": wins, "L": losses, "T": ties
+    }
+
+
+def eval_candidate(mode: str, label: str, workers: int = 8):
+    print(f"\n{'='*105}", flush=True)
+    print(f"  {label} (Mode: {mode})", flush=True)
+    print(f"{'='*105}", flush=True)
+
+    # 1. Self-Play Suites
+    sp20_mean, sp20_med, sp20_min, sp20_max = run_self_play(mode, OFFICIAL_20, max_workers=workers)
+    sp100_mean, sp100_med, sp100_min, sp100_max = run_self_play(mode, DISJOINT_100, max_workers=workers)
+    
+    print(f"  Self-Play Official 20:  ${sp20_mean:>9,.2f} (Med: ${sp20_med:>9,.2f}, Min: ${sp20_min:>9,.2f}) | Delta vs $47,224.93: {sp20_mean - 47224.93:>+,.2f}", flush=True)
+    print(f"  Self-Play Disjoint 100: ${sp100_mean:>9,.2f} (Med: ${sp100_med:>9,.2f}, Min: ${sp100_min:>9,.2f}) | Delta vs $52,058.16: {sp100_mean - 52058.16:>+,.2f}", flush=True)
+
+    # 2. H2H vs Dominant Meta (un-gated 10C/4S/0G)
+    r_dm = run_h2h(mode, "dominant_meta", "dispatcher", DISJOINT_100, max_workers=workers)
+    print(f"  vs Dominant Meta (10C/4S/0G, n=200): Prod ${r_dm['prod_mean']:>9,.2f} | Opp ${r_dm['opp_mean']:>9,.2f} | Delta ${r_dm['delta']:>+9,.2f} (t={r_dm['t']:>+5.2f}, p={r_dm['p']:.4e}) | WR: {r_dm['wr']:>5.1f}% ({r_dm['W']}W/{r_dm['L']}L/{r_dm['T']}T)", flush=True)
+
+    # 3. Direct H2H vs Baseline (§2w Production)
+    r_base = run_h2h(mode, "baseline", "dispatcher", DISJOINT_100, max_workers=workers)
+    print(f"  vs Baseline (§2w Prod, n=200):        Prod ${r_base['prod_mean']:>9,.2f} | Opp ${r_base['opp_mean']:>9,.2f} | Delta ${r_base['delta']:>+9,.2f} (t={r_base['t']:>+5.2f}, p={r_base['p']:.4e}) | WR: {r_base['wr']:>5.1f}% ({r_base['W']}W/{r_base['L']}L/{r_base['T']}T)", flush=True)
+
+    return {"label": label, "sp20": sp20_mean, "sp100": sp100_mean, "dm": r_dm, "base": r_base}
+
+
+def main():
+    workers = min(os.cpu_count() or 4, 8)
+    print("=" * 105)
+    print(f"THROUGHPUT EXPERIMENT §2y: CROP CREW AUTO-FLUSH FIELD RETENTION ({workers} WORKERS)")
+    print("Baseline (§2w): Official 20 = $47,224.93, Disjoint 100 = $52,058.16, DM WR = 64.3%")
+    print("=" * 105)
+
+    # Canary Validation
+    print("\n--- RUNNING STANDING CANARIES ---", flush=True)
+    r_pass = run_h2h("baseline", "", "pass", DISJOINT_100, max_workers=workers)
+    if abs(r_pass["opp_mean"] - 3000.0) > 1e-4 or r_pass["wr"] != 100.0:
+        raise RuntimeError(f"CANARY 1 FAILED! Pass baseline opponent = ${r_pass['opp_mean']:.2f}, WR = {r_pass['wr']:.1f}%")
+    print(f"  [PASS] Canary 1 (Pass Baseline): Opponent = $3,000.00, WR = 100.0% ({r_pass['W']}W/{r_pass['L']}L/{r_pass['T']}T)", flush=True)
+
+    r_ident = run_h2h("baseline", "baseline", "dispatcher", DISJOINT_100, max_workers=workers)
+    if abs(r_ident["wr"] - 50.0) > 1e-4 or abs(r_ident["delta"]) > 1e-4:
+        raise RuntimeError(f"CANARY 2 FAILED! Identity control WR = {r_ident['wr']:.1f}%, Delta = ${r_ident['delta']:.2f}")
+    print(f"  [PASS] Canary 2 (Identity Control): WR = 50.0%, Delta = $0.00 ({r_ident['W']}W/{r_ident['L']}L/{r_ident['T']}T)", flush=True)
+
+    t0 = time.time()
+
+    # Candidate 0: Baseline Verification
+    eval_candidate("baseline", "Candidate 0: Baseline (carrying >= 15 or hour >= 18 forces shed drop)", workers=workers)
+
+    # Candidate 1: Task Priority (work tasks first; only walk to shed when idle with produce)
+    eval_candidate("task_first", "Candidate 1: Task Priority (no hour>=18 or cap>=15 interruption; shed drop only if idle)", workers=workers)
+
+    # Candidate 2: Pure Field Retention (never walk to shed on days < 29; opportunistic drop if adjacent; auto-flush at midnight)
+    eval_candidate("pure_field", "Candidate 2: Pure Field Retention (never walk to shed days < 29; 100% auto-flush at midnight)", workers=workers)
+
+    # Candidate 3: High Capacity Buffer (only walk to shed if carrying >= 50 items or idle)
+    eval_candidate("high_cap", "Candidate 3: High Capacity Buffer (walk to shed only if carrying >= 50 items or idle)", workers=workers)
+
+    elapsed = time.time() - t0
+    print(f"\n{'='*105}", flush=True)
+    print(f"Throughput Experiment §2y completed in {elapsed:.1f}s", flush=True)
+    print(f"{'='*105}", flush=True)
+
+
+if __name__ == "__main__":
+    main()

@@ -743,6 +743,7 @@ because it structurally cannot do anything under the current per-species caps (g
   - **Canary 2 (Identity Control)**: WR = 50.0%, $\Delta = \$0.00$ (74W/74L/52T) $\rightarrow$ **PASS**.
 - **Key Takeaways**:
   1. **Dominant Meta Flipped Decisively**: Against the most common ladder build (37.8% of real trajectories), win rate rose from 50.0% $\rightarrow$ **64.3%** ($t = +4.61, p < 10^{-5}$). When milk demand is weak, the opponent wastes capital and feed maintaining 10 unprofitable cows while our agent saves capital and protects realized AMM prices.
+     *(Caveat: Our Dominant Meta archetype opponent scores ~$49.7k, whereas the real 10C/4S/0G meta on ladder scores $88,109 (n=527). Our archetype opponents are our own dispatcher with different parameters, inheriting our throughput/pathing weaknesses (~1.8x lower volume than real top bots). Thus, 64.3% measures parameter advantage against identical labor mechanics, not ladder performance. The true volume gap to close is $47k-$52k vs $88k.)*
   2. **Zero Free-Rider Exploitation**: Downward gating only fires on weak-demand draws where the opponent cannot benefit from extra cows either.
   3. **Worst-Case Floor Raised by >20%**: The minimum score across the Official 20 seeds rose from \$28,464 $\rightarrow$ \$34,398 (+20.8%), and across the 100 Disjoint suite from \$19,507 $\rightarrow$ \$24,501 (+25.6%).
 - **New Standing Production Baseline**: **\$47,224.93** (Official 20) / **\$52,058.16** (100 Disjoint).
@@ -768,8 +769,41 @@ because it structurally cannot do anything under the current per-species caps (g
   - Sheep policies (1, 2) drop DM WR from 64.3% $\rightarrow$ 39-41% — worse than the unsteered baseline (50%). Each additional sheep costs \$500 + daily feed + worker time, and wool's steep glut curve means even 2 extra sheep crash prices.
   - Melon policy (3) is milder (SP100 -\$1.4k, DM WR drops 64.3% $\rightarrow$ 49.0%) but still net-negative. Each extra melon seed costs \$100 + 10-day growth + worker time; melon `above_target=3.60` is the steepest curve in the game.
   - Combined policies (4, 5) compound both regressions.
-- **Params kept in code** (`sheep_realloc_cap`, `sheep_realloc_day=99`, `melon_realloc_target=6`) but disabled at defaults. No behavioral change to production agent.
+- **Dead Parameters Cleaned**: `sheep_realloc_cap`, `sheep_realloc_day`, and `melon_realloc_target` removed from codebase per §2f precedent.
 - **Conclusion**: The §2w cow gate is correctly designed as downward-only. The right strategy is to **save capital, not redeploy it** — the cash itself raises the floor.
+
+---
+
+### §2y — Throughput Optimization: Crop Crew Pure Field Retention (ADOPTED)
+
+- **Mechanic**: `_drop_inventories_to_shed` (`engine:843`, called from `_end_of_day:878`) automatically drops all held produce across all workers into `private["shed"]` at midnight from wherever workers stand on the grid.
+- **Intervention**: Removed the `hour >= 18` (and `carrying_produce >= 15`) walk-to-shed interruption for crop crews (units 4..12). Crop workers remain permanently in their respective sectors (NE/SW/NW) tending plants. If idle on a turn, they PASS in-place rather than walking to `(4,4)`. Midnight auto-flush banks all harvested produce with zero travel overhead. Opportunistic `["DROP"]` remains active if already adjacent to shed.
+- **Harness**: `eval/test_crop_crew_drop_policy.py` & `eval/fast_parallel_benchmark.py` (Multi-process FastEngine suite, Canary 1 + 2 passed).
+- **Sweep Results Matrix ($n=200$ matches per archetype on 100 Disjoint Seeds)**:
+
+| Mode / Candidate | SP Official 20 | SP Disjoint 100 | vs Dominant Meta (WR / Delta) | vs §2w Baseline (WR / Delta) |
+|---|---|---|---|---|
+| **Cand 0: Baseline (§2w)** | \$47,224.93 | \$52,058.16 | 64.3% / +\$1,617.86 | 50.0% / \$0.00 |
+| **Cand 1: Task Priority (drop if idle)** | \$45,232.68 | \$51,832.71 | 87.0% / +\$5,427.94 | 81.5% / +\$3,905.39 |
+| **Cand 2: Pure Field Retention** | **\$49,777.00** | **\$54,692.83** | **73.4%** / **+\$2,250.74** | **82.5%** / **+\$4,291.85** |
+| **Cand 3: High Capacity (>=50 items)** | \$45,232.68 | \$51,832.71 | 87.0% / +\$5,427.94 | 81.5% / +\$3,905.39 |
+
+- **Full Archetype Matrix under Pure Field Retention (Honest Competition Settings)**:
+
+| Archetype / Metric | Prod Mean | Opp Mean | Delta | t | p | WR (ex-ties) | W / L / T |
+|---|---|---|---|---|---|---|---|
+| **Official 20 Self-Play** | **\$49,777.00** | — | **+\$2,552.07** | — | — | — | (Min: \$32.3k vs \$28.5k) |
+| **Disjoint 100 Self-Play** | **\$54,692.83** | — | **+\$2,634.67** | — | — | — | (Min: \$26.9k vs \$19.5k, Max: **\$100,935.00**) |
+| **vs Dominant Meta (10C/4S/0G)** | \$55,039.21 | \$52,788.48 | **+\$2,250.74** | +7.21 | **1.16e-11** | **73.4%** | 135W / 49L / 16T ($n=200$) |
+| **vs Wool-Heavy (6C/12S/0G)** | \$58,908.71 | \$46,846.48 | **+\$12,062.23** | +12.93 | **< 1e-15** | **80.5%** | 161W / 39L / 0T ($n=200$) |
+| **vs Balanced Pasture (6C/8S/0G)** | \$58,598.34 | \$47,842.33 | **+\$10,756.01** | +11.74 | **< 1e-15** | **79.0%** | 158W / 42L / 0T ($n=200$) |
+| **vs Old Baseline (Goose-4)** | \$57,076.22 | \$51,890.58 | **+\$5,185.64** | +8.62 | **< 1e-15** | **81.0%** | 162W / 38L / 0T ($n=200$) |
+| **vs Pass Baseline** | \$76,186.60 | \$3,000.00 | **+\$73,186.60** | +47.12 | **< 1e-15** | **100.0%** | 200W / 0L / 0T ($n=200$) |
+
+- **Key Insights**:
+  1. **Zero Morning Travel Penalty**: When idle crop workers stay in place rather than returning to the shed, they start every morning (hour 0) directly on crop tiles, executing immediate watering and harvesting on tick 0.
+  2. **Direct H2H Dominance**: In direct match against §2w Production, Pure Field Retention wins **82.5%** of games (+4.3k net delta, $p < 10^{-13}$).
+  3. **New Standing Production Baseline**: **\$49,777.00** (Official 20) / **\$54,692.83** (100 Disjoint).
 
 ---
 

@@ -383,11 +383,11 @@ old copies of this section from memory; the numbers below are current.**
 **Benchmark standard (established the hard way): pure self-play, `env.run([agent, agent])`.**
 Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the headline.
 
-**Production Agent Status (2026-08-24): `goose_cap=0`, Shop-Adaptive Cow-Cap Gating, Unsteered in Competition.**
+**Production Agent Status (2026-08-24): `goose_cap=0`, Shop-Adaptive Cow-Cap Gating, Pure Field Retention (Crop Crews), Unsteered in Competition.**
 
 - **Standing Shippable Production Baseline (No Seed Injected, Fully Honest)**:
-  - **Official 20 Seeds (real `env.run()` / FastEngine)**: **$47,224.93** (Median: $44,367.00, Min: $34,398.00, Max: $92,837.00, SE: $2,012.30) — *+$2,481.58 (+5.5%) lift with floor +20.8%*.
-  - **100 Disjoint Seeds (`10000-10099`)**: **$52,058.16** (Median: $49,065.50, Min: $24,501.00, Max: $91,494.00, SE: $1,028.45) — *+$2,445.10 (+4.9%) lift with floor +25.6%*.
+  - **Official 20 Seeds (real `env.run()` / FastEngine)**: **$49,777.00** (Median: $46,410.00, Min: $32,290.00, Max: $72,057.00, SE: $1,973.12) — *+$5,033.65 (+11.2%) lift over raw unsteered baseline*.
+  - **100 Disjoint Seeds (`10000-10099`)**: **$54,692.83** (Median: $49,692.50, Min: $26,916.00, Max: $100,935.00, SE: $1,087.65) — *+$5,079.77 (+10.2%) lift over raw unsteered baseline*.
 
 **Completed Verification & Architecture Milestones:**
 1. **Dedicated-Courier Strawberry Fertilization (REJECTED, §2o)**:
@@ -404,16 +404,22 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
 5. **Shop-Adaptive Cow-Cap Gating (ADOPTED, §2w)**:
    - Dynamic early gating on Day 10 (3 revealed shops): if `milk_shop_count == 0`, cap cows at 4; if `milk_shop_count <= 1`, cap cows at 6.
    - **Head-to-Head vs Dominant Meta (10C/4S/0G, n=200)**: **64.3% Win Rate** (117W / 65L / 18T), Δ = **+$1,617.86**, $t = +4.61, p = 7.18 \times 10^{-6}$.
+     *(Caveat: Our Dominant Meta archetype opponent scores ~$49.7k, whereas the real 10C/4S/0G meta on ladder scores $88,109 (n=527). Our archetype opponents are our own dispatcher with different parameters, inheriting our throughput/pathing weaknesses (~1.8x lower volume than real top bots). Thus, 64.3% measures parameter advantage against identical labor mechanics, not ladder performance. The true volume gap to close is $47k-$52k vs $88k.)*
    - Dominates all ladder archetypes: Wool-Heavy (**81.5% WR**, $p < 10^{-15}$), Balanced Pasture (**78.5% WR**, $p < 10^{-15}$), Old Baseline (**79.0% WR**, $p < 10^{-15}$).
 6. **Dynamic Crop & Pasture Reallocation Sweep (REJECTED, §2x)**:
    - Tested 6 policies reinvesting cow-gate savings: sheep expansion (cap 6/8 on YARN_STORE + low milk), melon expansion (target 8/10 on melon shops), combined. All regressed on both self-play (−$1.4k to −$3.7k) and DM win rate (27.6% to 49.0% vs baseline 64.3%).
    - Confirms §2b/§2e: expanding glut-prone production (wool `above_target=3.20`, melon `above_target=3.60`) floods the shared AMM. Saved capital is worth more as cash than as additional supply.
+7. **Crop Crew Pure Field Retention (ADOPTED, §2y)**:
+   - Removed the `hour >= 18` and `carrying_produce >= 15` walk-to-shed interruptions for crop crews (units 4..12). Rely on midnight auto-flush (`engine:843`) to bank harvested produce. Workers remain in NE/SW/NW plots continuously, eliminating morning travel penalties and unlocking immediate Day-tick-0 harvesting/watering.
+   - **Self-Play Lift**: Official 20 Mean **$49,777.00** (+$2.55k lift); 100 Disjoint Mean **$54,692.83** (+$2.63k lift, Max: $100.9k).
+   - **Head-to-Head vs Dominant Meta (n=200)**: **73.4% Win Rate** (135W/49L/16T), Δ = **+$2,250.74**, $t = +7.21, p = 1.16 \times 10^{-11}$.
+   - **Head-to-Head vs Previous §2w Baseline (n=200)**: **82.5% Win Rate** (165W/35L/0T), Δ = **+$4,291.85**, $t = +8.27, p = 1.91 \times 10^{-14}$.
 
-**Target: $80–90k in self-play — currently ~53–59% of target (up from ~48% at project start).**
+**Target: $80–90k in self-play — currently ~56–62% of target (up from ~48% at project start).**
 
 **Next Priority Milestones:**
-1. **AMM Sell Timing Optimization** — PRIMARY. The largest remaining lever. Current trickle sells 4 units/turn of glut-prone products at price_ratio ≥ 0.55. Shop/town-center drain recovers inventory between sells — optimizing the trickle rate per product against the drain schedule could improve realized prices significantly.
-2. **Worker Pathing & Throughput Optimization** — SECONDARY. Current sector assignment uses greedy nearest-task. Bottleneck analysis (e.g. lost watering/harvest cycles) could recover 5–15% throughput.
+1. **Worker Pathing & Multi-Tile Task Coordination (PRIMARY)** — Deep throughput optimization across sectors: optimal intra-quadrant snake traversal, reducing redundant steps, and optimizing worker handoffs.
+2. **AMM Sell Timing Optimization (SECONDARY)** — Fine-tuning trickle sell rates against shop and town-center drain intervals.
 3. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset. Must run in a Kaggle notebook kernel — local execution invalid.
 
 ---
