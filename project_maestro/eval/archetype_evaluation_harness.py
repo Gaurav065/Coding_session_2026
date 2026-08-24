@@ -49,12 +49,22 @@ def get_archetype_factories() -> Dict[str, Callable[[int], Any]]:
     }
 
 
-def run_kaggle_match(agent_0, agent_1, seed: int) -> Tuple[float, float]:
-    """Run a single match in the official environment."""
-    env = make("kaggriculture", configuration={"episodeSteps": 720, "seed": seed}, debug=False)
-    env.run([agent_0, agent_1])
-    s = env.steps[-1]
-    return float(s[0].reward), float(s[1].reward)
+from project_maestro.engine.fast_engine import FastGame
+
+def run_match(agent_0, agent_1, seed: int) -> Tuple[float, float]:
+    """Run a match using FastGame if both are callables, or kaggle_environments otherwise."""
+    if callable(agent_0) and callable(agent_1):
+        game = FastGame(seed=seed)
+        while not game.done:
+            act0 = agent_0(game.get_observation(0))
+            act1 = agent_1(game.get_observation(1))
+            game.step_game(act0, act1)
+        return float(game.farms[0].money), float(game.farms[1].money)
+    else:
+        env = make("kaggriculture", configuration={"episodeSteps": 720, "seed": seed}, debug=False)
+        env.run([agent_0, agent_1])
+        s = env.steps[-1]
+        return float(s[0].reward), float(s[1].reward)
 
 
 def evaluate_archetype(
@@ -79,7 +89,7 @@ def evaluate_archetype(
         # Seat 0: Production Agent is Player 0, Opponent is Player 1
         p0 = make_spatial_dispatcher_agent(seed=seed)
         p1 = arch_factory(seed)
-        r0, r1 = run_kaggle_match(p0, p1, seed)
+        r0, r1 = run_match(p0, p1, seed)
         prod_rewards_s0.append(r0)
         opp_rewards_s1.append(r1)
         diff_s0 = r0 - r1
@@ -90,7 +100,7 @@ def evaluate_archetype(
         # Seat 1: Opponent is Player 0, Production Agent is Player 1
         opp0 = arch_factory(seed)
         prod1 = make_spatial_dispatcher_agent(seed=seed)
-        r_opp0, r_prod1 = run_kaggle_match(opp0, prod1, seed)
+        r_opp0, r_prod1 = run_match(opp0, prod1, seed)
         opp_rewards_s0.append(r_opp0)
         prod_rewards_s1.append(r_prod1)
         diff_s1 = r_prod1 - r_opp0

@@ -342,6 +342,60 @@ Value-gated shop steering (`GAMMA_INTEGRATED`, `K_COST_CORRECTED = 208.74`, `STE
    - Vs Random Baseline: $71,196.52 vs $19.25 (100% win rate, $+71.2k margin).
    - Vs Pass Baseline: $72,535.70 vs $3,000.00 (100% win rate, $+69.5k margin).
 
+**⚠ CRITICAL CAVEAT ON THE STEERING RESULT (Claude, verification pass 2026-08-24) — read
+before treating $56,743.07 as the agent's competitive strength.**
+
+The archetype harness produced one result that is far more consequential than its placement
+above suggests: **against an unsteered copy of itself, the steered production agent LOSES
+head-to-head — 40.0% win rate (16/40), margin -$820.67.**
+
+The mechanism Gemini identified is correct and important: **steering produces a public good.**
+The steerer pays the full early-wheat displacement cost ($208.74/tile) to unlock a
+high-demand shop, but that shop is a *shared* market sink — the opponent gets the same
+price support for free while keeping all 10 NW wheat tiles. The free-rider profits more than
+the payer. Note the opponent's $57,298.07 in that matchup exceeds **both** mirror baselines
+($47,526.12 unsteered mirror, $56,743.07 steered mirror), which is exactly the free-rider
+signature.
+
+**Why this matters more than the mirror number:** this competition is an **Elo ladder**, and
+§3 of this file already records the governing principle — "since the ladder scores wins not
+margin, the win-rate signal is the one that matters." The +19.39% mirror gain was measured in
+the one configuration where the public-good cost is symmetric and therefore invisible. Against
+a ladder full of agents that do not steer, we would be paying to raise our opponents' scores.
+
+**Statistical honesty:** -$820.67 with SE $504.29 (t=-1.63, p=0.11) and 16/40 wins are **not**
+significant. The correct claim is *"steering shows no head-to-head advantage, with a negative
+point estimate"* — not that it definitively loses. But it can no longer be described as the
+project's biggest win without this qualifier.
+
+**Systematic methodological consequence — this is the durable lesson.** Pure self-play mirror
+benchmarking has a structural blind spot: **it cannot detect public-good / free-rider
+asymmetries, because both seats make identical moves and so pay identical costs.** Any change
+touching a *shared* resource (the AMM, the town shop sink, the shared weed/shop RNG) will look
+better in mirror than it performs in real asymmetric play. Changes that are purely internal to
+our own farm are unaffected.
+
+Re-validation audit list (head-to-head vs an opponent NOT making the same change):
+- **Shop steering (§2n)** — confirmed affected; see above.
+- **Downward-only cow cap (§2d)** — suspect. We cut milk supply on weak-demand draws; an
+  opponent who does not cut enjoys the firmer price we paid for. Same free-rider shape.
+- **Curve-aware sell logic (§2a.2)** — suspect. We trickle GLUT_PRONE goods to protect price;
+  an opponent who dumps sells into the price we protected.
+- **Internal-only and therefore safe**: PLANT priority (§2h.4), strawberry dig+replant (§2j.2),
+  day-29 crew scale-down (§2l), `crew_late` (§2i), the horizon fix (§2h.1).
+
+**Also incomplete:** the harness defines 7 archetypes but only 4 are reported here and in the
+round report. The three missing ones — **Dominant Meta (10C/4S/0G), Wool-Heavy (6C/12S/0G),
+Balanced Pasture (6C/8S/0G)** — are the *most* competitively relevant, since 10C/4S/0G alone is
+37.8% of real trajectories. The steering keep/remove decision should not be made until those
+three rows exist.
+
+**Scope note:** this harness varies the **opponent's portfolio**, not the **shop-demand
+archetype**. That is a useful and different question, but it does **not** close Phase 4's gate
+("win rate >= target on every archetype"), where archetype means the demand-pressure cluster
+(Phase 0's K=15 clustering). We still cannot distinguish "uniformly at 66% of target" from
+"strong on rich draws, collapsing on poor ones."
+
 **Target: $80-90k in self-play — currently ~66-70% of target (up from ~48% two days ago).**
 
 **Next Priority Milestones:**
