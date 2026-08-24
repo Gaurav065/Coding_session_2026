@@ -630,27 +630,72 @@ because it structurally cannot do anything under the current per-species caps (g
 
 - **Provenance note (corrected from stub)**: The §2s control row was a partial goose test, not a clean one. Standing Baseline (kw_early=10, goose_cap=4) vs Dominant Meta (kw_early=10, goose_cap=0) isolated geese only within an unsteered comparison. That 15% WR conflated two effects: (1) geese capital timing disadvantage, and (2) unsteered vs no-goose opponent. The present experiment isolates the goose effect with steering active.
 - **Experiment**: `eval/goose_cap_experiment.py`. Candidate = steered production with `goose_cap=0` via params override (`DEFAULT_PARAMS` unchanged). 280 FastEngine matches total.
-- **Results**:
+- **Results** (20-seed §2t runs — see §2u for powered 100-seed follow-up):
 
-| Section | Configuration | Result | vs Prior |
-|---|---|---|---|
-| A) Self-play Official 20 | no-goose mirror | **\$46,767** | **-\$9,976 vs \$56,743 baseline** |
-| A) Self-play Disjoint 100 | no-goose mirror | **\$54,852** | **-\$7,442 vs \$62,293 baseline** |
-| B) vs Dominant Meta (10C/4S/0G) | no-goose steered vs no-goose | \$57,510 vs \$57,730, Δ=-\$220, t=-0.30, p=0.77 | **40.0% WR (W16/L24/T0), +10pp vs 30%** |
-| C) vs Wool-Heavy (6C/12S/0G) | no-goose steered vs no-goose | \$62,991 vs \$51,930, Δ=+\$11,061, t=+5.36, p<0.001 | **82.5% WR (W33/L7/T0), +15pp vs 67.5%** |
-| D) vs Balanced Pasture (6C/8S/0G) | no-goose steered vs no-goose | \$62,969 vs \$53,014, Δ=+\$9,955, t=+5.24, p<0.001 | **82.5% WR (W33/L7/T0), +17.5pp vs 65.0%** |
+| Section | Prod Mean | Opp Mean | Delta | t | p | WR (ex-ties) |
+|---|---|---|---|---|---|---|
+| A) Self-play Official 20 | \$46,767 | — | **-\$9,976 vs \$56,743** | — | — | — |
+| A) Self-play Disjoint 100 | \$54,852 | — | **-\$7,442 vs \$62,293** | — | — | — |
+| B) vs Dominant Meta | \$57,510 | \$57,730 | -\$220 | -0.30 | 0.77 | **40.0%** (+10pp) |
+| C) vs Wool-Heavy | \$62,991 | \$51,930 | +\$11,061 | +5.36 | <0.001 | **82.5%** (+15pp) |
+| D) vs Balanced Pasture | \$62,969 | \$53,014 | +\$9,955 | +5.24 | <0.001 | **82.5%** (+17.5pp) |
 
-- **Verdict: KEEP goose_cap=4. Do not change DEFAULT_PARAMS.**
-  - The self-play regression is decisive: **-\$9,976 on official 20** and **-\$7,442 on disjoint 100**. This is not capital timing — it is real egg revenue. Geese are **genuinely additive** (~\$10k/season in the symmetric environment), not substitutive for cows.
-  - The prediction ("flip Dominant Meta to a winning record") did **not** materialize. No-goose reaches 40% WR, still below 50%. Removing geese is not sufficient to overcome 10-cow production parity.
-  - The goose-isolated effect on Dominant Meta matchup: +10pp (30% → 40%). This is real but buys nothing if self-play drops \$10k simultaneously.
-  - Wool-Heavy / Balanced Pasture improvements (+15pp / +17.5pp) are dramatic, but those archetypes are already losing to us at 67-65%; the improvement there does not compensate for the self-play floor collapse.
+- **Caveat (identified post-run)**: The 20-seed H2H runs are underpowered. Dominant Meta +10pp ≈ p=0.35 (z≈0.94, n=40); Wool-Heavy/Balanced +15/+17.5pp each ≈ p≈0.07. All three move the same direction (encouraging), but individual tests are inconclusive. Also, the goose_cap=0 steered vs Dominant Meta result (40%) is uninterpretable without an identity control — goose_cap=0 unsteered vs Dominant Meta (parameter-identical) must be run first to confirm the harness is correct and to isolate the steering cost. See §2u for the powered follow-up and identity control.
+
+
+- **Verdict in §2t was issued on the wrong metric — see §2u for the correct verdict.**
+  - §2t used self-play mean as the decision criterion (-\$9,976 regression). HANDOVER §3 establishes win rate as the governing metric on the Elo ladder; self-play mean is not decisive.
+  - §2u (powered 100-seed runs) shows goose_cap=0 gains +23.7pp vs Dominant Meta (30% → 53.7%), +18pp vs Wool-Heavy (67.5% → 85.5%), +18.5pp vs Balanced Pasture (65% → 83.5%).
+  - **Correct verdict: goose_cap=0 should be the new default.** Pending user confirmation.
 - **Mechanism clarified — geese are additive, not a free-rider problem**:
   - In symmetric self-play, both players produce eggs, sell to BRUNCH_SPOT + town center. The egg AMM absorbs volume from both sides; the \$10k contribution is real per-player revenue, not cancellation.
   - Against no-goose opponents, we are not paying a capital cost that hurts us — we are paying for an independent revenue stream. The disadvantage vs no-goose is mild: +10pp WR improvement when we drop them, while we give up \$10k absolute.
   - **Additive-vs-substitutive (§2a.3) resolved: geese are additive.** They do not displace cow productivity. goose_cap=4 stays in DEFAULT_PARAMS.
 - **What the §2s "accidental" signal actually measured**: The 15% WR in §2s was primarily driven by our agent being *unsteered* (kw_early=10), not just by geese. Steering alone lifts Dominant Meta WR from 15% → 30% (§2s vs §2p). Removing geese lifts it a further 10pp to 40%, but only within the steered-vs-unsteered asymmetry where their agent doesn't steer either. The goose effect is real but not the dominant variable.
 - **Geese in HANDOVER §6**: Do NOT move to "Closed Doors." The experiment closes the additive-vs-substitutive question (additive), which is the correct outcome. Geese stay in production.
+
+---
+
+### 2u. Goose/Steering Attribution Runs — COMPLETE (2026-08-24)
+
+- **Harness**: `eval/goose_steering_attribution.py`. 640 FastEngine matches total.
+
+**RUN 1 — Identity Control (sanity check)**
+- goose_cap=0, kw_early=10 vs Dominant Meta (10C/4S/0G, kw_early=10). Parameters identical.
+- Result: \$44,743 vs \$44,743. **15W/15L/10T. WR (ex-ties) = 50.0%. Δ = \$0.00. t = 0.000. p = 1.000.**
+- **PASS**: Harness verified. The $44,743 is the goose-free unsteered self-play baseline.
+
+**RUN 2-4 — goose_cap=0 STEERED vs archetypes (100 disjoint seeds × 2 seats = 200 matches each)**
+
+| Archetype | Prod Mean | Opp Mean | Delta | t | p | WR (ex-ties) | vs Prior (20-seed) |
+|---|---|---|---|---|---|---|---|
+| Dominant Meta (10C/4S/0G) | \$60,653 | \$59,853 | +\$800 | +1.90 | 0.058 | **53.7%** (101W/87L/12T) | +13.7pp from 40.0% |
+| Wool-Heavy (6C/12S/0G) | \$64,775 | \$52,809 | +\$11,966 | +15.28 | <0.001 | **85.5%** (171W/29L/0T) | +3.0pp from 82.5% |
+| Balanced Pasture (6C/8S/0G) | \$64,698 | \$54,870 | +\$9,828 | +14.96 | <0.001 | **83.5%** (167W/33L/0T) | +1.0pp from 82.5% |
+
+**Steering cost vs identical no-steer opponent:**
+- Identity baseline (no steer): 50.0%
+- Steered vs same build: 53.7%
+- **Steering effect: +3.7pp GAIN** — not the -10pp cost the hypothesis predicted. Steering helps even against parameter-identical no-steer opponents; the steerer opens a milk sink earlier and captures first-mover advantage despite paying the wheat displacement cost.
+
+**Comparison with goose_cap=4 (current default) head-to-head results:**
+
+| Archetype | WR with geese (§2p) | WR without geese (§2u) | Change |
+|---|---|---|---|
+| Dominant Meta | 30.0% | **53.7%** | **+23.7pp** |
+| Wool-Heavy | 67.5% | **85.5%** | **+18.0pp** |
+| Balanced Pasture | 65.0% | **83.5%** | **+18.5pp** |
+| Self-play mean | \$56,743 | \$46,767 | -\$9,976 |
+
+**Verdict: GOVERNING METRIC IS WIN RATE (HANDOVER §3). goose_cap=0 WINS on all three competitive matchups. §2t verdict was wrong — it used self-play mean as the decision criterion, which HANDOVER §3 explicitly overrides.**
+
+- Dominant Meta is 37.8% of real ladder trajectories; geese appear in only 7.3%. Against the realistic ladder population (92.7% no-goose opponents), goose_cap=0 gains +18–24pp win rate across all tested archetypes.
+- Self-play mean drops -\$9,976 because egg revenue (~\$10k) is lost in the symmetric mirror. That drop is irrelevant on a win-rate Elo ladder where both self-play players are penalized equally; what matters is head-to-head against the real opponent distribution.
+- Dominant Meta result (53.7%, p=0.058) is borderline — "slim winning majority, not yet significant." The Wool-Heavy and Balanced Pasture results are unambiguous (p<0.001).
+
+**Recommended action: Set `DEFAULT_PARAMS["goose_cap"] = 0`, re-run production baseline on Official 20 + 100 Disjoint seeds, update §2v. Then close geese in HANDOVER §6.**
+
+- Updated 7-archetype table (replacing §2p values with goose_cap=0 results) should be done after the baseline run.
 
 ---
 
