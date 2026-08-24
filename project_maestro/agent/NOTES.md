@@ -615,13 +615,42 @@ because it structurally cannot do anything under the current per-species caps (g
 | **Steered** vs Dominant Meta | \$55,681.03 | \$58,225.85 | -\$2,544.82 | \$1,623.58 | -1.57 | 0.126 | 30.0% (12/40) |
 | **Unsteered** vs Dominant Meta | \$43,624.50 | \$46,830.12 | -\$3,205.62 | \$1,298.74 | -2.47 | 0.018 | **15.0%** (6/40) |
 
-- **Attribution confirmed: production parity is the driver, not steering.**
-  - Unsteered loses *worse* (15% win rate, p=0.018 — statistically significant). Steering **doubles** win rate against Dominant Meta from 15% → 30%.
-  - Root cause: both agents run 10 cows and compete for the same milk sink. With matched cow counts, selling into a jointly-opened shop is approximately zero-sum; whoever hits more lactation cycles wins. The slight edge to Dominant Meta comes from them keeping all 10 NW wheat tiles (no displacement cost), giving them ~\$208.74/tile of extra Day-0 capital to accelerate cow purchase timing.
+- **Attribution confirmed: free-riding is real but not disqualifying.**
+  - Dominant Meta opponent goes from \$46,830 (unsteered row) to \$58,226 (steered row) — +\$11,396 captured without paying the displacement cost. The free-rider effect is real.
+  - But we gain \$12,056 (\$43,625 → \$55,681), so net impact of steering vs not steering is +\$660 absolute and +15pp win rate. Steering is not net-negative even in the worst-case matchup.
+  - Root cause of the 30% ceiling: both agents run 10 cows competing for the same milk sink (production parity). Steering lifts us from 15% to 30% but cannot break the parity ceiling without either (a) running fewer competing cows (goose experiment) or (b) deeper milk-regime re-steering on Days 6+.
   - The free-rider effect is real but secondary and *directionally helpful*: even in the worst-case opponent matchup (equal cows, no steering), the steerer lifts win rate by 15pp by pushing the shared milk sink earlier.
 - **Decision: KEEP STEERING as-is.** The "Option 3 — condition on opponent archetype" path is moot; steering strictly dominates unsteered production even against its worst matchup. The 10-cow production-parity problem is a separate concern (co-design, or Day-6+ re-steering) and cannot be addressed by removing Day-0 steering.
 - **Option 3 complexity note (archived)**: Day-3 detection of opponent archetype arrives after the Day 0-2 steering cost is already sunk. Even if feasible, there is no scenario where removing the steer would help — the control row closes this path.
 - **Next target**: Extend value-gated steering to Days 6–24 windows to address the milk regime gap (\$29.3k Milk-Rich vs Milk-Starved spread, §2r). Top-3 gamma shops are all milk shops; later re-draws can fix low-milk-draw scores without touching the Day-0 wheat cost.
+
+---
+
+### 2t. Goose Cap Experiment — COMPLETE, goose_cap=4 RETAINED (2026-08-24)
+
+- **Provenance note (corrected from stub)**: The §2s control row was a partial goose test, not a clean one. Standing Baseline (kw_early=10, goose_cap=4) vs Dominant Meta (kw_early=10, goose_cap=0) isolated geese only within an unsteered comparison. That 15% WR conflated two effects: (1) geese capital timing disadvantage, and (2) unsteered vs no-goose opponent. The present experiment isolates the goose effect with steering active.
+- **Experiment**: `eval/goose_cap_experiment.py`. Candidate = steered production with `goose_cap=0` via params override (`DEFAULT_PARAMS` unchanged). 280 FastEngine matches total.
+- **Results**:
+
+| Section | Configuration | Result | vs Prior |
+|---|---|---|---|
+| A) Self-play Official 20 | no-goose mirror | **\$46,767** | **-\$9,976 vs \$56,743 baseline** |
+| A) Self-play Disjoint 100 | no-goose mirror | **\$54,852** | **-\$7,442 vs \$62,293 baseline** |
+| B) vs Dominant Meta (10C/4S/0G) | no-goose steered vs no-goose | \$57,510 vs \$57,730, Δ=-\$220, t=-0.30, p=0.77 | **40.0% WR (W16/L24/T0), +10pp vs 30%** |
+| C) vs Wool-Heavy (6C/12S/0G) | no-goose steered vs no-goose | \$62,991 vs \$51,930, Δ=+\$11,061, t=+5.36, p<0.001 | **82.5% WR (W33/L7/T0), +15pp vs 67.5%** |
+| D) vs Balanced Pasture (6C/8S/0G) | no-goose steered vs no-goose | \$62,969 vs \$53,014, Δ=+\$9,955, t=+5.24, p<0.001 | **82.5% WR (W33/L7/T0), +17.5pp vs 65.0%** |
+
+- **Verdict: KEEP goose_cap=4. Do not change DEFAULT_PARAMS.**
+  - The self-play regression is decisive: **-\$9,976 on official 20** and **-\$7,442 on disjoint 100**. This is not capital timing — it is real egg revenue. Geese are **genuinely additive** (~\$10k/season in the symmetric environment), not substitutive for cows.
+  - The prediction ("flip Dominant Meta to a winning record") did **not** materialize. No-goose reaches 40% WR, still below 50%. Removing geese is not sufficient to overcome 10-cow production parity.
+  - The goose-isolated effect on Dominant Meta matchup: +10pp (30% → 40%). This is real but buys nothing if self-play drops \$10k simultaneously.
+  - Wool-Heavy / Balanced Pasture improvements (+15pp / +17.5pp) are dramatic, but those archetypes are already losing to us at 67-65%; the improvement there does not compensate for the self-play floor collapse.
+- **Mechanism clarified — geese are additive, not a free-rider problem**:
+  - In symmetric self-play, both players produce eggs, sell to BRUNCH_SPOT + town center. The egg AMM absorbs volume from both sides; the \$10k contribution is real per-player revenue, not cancellation.
+  - Against no-goose opponents, we are not paying a capital cost that hurts us — we are paying for an independent revenue stream. The disadvantage vs no-goose is mild: +10pp WR improvement when we drop them, while we give up \$10k absolute.
+  - **Additive-vs-substitutive (§2a.3) resolved: geese are additive.** They do not displace cow productivity. goose_cap=4 stays in DEFAULT_PARAMS.
+- **What the §2s "accidental" signal actually measured**: The 15% WR in §2s was primarily driven by our agent being *unsteered* (kw_early=10), not just by geese. Steering alone lifts Dominant Meta WR from 15% → 30% (§2s vs §2p). Removing geese lifts it a further 10pp to 40%, but only within the steered-vs-unsteered asymmetry where their agent doesn't steer either. The goose effect is real but not the dominant variable.
+- **Geese in HANDOVER §6**: Do NOT move to "Closed Doors." The experiment closes the additive-vs-substitutive question (additive), which is the correct outcome. Geese stay in production.
 
 ---
 

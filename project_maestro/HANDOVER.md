@@ -413,12 +413,18 @@ Control row: Unsteered (`kw_early=10`) vs Dominant Meta (10C/4S/0G), 40 matches:
 - Unsteered: \$43,624 vs \$46,830 — **6W/34L/0T = 15.0% win rate** (t=-2.47, p=0.018)
 - Steered (existing): \$55,681 vs \$58,226 — **30.0% win rate** (t=-1.57, p=0.126)
 
-Steering *doubles* win rate against the worst-case opponent. Attribution: the loss to Dominant Meta is caused by **production parity** (both agents run 10 cows competing for the same milk sink), not the free-rider effect. Steering strictly dominates unsteered in all 7 matchups. Option 3 (conditional steering) is moot — Day-3 detection arrives after the cost is sunk, and there's no matchup where removing the steer helps. See §2s.
+Steering *doubles* win rate against the worst-case opponent. Attribution: the loss to Dominant Meta is caused by **production parity** (both agents run 10 cows competing for the same milk sink), not the free-rider effect. Free-riding is real (+\$11,396 captured by opponent) but not disqualifying (we gain +\$12,056, net +\$660, win rate doubles). Steering strictly dominates unsteered in all 7 matchups. See §2s.
+
+**Goose Cap Experiment (`eval/goose_cap_experiment.py`, §2t) — COMPLETE, goose_cap=4 RETAINED:**
+- Self-play regression: -\$9,976 (Official 20), -\$7,442 (Disjoint 100). Geese are genuinely additive (~\$10k/season symmetric revenue) — not a free-rider problem.
+- vs Dominant Meta: 40% WR (up from 30%) — improved, but prediction of "flip to winning record" did not materialize. 10-cow production parity is the ceiling, not geese.
+- vs Wool-Heavy: 82.5% WR (+15pp); vs Balanced Pasture: 82.5% WR (+17.5pp) — both dramatic, but don't compensate the self-play floor collapse.
+- **Verdict**: KEEP goose_cap=4 in DEFAULT_PARAMS. Additive-vs-substitutive question (§2a.3) closed: **geese are additive**. Do not move geese to "Closed Doors" (§6).
 
 **Target: \$80–90k in self-play — currently ~66–70% of target (up from ~48% two days ago).**
 
 **Next Priority Milestones:**
-1. **Multi-Shop Steering Extension (Days 6–24)** — UNBLOCKED. Extend value-gated steering to later 3-day draw windows (Days 6, 9, 12…) using post-Day-3 farm occupancy states. Top-3 gamma shops are all milk shops; this directly attacks the \$29.3k Milk-Rich vs Milk-Starved gap.
+1. **Multi-Shop Steering Extension (Days 6–24)** — PRIMARY. Extend value-gated steering to later 3-day draw windows (Days 6, 9, 12…) using post-Day-3 farm occupancy states. Top-3 gamma shops are all milk shops; this directly attacks the \$29.3k Milk-Rich vs Milk-Starved gap (\$61.9k vs \$32.6k from §2r).
 2. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset. Must run in a Kaggle notebook kernel — local execution invalid.
 3. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for significance on the milk regime gap.
 
