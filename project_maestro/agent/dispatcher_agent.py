@@ -201,8 +201,11 @@ DEFAULT_PARAMS = {
     "cow_cap_zero": 4,        # cow cap when 0 milk shops revealed by Day 10
     "cow_gate_day_mid": 10,   # check on Day 10 for <=1 milk shops -> cap at cow_cap_low (6)
     "sheep_cap": 4,
+    "sheep_realloc_cap": 4,   # §2x: sheep cap when YARN_STORE active & milk_shop_count<=1 on day>=sheep_realloc_day (TESTED: all values regressed, kept disabled at day=99)
+    "sheep_realloc_day": 99,  # §2x: day threshold for sheep reallocation check (99 = disabled; sweep showed -$2.8k to -$3.7k self-play and DM WR collapse)
     "goose_cap": 0,
     "melon_seed_target": 6,
+    "melon_realloc_target": 6, # §2x: melon seed target when melon shops (SALAD_BAR/FARMERS_MARKET) present
     "strawberry_target": 16,
     "crew_late": 10,        # target_crew once SW is unlocked (capped at 10 to match optimal single-turn HIRE ceiling)
     "crew_mid": 9,          # target_crew day>=8, SW not yet unlocked
@@ -261,6 +264,8 @@ class MaestroFullPortfolioAgent:
         # baseline 10.
         MILK_SHOPS = {"PIZZA_SHOP", "ICE_CREAM_SHOP", "SMOOTHIE_SHOP"}
         milk_shop_count = sum(1 for s in unlocked_shops if s in MILK_SHOPS)
+        MELON_SHOPS = {"FARMERS_MARKET", "SALAD_BAR"}
+        has_melon_shop = any(s in MELON_SHOPS for s in unlocked_shops)
 
         market_orders = []
 
@@ -344,8 +349,8 @@ class MaestroFullPortfolioAgent:
                     if buy_straw > 0:
                         market_orders.append(["BUY_SEED", "STRAWBERRY", min(4, buy_straw)])
 
-            # 3. Melon Seeds
-            melon_target = self.params["melon_seed_target"]
+            # 3. Melon Seeds — §2x: conditionally increase target if melon shops are active
+            melon_target = self.params["melon_realloc_target"] if has_melon_shop else self.params["melon_seed_target"]
             if "SW" in unlocked_quads and private["seeds"].get("MELON", 0) < melon_target and money >= 300 and day < 16:
                 market_orders.append(["BUY_SEED", "MELON", melon_target])
 
@@ -384,7 +389,11 @@ class MaestroFullPortfolioAgent:
                         market_orders.append(["BUY_ANIMAL", "COW", min(2, buy_c)])
 
                 else:
-                    sheep_cap = self.params["sheep_cap"]
+                    # §2x: Dynamic sheep cap — reallocate freed cow capacity into wool when YARN_STORE is active and milk demand is weak
+                    if has_yarn_store and day >= self.params.get("sheep_realloc_day", 99) and milk_shop_count <= 1:
+                        sheep_cap = self.params["sheep_realloc_cap"]
+                    else:
+                        sheep_cap = self.params["sheep_cap"]
                     if has_yarn_store and total_s < sheep_cap and money >= 800 and shed_total_items <= 90 and day < 20:
                         buy_s = min(sheep_cap - total_s, int((money - 300) // 500))
                         if buy_s > 0:

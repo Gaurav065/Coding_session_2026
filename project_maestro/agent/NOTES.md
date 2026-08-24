@@ -749,6 +749,30 @@ because it structurally cannot do anything under the current per-species caps (g
 
 ---
 
+### §2x — Dynamic Crop & Pasture Reallocation Sweep (NEGATIVE — No Policy Adopted)
+
+- **Hypothesis**: Capital saved by the §2w early cow gate (~\$1.6-2.4k on weak-milk seeds) can be reinvested into glut-prone production when matching shops are present — sheep expansion when YARN_STORE + low milk, melon expansion when SALAD_BAR/FARMERS_MARKET.
+- **Harness**: `eval/test_reallocation_policies.py` using verified fast multi-process benchmark (Canary 1 + 2 passed). 6 policies tested: self-play Official 20 + Disjoint 100, H2H vs Dominant Meta + Wool-Heavy at $n=200$ each.
+- **Result**: **All six policies regressed** on both self-play and DM win rate.
+
+| Policy | SP100 Delta | DM WR | DM Delta |
+|---|---|---|---|
+| **0 (Baseline)** | **\$0** | **64.3%** | **+\$1,618** |
+| 1 (Sheep 6 on YARN_STORE + Low Milk) | **-\$2,840** | **39.6%** | -\$2,630 |
+| 2 (Sheep 8 on YARN_STORE + Low Milk) | **-\$3,141** | **40.7%** | -\$3,199 |
+| 3 (Melon 10 on Melon Shops) | **-\$1,416** | **49.0%** | +\$933 |
+| 4 (Combined Sheep 6 + Melon 10) | **-\$3,673** | **27.6%** | -\$2,909 |
+| 5 (Combined Sheep 6 + Melon 8) | **-\$3,405** | **32.3%** | -\$2,630 |
+
+- **Root Cause — §2b/§2e Confirmed**: Expanding production of glut-prone products (wool `above_target=3.20`, melon `above_target=3.60`) floods the shared AMM, crashing realized prices. The cow gate saves capital by *not spending*; reinvesting that savings into more supply of price-sensitive goods destroys the benefit. **Saved capital is worth more as cash than as sheep or melons.**
+  - Sheep policies (1, 2) drop DM WR from 64.3% $\rightarrow$ 39-41% — worse than the unsteered baseline (50%). Each additional sheep costs \$500 + daily feed + worker time, and wool's steep glut curve means even 2 extra sheep crash prices.
+  - Melon policy (3) is milder (SP100 -\$1.4k, DM WR drops 64.3% $\rightarrow$ 49.0%) but still net-negative. Each extra melon seed costs \$100 + 10-day growth + worker time; melon `above_target=3.60` is the steepest curve in the game.
+  - Combined policies (4, 5) compound both regressions.
+- **Params kept in code** (`sheep_realloc_cap`, `sheep_realloc_day=99`, `melon_realloc_target=6`) but disabled at defaults. No behavioral change to production agent.
+- **Conclusion**: The §2w cow gate is correctly designed as downward-only. The right strategy is to **save capital, not redeploy it** — the cash itself raises the floor.
+
+---
+
 ## 3. Data Extractor & Mechanic Diagnoses
 
 1. **Fixed Phase 0 Extractor & Re-derived Meta Sales Targets**:

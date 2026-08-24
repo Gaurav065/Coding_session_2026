@@ -405,13 +405,16 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
    - Dynamic early gating on Day 10 (3 revealed shops): if `milk_shop_count == 0`, cap cows at 4; if `milk_shop_count <= 1`, cap cows at 6.
    - **Head-to-Head vs Dominant Meta (10C/4S/0G, n=200)**: **64.3% Win Rate** (117W / 65L / 18T), Δ = **+$1,617.86**, $t = +4.61, p = 7.18 \times 10^{-6}$.
    - Dominates all ladder archetypes: Wool-Heavy (**81.5% WR**, $p < 10^{-15}$), Balanced Pasture (**78.5% WR**, $p < 10^{-15}$), Old Baseline (**79.0% WR**, $p < 10^{-15}$).
+6. **Dynamic Crop & Pasture Reallocation Sweep (REJECTED, §2x)**:
+   - Tested 6 policies reinvesting cow-gate savings: sheep expansion (cap 6/8 on YARN_STORE + low milk), melon expansion (target 8/10 on melon shops), combined. All regressed on both self-play (−$1.4k to −$3.7k) and DM win rate (27.6% to 49.0% vs baseline 64.3%).
+   - Confirms §2b/§2e: expanding glut-prone production (wool `above_target=3.20`, melon `above_target=3.60`) floods the shared AMM. Saved capital is worth more as cash than as additional supply.
 
 **Target: $80–90k in self-play — currently ~53–59% of target (up from ~48% at project start).**
 
 **Next Priority Milestones:**
-1. **Dynamic Crop & Pasture Reallocation on Revealed Demand (Days 10–18)** — PRIMARY. Reallocate capital and worker capacity saved by early cow gating into active shop sinks (expanding Strawberry/Melon planting or Sheep when respective shops unlock).
-2. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset. Must run in a Kaggle notebook kernel — local execution invalid.
-3. **Demand-Pressure Cell Expansion**: Increase per-cell sample from ~30 to ≥100 for higher precision on demand-regime responses.
+1. **AMM Sell Timing Optimization** — PRIMARY. The largest remaining lever. Current trickle sells 4 units/turn of glut-prone products at price_ratio ≥ 0.55. Shop/town-center drain recovers inventory between sells — optimizing the trickle rate per product against the drain schedule could improve realized prices significantly.
+2. **Worker Pathing & Throughput Optimization** — SECONDARY. Current sector assignment uses greedy nearest-task. Bottleneck analysis (e.g. lost watering/harvest cycles) could recover 5–15% throughput.
+3. **Phase 0 Dataset Extractor Re-run on Kaggle Cloud**: Execute corrected bounded-SELL extractor on the full 20GB `/kaggle/input/` dataset. Must run in a Kaggle notebook kernel — local execution invalid.
 
 ---
 
@@ -441,6 +444,13 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
   28.5% WR (57W/143L), -$3,837, t=-6.81, p=1.10e-10 vs Dominant Meta (10C/4S/0G) in unsteered
   play at n=200. Phase 0 shows 92.7% of ladder opponents are goose-free. `goose_cap=0` is the
   permanent default.
+- **Production reallocation into glut-prone products.** Closed (2026-08-24, §2x). Tested 6
+  policies reinvesting cow-gate savings into sheep (cap 6/8 on YARN_STORE + low milk) and melon
+  (target 8/10 on melon shops). All regressed: self-play −$1.4k to −$3.7k, DM WR 27.6%–49.0%
+  vs baseline 64.3%. Root cause: wool (`above_target=3.20`) and melon (`above_target=3.60`)
+  have the steepest glut curves in the game — additional supply crashes the shared AMM. Saved
+  capital is worth more as cash. This closes **all** upward-scaling directions; the remaining
+  levers are sell timing, worker throughput, and downward exposure management.
 - **The analytical valuation model.** It was recalibrated twice; each time the error
   *moved* rather than shrank (first understating the reference build by 4.4x, then
   overshooting the previously-correct clusters by +32% while still being -39% on
