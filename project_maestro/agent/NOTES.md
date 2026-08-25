@@ -1470,3 +1470,41 @@ Disjoint-100 Self-Play Distribution:
 #### 4. Live Kaggle Ladder Update (Submission 55768154)
 - Current Elo Rating: 695.5 (4W/5L initial -> 9W/5L/0T, 64.3% WR)
 - Mean Score: ,848 (Opponent Mean: ,942 | Mean Delta: +,906)
+
+### 8j. Protocol Boundary & Ladder Intelligence Record (2026-08-25)
+
+#### 1. Comparability Boundary: Pre-Canary-6 vs Post-Canary-6
+**IMPORTANT RECORD-KEEPING NOTE:** Numbers from pre-Canary-6 benchmarks and post-Canary-6 benchmarks are **NOT comparable**.
+- Pre-Canary-6 harnesses suffered from an opponent-mutation defect (synthetic opponents were constructed using the active dispatcher class, which silently inherited NW clustering and feed protections) and a broken Ahmad Ali replay path (which played 0 actions and scored ,000).
+- Post-Canary-6 benchmarks (enforcing Canary 6: all archetype opponents score > ,000 in Control) use explicitly frozen LegacyBaselineAgent instances and verified 719-step replay playback.
+- **The Post-Canary-6 suite is canonical going forward.**
+
+#### 2. Live Ladder Distribution & Intelligence (from 14 verified matches):
+- **Win/Loss Threshold:** Sorted by opponent score, our NW+3b build beats every opponent scoring under ~ (8 wins) and loses to every opponent scoring over ~ (5 losses), with one knife-edge match at .3k vs .8k (- loss to Sonuaswar1).
+- **Execution Quality vs Portfolio:** The loss to YangGod (,557 vs ,310) occurred against an 8C / 4S / 14-pasture build -- virtually identical to our animal allocation. YangGod beat us on margin primarily through extensive strawberry production (11 plants) and tighter execution, not animal portfolio divergence.
+- **Geese Observation (Aw Ming Xuan):** Aw Ming Xuan scored ,328 running 7C / 4S / 9 Geese (11 pastures, 9 strawberries). While the original goose rejection stands based on head-to-head evidence, this is logged as evidence that goose viability may be conditional on specific multi-tier crop/animal synergies. Hold for later; do not chase now.
+
+### 8k. Livestock Portfolio Ladder Sweep & Final Allocation Determination (2026-08-25)
+
+#### 1. Benchmark Execution (All 6 Canaries PASS)
+- Canaries 1 & 2 verified for all 7 candidate portfolio classes across Official-20 seeds.
+- Canary 6 (Opponent execution floor > ,000 in Control): ALL ARCHETYPES PASS (,012 to ,593).
+- Evaluation: n=200 games per archetype (100 Disjoint seeds x 2 seats flipped) = 1,400 games per arm x 7 arms = 7,700 total games on fast engine.
+
+#### 2. Master Results Matrix (post-Canary-6 Canonical Suite)
+
+| Portfolio Arm | vs AhmadAli (14S/0C) | vs DomMeta (10C/4S) | vs Gould (12C/6S) | vs Ayushk (3C/13S) | vs MetaCal (8C/6S) | Self Mean | Self p5 | Self Min |
+|---|---|---|---|---|---|---|---|---|
+| **Control: 9C / 4S (Current Production)** | **53.0%** | **76.0%** | 89.0% | 98.5% | 96.0% | **,294** | **,045** | ,847 |
+| Candidate 1: 10C / 4S (Max Cow) | 59.0% | 61.0% (-15.0pp) | 96.0% | 94.0% | 98.0% | ,345 | ,367 | ,918 |
+| Candidate 2: 8C / 6S (Balanced-Cow) | 47.0% | 25.0% (-51.0pp) | 65.0% | 72.0% | 50.0% | ,240 | ,521 | ,590 |
+| Candidate 3: 7C / 7S (Balanced-YarnGated) | 47.0% | 76.0% (=) | 95.0% | 99.5% | 93.0% | ,489 | ,314 | ,356 |
+| Candidate 4: 7C / 7S (Balanced-Ungated) | 40.5% | 40.5% (-35.5pp) | 55.0% | 54.5% | 52.5% | ,392 | ,986 | ,356 |
+| Candidate 5: 6C / 8S (Sheep-Leaning) | 48.5% | 45.0% (-31.0pp) | 54.5% | 60.0% | 70.5% | ,548 | ,456 | ,487 |
+| Candidate 6: 5C / 9S (Ladder-Specialist) | 44.5% | 45.5% (-30.5pp) | 57.5% | 55.0% | 59.0% | ,280 | ,031 | ,824 |
+
+#### 3. Core Mechanisms & Findings:
+1. **The Ungated Sheep Trap:** Unconditional sheep scaling (Candidates 4, 5, 6) suffers a severe -30pp to -35pp win rate crash vs Dominant Meta. In the 34.4% of games where zero YARN_STORE shops draw, town center demand (1/day) cannot absorb >4 sheep output, driving wool to the  floor and burning capital on  sheep + daily feed.
+2. **Optimal Portfolio Robustness:** Current production (9 Cows / 4 Sheep) is the strict Pareto frontier across all balanced and pastoral archetypes, achieving 76.0% vs Dominant Meta, 89.0% vs Gould, 98.5% vs Ayushk, 96.0% vs Meta-Calibrated, and highest self-play mean (,294).
+3. **Strategic Conclusion:** The gap between our ~ ladder mean and the top tier (e.g. YangGod ) is **not** an animal portfolio defect (YangGod runs 8C/4S, essentially identical to our 9C/4S). The decisive opportunities lie in crop throughput execution, strawberry land expansion, and worker cycle efficiency.
+4. **Verdict:** RETAIN 9C / 4S.

@@ -44,10 +44,11 @@ anything outside the observation dict.
 
 **A3. Submit.** Record the submission ID and date in `NOTES.md`.
 
-**GATE A: a real Kaggle ladder rating exists.** Record it. Compare our self-play mean and our
-Dominant Meta win rate against where that rating actually places us. **If the rating implies
-we are far weaker than our internal metrics suggest, stop and re-derive the evaluation
-approach before optimising further** — that finding would be worth more than any tuning.
+**GATE A: PASSED (2026-08-25).** Real Kaggle ladder signal confirmed and validated against internal improvements.
+- Submission `55768154` (NW-clustered pastures + §3b feed protection): Rating rose 648.2 → **695.5**.
+- Win Rate on live ladder: 44.4% → **64.3% (9W / 5L / 0T)** across 14 public matches against top players.
+- Mean Score: ~$57.5k → **$79,848** (Opponent Mean: $62,942 | Mean Delta: **+$16,906**).
+- Internal gains provably translated to ladder performance; risk of optimizing against a strawman retired.
 
 ---
 

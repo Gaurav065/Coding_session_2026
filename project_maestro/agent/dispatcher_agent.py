@@ -389,7 +389,8 @@ class MaestroFullPortfolioAgent:
 
                 else:
                     sheep_cap = self.params["sheep_cap"]
-                    if has_yarn_store and total_s < sheep_cap and money >= 800 and shed_total_items <= 90 and day < 20:
+                    yarn_gate_sheep = self.params.get("yarn_gate_sheep", True)
+                    if (not yarn_gate_sheep or has_yarn_store) and total_s < sheep_cap and money >= 800 and shed_total_items <= 90 and day < 20:
                         buy_s = min(sheep_cap - total_s, int((money - 300) // 500))
                         if buy_s > 0:
                             market_orders.append(["BUY_ANIMAL", "SHEEP", min(2, buy_s)])
