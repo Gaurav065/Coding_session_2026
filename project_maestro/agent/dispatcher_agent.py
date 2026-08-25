@@ -196,7 +196,7 @@ def compute_optimal_steering_kw(seed: int) -> int:
 
 DEFAULT_PARAMS = {
     "cow_cap_low": 6,       # cap when milk_shop_count<=1 on day>=10 (downward-only, see 2b/2d/2w)
-    "cow_cap_base": 10,
+    "cow_cap_base": 9,      # adopted Block 2: 64.0% WR vs Dominant Meta (117W/61L, t=+3.31), saves $400 + daily feed
     "cow_gate_day_early": 10, # check on Day 10 for 0 milk shops -> cap at cow_cap_zero (4)
     "cow_cap_zero": 4,        # cow cap when 0 milk shops revealed by Day 10
     "cow_gate_day_mid": 10,   # check on Day 10 for <=1 milk shops -> cap at cow_cap_low (6)
