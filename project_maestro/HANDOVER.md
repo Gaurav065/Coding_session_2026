@@ -415,7 +415,7 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
    - Mechanism note: hands respawn at shed each morning (`kaggriculture.py:880`); the lift is pure elimination of evening walk (~1,620 worker-turns freed).
    - In direct H2H match against Candidate 1 (Drop when idle), Candidate 2 won **63.5%** (127W/73L/0T).
 8. **NE Wheat -> Strawberry Conversion Ladder (ADOPTED, §3b)**:
-   - Evaluated expanding Strawberry capacity from 16 to 18, 20, 22, 24 plots. Step 3 (22 Strawberry / 2 Wheat) identified as Pareto optimum.
+   - Evaluated expanding Strawberry capacity from 16 to 18, 20, 22, 24 plots. Step 3 (22 Strawberry / 2 Wheat) selected as the optimal tradeoff choice (best §2y direct H2H at 85.5% WR, best Disjoint-100 floor at $32,123).
    - **Head-to-Head vs Previous §2y Baseline (n=200)**: **85.5% Win Rate** (171W/29L/0T), Δ = **+$3,998.60**, $t = +12.18, p < 10^{-15}$.
    - **Head-to-Head vs Dominant Meta (n=200)**: **88.0% Win Rate** (176W/24L/0T), Δ = **+$5,959.05**, $t = +16.07, p < 10^{-15}$.
    - **Floor Security**: Official 20 Min: **$33,376.00**; Disjoint 100 Min: **$32,123.00**.
@@ -423,8 +423,8 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
 **Target: $80–90k in self-play — currently ~62% of target (up from ~48% at project start, unconstrained score at $83.1k).**
 
 **Next Priority Milestones:**
-1. **Worker Pathing & Multi-Tile Task Coordination (PRIMARY)** — Deep throughput optimization across sectors: optimal intra-quadrant snake traversal, reducing redundant steps, and optimizing worker handoffs.
-2. **AMM Sell Timing Optimization (SECONDARY)** — Fine-tuning trickle sell rates against shop and town-center drain intervals.
+1. **AMM Sell Timing Optimization (PRIMARY)** — Closing the **$45,000+ price realization gap**. Our agent out-produces the meta on 5 of 6 goods (196.9 milk vs 50.5, 1,213 wheat vs 227.6, 174.7 fert vs 123.0), but dumps milk (0.61x base) and fertilizer (0.60x base) into crashed books. Synchronizing sell orders with shop drain intervals (every 4 turns) will elevate realization from 1.03x to the meta's 2.44x.
+2. **Worker Pathing & Multi-Tile Task Coordination (SECONDARY)** — Deep throughput optimization across sectors: optimal intra-quadrant snake traversal, reducing redundant steps, and optimizing worker handoffs.
 
 ---
 

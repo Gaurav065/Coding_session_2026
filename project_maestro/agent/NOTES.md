@@ -892,22 +892,41 @@ because it structurally cannot do anything under the current per-species caps (g
    - **Labor**: Day 0 Hires = **4.9** (Median: 5.0), Total Season Hires = **282.8** (Median: 277.0 $\approx$ 9.5 hands/day)
    - **Land Unlocks**: NE unlocked in **100%** of games (Day 5.8), SW unlocked in **100%** of games (Day 10.4), SE unlocked in only **17.7%** of games.
 
-1. **Fixed Phase 0 Extractor & Re-derived Meta Sales Targets**:
-   - Fixed `phase0_analysis.py:234` by bounding SELL orders against actual shed inventory `min(qty, step_shed.get(item, 0))` (`kaggriculture.py:642-650`).
-   - Ground-Truth Re-derived Meta Sales across top 133k–176k tapes (`rederive_sales_targets.py`):
-     - **WHEAT**: 340.3 units (\$14,372.57)
-     - **STRAWBERRY**: 84.6 units (\$20,398.57) [Max: 243 units / \$57.5k in strawberry-focused tape]
-     - **MILK**: 77.4 units (\$16,326.71) [Max: 227 units / \$47.3k in milk-focused tape]
-     - **WOOL**: 60.6 units (\$13,106.86) [Max: 107 units / \$25.4k in wool-focused tape]
-     - **FERTILIZER**: 121.0 units (\$10,245.43)
-     - **MELON**: 7.6 units (\$1,810.86)
-     - **CARROT**: 4.1 units (\$228.57)
-     - **EGG / TOMATO**: 0.0 units
-   - The prior "286 strawberry target" was an artifact of summing unbounded order requests from unexercised actions.
-2. **Systemic Codebase Audit of Shop Mappings**:
-   - Audited all shop maps across `fast_engine.py`, `phase0_analysis.py`, `price_model.py`, and `dispatcher_agent.py` against `kaggriculture.py:103-112` and `kaggriculture.py:41-51` via `project_maestro/tests/audit_shop_product_mappings.py`. All mappings verified 100% equivalent.
-3. **Corrected 10C/4S/0G Meta Baseline Bounds**:
-   - Mean: **\$88,109.11**
+---
+
+### §3c — Price Realization vs. Throughput & Strategic Reversal
+
+- **Motivation & Finding**:
+  - Direct comparison of our production volumes vs. the top meta reveals that **our agent already meets or exceeds the meta on 5 of 6 goods**:
+    - **Wheat**: 1,213 vs 227.6 (+433%)
+    - **Milk**: 196.9 vs 50.5 (+290%)
+    - **Melon**: 33.6 vs 29.6 (+13%)
+    - **Fertilizer**: 174.7 vs 123.0 (+42%)
+    - **Strawberry**: 81.6 vs 55.5 (+47%)
+  - Despite producing **\$104.4k in base-value goods**, our agent earns only **\$51.0k in reward** (gross revenue \$108.1k, realization ratio **1.03x**).
+  - Meanwhile, the meta earns **\$91.6k net reward** (~**\$115k gross**) on only **\$47.8k in base value** (realization ratio **2.44x**)!
+
+- **Official 20 Price Realization Matrix (Self-Play)**:
+
+| Product | Units/Game | Base Price ($) | Scarcity Ceiling ($) | Glut Floor ($) | Realized Price ($) | Realization Ratio | Total Revenue ($) | Status |
+|---|---|---|---|---|---|---|---|---|
+| **WHEAT** | 1,213.0 | \$25 | \$45.0 | \$20.0 | \$37.08 | **1.48x** | \$44,981.2 | PREMIUM (Scarcity) |
+| **STRAWBERRY** | 81.6 | \$120 | \$204.0 | \$1.0 | \$190.88 | **1.59x** | \$15,580.9 | PREMIUM (Scarcity) |
+| **MILK** | 196.9 | \$160 | \$256.0 | \$1.0 | \$98.24 | **0.61x** | \$19,348.7 | **GLUT DUMP (Depressed)** |
+| **WOOL** | 23.0 | \$200 | \$240.0 | \$1.0 | \$207.09 | **1.04x** | \$4,757.8 | NEAR BASE |
+| **MELON** | 33.6 | \$250 | \$300.0 | \$1.0 | \$259.22 | **1.04x** | \$8,709.8 | NEAR BASE |
+| **FERTILIZER** | 174.7 | \$100 | \$140.0 | \$60.0 | \$59.57 | **0.60x** | \$10,408.0 | **GLUT DUMP (Depressed)** |
+| **CARROT** | 67.1 | \$35 | \$70.0 | \$10.0 | \$63.83 | **1.82x** | \$4,284.7 | PREMIUM (Scarcity) |
+| **TOTAL** | | **\$104,449** | | | | **1.03x** | **\$108,071.1** | |
+
+- **Root Cause**:
+  - We flood the market with batch sells of Milk and Fertilizer at Hour 0/23, transacting along the linear/quadratic glut curve down to \$59 (Fertilizer) and \$98 (Milk).
+  - Lost revenue on Milk (\$98.24 vs \$256 scarcity) = **\$31,058 per game**.
+  - Lost revenue on Fertilizer (\$59.57 vs \$140 scarcity) = **\$14,050 per game**.
+  - Combined lost price realization = **\$45,108 per game** — the entire gap between our \$51k baseline and the \$90k+ target!
+- **Strategic Milestone Ordering**:
+  - **AMM Sell Timing Optimization is designated PRIMARY.**
+  - **Worker Pathing / Sector Coordination is designated SECONDARY.**
    - Median: **\$87,662.00**
    - Min: **\$26,958.00**
    - Max: **\$162,096.00** (overall corpus max across all builds is \$170,964.00).
