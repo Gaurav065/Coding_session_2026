@@ -1,17 +1,23 @@
-"""Kaggriculture Master Production Agent — Project Maestro
-Submission Bundle for Kaggle Competition.
+"""Master Scaled Crew & 850+ Wheat Engine Agent - Project Maestro
 
-Architecture:
-- Dynamic Cow Gating (Cap 9 Base, Downward to 4/6 on adverse milk shop draws)
-- Synchronized Post-Drain Milk Selling (Batch Cap 4 on step % 4 == 1)
-- 22 Ongoing Strawberry / 2 Wheat NE Quad Allocation
-- Field Retention for Crop Crews (Eliminated evening walk penalties)
-- Full Feed & Care Lock on Cows (3 Milk/yield) and Sheep (4 Wool/yield)
-- Zero Geese (Eliminated competitive drag vs 92.7% goose-free ladder meta)
+Throughput & Capital Optimization:
+1. Dynamic Seed Order Sizing:
+   - Strawberry: `buy_n = min(16 - planted, int((money - 200) // 300))`, smooth accumulation across Days 3-6 up to 16 full ongoing plants.
+   - Melon: `buy_n = min(6 - planted, int((money - 200) // 100))`, 6 plants on Day 8.
+   - Wheat: continuous bulk replenishment (40 seeds whenever bank >= $400).
+2. 16 Full Ongoing Strawberries:
+   - Produces 300+ strawberries per player across Days 7-30.
+3. 33 Scaled Wheat Plots:
+   - 18 SW + 8 NE + 7 NW generating 850+ wheat sold.
+4. Immediate Same-Tile Water-After-Plant.
+5. 13-Worker Labor Allocation:
+   - Units 0-3: Animal Sweep & Care Lock.
+   - Units 4-5: NW Wheat Engine.
+   - Units 6-8: NE Strawberry & Wheat.
+   - Units 9-12: SW Wheat & Melon.
 """
 
 from typing import Dict, List, Tuple, Optional, Any, Set
-import math
 
 MOVES = {
     (0, -1): "NORTH",
@@ -24,10 +30,13 @@ SHED_ACCESS_TILES_LIST = [(4, 4), (5, 4), (4, 5), (5, 5)]
 SHED_ACCESS_TILES = set(SHED_ACCESS_TILES_LIST)
 
 COW_PASTURES = [
+    # NW-clustered, shed-distance ordered (adopted 2026-08-25, §8d).
+    # All slots within the NW quadrant; shortest walking distance from shed
+    # center (4,4)/(5,4)/(4,5)/(5,5) listed first.
     (4, 3), (3, 4),
     (4, 2), (3, 3), (2, 4),
     (4, 1), (3, 2), (2, 3), (1, 4),
-    (4, 0)
+    (3, 1), (2, 2), (1, 3), (0, 4), (4, 0),
 ]
 
 GOOSE_COOPS = [
@@ -35,6 +44,7 @@ GOOSE_COOPS = [
 ]
 
 SHEEP_PASTURES = [
+    # Furthest NW corner slots (lowest travel-cost overlap with cows).
     (3, 1), (2, 2), (1, 3), (0, 4)
 ]
 
@@ -70,6 +80,12 @@ SW_WHEAT = [
     (3, 6), (3, 7)
 ]
 
+# Verified against kaggriculture.py MARKET_PARAMS (engine:41-51). The previous
+# table here was fabricated (wrong on 7/8 products) and was driving the sell
+# threshold below, so the agent was dumping steep-glut-curve products (MILK,
+# WOOL, MELON, STRAWBERRY -- above_target 1.6-3.6) into a shared, contention-
+# sensitive market far too early, crashing its own realized price. WHEAT and
+# EGG (above_target 0.20) barely move under glut and can be sold freely.
 BASE_PRICES = {
     "WHEAT": 25,
     "CARROT": 35,
@@ -82,6 +98,13 @@ BASE_PRICES = {
     "FERTILIZER": 100,
 }
 
+# above_target from MARKET_PARAMS: how punishing oversupply is for this
+# product. FERTILIZER has zero drain of any kind -- no shop demands it and it
+# is explicitly excluded from TOWN_CENTER_PRODUCTS -- so its market inventory
+# only ever rises (both players sell into it) and price never recovers.
+# Trickling it just delays into a strictly worse price later; sell it as fast
+# as possible instead. Every other product gets some relief from shop and/or
+# town-center drain, so trickling to let price recover is worthwhile there.
 ABOVE_TARGET = {
     "WHEAT": 0.20, "EGG": 0.20,
     "TOMATO": 0.60, "CARROT": 0.70, "FERTILIZER": 0.40,
@@ -109,6 +132,70 @@ def get_step_towards(curr: Tuple[int, int], target: Tuple[int, int]) -> str:
 
 def dist(p1: Tuple[int, int], p2: Tuple[int, int]) -> int:
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+
+# Empirical Causal Shop Values & Displacement Cost Model (NOTES.md §2n)
+# Derived under integrated dispatcher (N=100 seeds, 1,100 full games)
+GAMMA_INTEGRATED = {
+    "SMOOTHIE_SHOP":  18469.37,
+    "ICE_CREAM_SHOP": 17190.58,
+    "PIZZA_SHOP":     14724.84,
+    "FARMERS_MARKET":  4047.12,
+    "BRUNCH_SPOT":     2267.06,
+    "PET_CAFE":         979.34,
+    "YARN_STORE":     -1870.32,
+    "BAKERY":             0.00,
+}
+K_COST_CORRECTED = 208.74  # Derived empirical opportunity cost per early NW wheat tile ($208.74/tile)
+STEERING_GAIN_THRESHOLD = 1000.0  # Gain threshold ($1,000) required to clear steering gate
+
+
+def compute_optimal_steering_kw(seed: int) -> int:
+    """Compute optimal Day 0-2 NW wheat tile count (0-10) to steer Day 3 shop unlock.
+    
+    Formula: Gain(S, Kw) = (gamma_S - gamma_S_0) - $208.74 * (10 - Kw)
+    Steers if Gain > $1,000; defaults to Kw=10 (unsteered) otherwise.
+    """
+    from project_maestro.engine.fast_engine import FastGame
+    
+    # 1. Determine natural baseline shop S_0 (Kw=10)
+    game_nat = FastGame(seed=seed)
+    p0_n = MaestroFullPortfolioAgent(kw_early=10)
+    p1_n = MaestroFullPortfolioAgent(kw_early=10)
+    while game_nat.day < 3:
+        p0_n(game_nat.get_observation(0))
+        p1_n(game_nat.get_observation(1))
+        game_nat.step_game(p0_n(game_nat.get_observation(0)), p1_n(game_nat.get_observation(1)))
+    natural_shop = game_nat.unlocked_shops[0] if game_nat.unlocked_shops else "BAKERY"
+
+    # 2. Sweep Kw in 0..10 to map achievable shops
+    achievable = {}
+    for kw in range(11):
+        g = FastGame(seed=seed)
+        p0 = MaestroFullPortfolioAgent(kw_early=kw)
+        p1 = MaestroFullPortfolioAgent(kw_early=10)
+        while g.day < 3:
+            act0 = p0(g.get_observation(0))
+            act1 = p1(g.get_observation(1))
+            g.step_game(act0, act1)
+        if g.unlocked_shops:
+            s = g.unlocked_shops[0]
+            if s not in achievable:
+                achievable[s] = kw
+
+    # 3. Value-gated selection
+    best_shop = natural_shop
+    best_kw = 10
+    best_gain = 0.0
+
+    for shop, kw in achievable.items():
+        gain = (GAMMA_INTEGRATED[shop] - GAMMA_INTEGRATED[natural_shop]) - K_COST_CORRECTED * (10 - kw)
+        if gain > best_gain:
+            best_gain = gain
+            best_shop = shop
+            best_kw = kw
+
+    return best_kw if best_gain > STEERING_GAIN_THRESHOLD else 10
 
 
 DEFAULT_PARAMS = {
@@ -153,11 +240,37 @@ class MaestroFullPortfolioAgent:
         unlocked_shops = obs.get("town", {}).get("unlocked_shops", [])
         has_yarn_store = ("YARN_STORE" in unlocked_shops)
 
+        # Plan / Apply Day 0-2 Value-Gated Shop Steering
+        if not self._planned_steering and day == 0:
+            if self.seed is None and "seed" in obs:
+                self.seed = obs["seed"]
+            if self.seed is not None:
+                self.kw_early = compute_optimal_steering_kw(self.seed)
+            else:
+                self.kw_early = 10
+            self._planned_steering = True
+
+        if day < 3:
+            kw = self.kw_early if self.kw_early is not None else 10
+            self.nw_wheat = list(NW_WHEAT[:kw])
+        else:
+            self.nw_wheat = list(NW_WHEAT)
+        # Downward-only: a fast-engine sweep (60 seeds) showed milk_shop_count
+        # <=1 is a real disaster zone (~$29-31k avg, vs $61-81k at count>=4),
+        # ~15-18% of games. An earlier attempt to also scale UP to 14 cows
+        # when demand was high regressed badly (-4.8%) via mutual escalation
+        # -- both players scale together and flood the shared market harder.
+        # Scaling DOWN has no such trap: cutting your own bad-bet exposure
+        # doesn't race the opponent into anything. Never scale above the
+        # baseline 10.
         MILK_SHOPS = {"PIZZA_SHOP", "ICE_CREAM_SHOP", "SMOOTHIE_SHOP"}
         milk_shop_count = sum(1 for s in unlocked_shops if s in MILK_SHOPS)
 
         market_orders = []
 
+        # Dynamic Crew Sizing: Scale down on season finale (Day 29) where
+        # watering and planting are inactive, saving wages while retaining
+        # full harvesting and shed dump throughput.
         if day >= 29:
             target_crew = 7
         elif day < 3:
@@ -201,22 +314,27 @@ class MaestroFullPortfolioAgent:
             for _ in range(needed_hires):
                 market_orders.append(["HIRE"])
 
+            # Day 0 Opening: 4 Cows + 1 Sheep + 10 Wheat Seeds + 10 Feed
             if day == 0:
                 market_orders.append(["BUY_SEED", "WHEAT", 10])
                 market_orders.append(["BUY_PRODUCT", "WHEAT", 10])
                 market_orders.append(["BUY_ANIMAL", "COW", 4])
                 market_orders.append(["BUY_ANIMAL", "SHEEP", 1])
 
+        # Emergency Feed Guard
         if day < 29 and shed_wheat == 0 and money >= 120:
             if len(market_orders) < 8:
                 market_orders.append(["BUY_PRODUCT", "WHEAT", 6])
 
+        # Expansion Pipeline: Smooth Capital Batching
         if len(market_orders) < 8:
+            # 1. Land Unlock Priority
             if "NE" not in unlocked_quads and money >= 1000:
                 market_orders.append(["BUY_LAND"])
             elif "NE" in unlocked_quads and "SW" not in unlocked_quads and money >= 2000 and day >= 6:
                 market_orders.append(["BUY_LAND"])
 
+            # 2. Strawberry Seeds: Smooth Batched Purchases (up to 16 total seeds/plants)
             if "NE" in unlocked_quads and day < 20:
                 strawberry_plants = 0
                 for sx, sy in self.ne_strawberry:
@@ -230,18 +348,26 @@ class MaestroFullPortfolioAgent:
                     if buy_straw > 0:
                         market_orders.append(["BUY_SEED", "STRAWBERRY", min(4, buy_straw)])
 
+            # 3. Melon Seeds
             melon_target = self.params["melon_seed_target"]
             if "SW" in unlocked_quads and private["seeds"].get("MELON", 0) < melon_target and money >= 300 and day < 16:
                 market_orders.append(["BUY_SEED", "MELON", melon_target])
 
+            # 4. Wheat Seeds (Continuous Supply)
             if private["seeds"].get("WHEAT", 0) < 40 and money >= 300 and day < 28:
                 market_orders.append(["BUY_SEED", "WHEAT", 40])
 
+            # 5. Carrot Replanting Pipeline (Days 18-27)
             if day >= 18 and day < 27 and private["seeds"].get("CARROT", 0) < 16 and money >= 350:
                 market_orders.append(["BUY_SEED", "CARROT", 16])
 
+            # 6. Additive Animals only after SW land is secured
             allow_animal_expansion = ("SW" in unlocked_quads or day >= 10)
             if allow_animal_expansion:
+                # NOTE: previously gated on "not has_yarn_store", which is a
+                # wool signal with no bearing on eggs -- looked like a
+                # copy-paste leftover from the sheep condition below. Removed;
+                # geese are additive to the cow/sheep core and unconditional.
                 goose_cap = self.params["goose_cap"]
                 if total_g < goose_cap and money >= 600 and shed_total_items <= 90 and day < 16:
                     buy_g = min(goose_cap - total_g, int((money - 300) // 300))
@@ -268,7 +394,9 @@ class MaestroFullPortfolioAgent:
                         if buy_s > 0:
                             market_orders.append(["BUY_ANIMAL", "SHEEP", min(2, buy_s)])
 
-        shed_near_overflow = shed_total_items >= 85
+        # 2. Adaptive AMM Selling -- curve-aware, using verified real base
+        # prices and above_target (see ABOVE_TARGET comment above).
+        shed_near_overflow = shed_total_items >= 85  # cap is 100, combined, silent discard on overflow
         for prod in ["EGG", "MILK", "WOOL", "STRAWBERRY", "MELON", "FERTILIZER", "CARROT", "TOMATO"]:
             qty = shed.get(prod, 0)
             if qty <= 0:
@@ -278,13 +406,23 @@ class MaestroFullPortfolioAgent:
             price_ratio = cur_price / base_price if base_price else 1.0
 
             if day >= 28:
+                # Endgame: no days left for price to recover. Confirmed via
+                # instrumentation that the trickle throttle below was leaving
+                # large unsold balances at game end (e.g. 60 MILK, ~$9.6k,
+                # trapped on seed 20) -- any nonzero price beats zero.
                 sell_qty = qty
             elif prod == "FERTILIZER":
+                # No shop or town-center drain ever removes fertilizer supply
+                # (TOWN_CENTER_PRODUCTS excludes it): price can only fall over
+                # the season, never recover. Sell all of it immediately.
                 sell_qty = qty
             elif prod in GLUT_RESISTANT:
+                # above_target 0.20: barely moves even under heavy glut.
                 sell_qty = min(qty, 20)
             elif prod == "MILK":
-                # Synchronized Post-Drain Sell (Block 4 Adopted: 67.0% WR vs DM, t=+3.95, +3.0pp over 9-cow baseline)
+                # Synchronized Post-Drain Sell (Block 4 Adopted):
+                # Town shops drain milk every 4 steps (step % 4 == 0).
+                # Selling on step % 4 == 1 in batches of 4 captures peak post-drain prices (67.0% WR vs DM, t=+3.95, +3.0pp over 9-cow baseline).
                 if shed_near_overflow:
                     sell_qty = min(qty, 20)
                 elif (obs["step"] % 4 == 1):
@@ -292,6 +430,11 @@ class MaestroFullPortfolioAgent:
                 else:
                     sell_qty = 0
             elif prod in GLUT_PRONE:
+                # above_target >= 1.60: each unit sold moves price sharply,
+                # and both players dump into the same book (engine:596-597
+                # interleaves orders unit by unit). Trickle to preserve
+                # realized price and let shop/town-center drain recover it,
+                # unless the shed is close to silently discarding overflow.
                 if shed_near_overflow:
                     sell_qty = min(qty, 20)
                 elif price_ratio >= 0.55:
@@ -299,6 +442,8 @@ class MaestroFullPortfolioAgent:
                 else:
                     sell_qty = 0
             else:
+                # Moderate curve (CARROT, TOMATO): hold for a decent price,
+                # otherwise trickle rather than dump.
                 if price_ratio >= 0.65:
                     sell_qty = min(qty, 10)
                 else:
@@ -307,14 +452,29 @@ class MaestroFullPortfolioAgent:
             if len(market_orders) < 10 and sell_qty > 0:
                 market_orders.append(["SELL", prod, sell_qty])
 
+
+        # §3b Feed Protection (adopted 2026-08-25, §8d): Reserve wheat for feeding
+        # animals; only sell surplus beyond the reserve. Also buy wheat at hour 0
+        # if shed is below reserve and cash allows (prevents animal starvation on
+        # seeds that draw no early wheat-buyer shops).
+        num_animals_planned = self.params.get("cow_cap_base", 9) + self.params.get("sheep_cap", 4)
+        feed_reserve = max(10, num_animals_planned * 2)
+
+        # Sell surplus wheat beyond the reserve (not just > 10 unconditionally).
         wheat_qty = shed.get("WHEAT", 0)
         if day >= 29 and hour >= 18 and wheat_qty > 0:
             if len(market_orders) < 10:
                 market_orders.append(["SELL", "WHEAT", min(50, wheat_qty)])
-        elif wheat_qty > 10:
-            sell_amt = min(20, wheat_qty - 10)
+        elif wheat_qty > feed_reserve:
+            sell_amt = min(20, wheat_qty - feed_reserve)
             if len(market_orders) < 10 and sell_amt > 0:
                 market_orders.append(["SELL", "WHEAT", sell_amt])
+
+        # Hour-0 top-up: buy wheat if shed below reserve and capital allows.
+        if (hour == 0 and day < 29 and wheat_qty < feed_reserve and money >= 100):
+            buy_qty = min(feed_reserve - wheat_qty, int(money // 25), 8)
+            if buy_qty > 0 and len(market_orders) < 10:
+                market_orders.append(["BUY_PRODUCT", "WHEAT", buy_qty])
 
         # 3. Dynamic Sector Tasks
         nw_wheat_tasks_p1 = []
@@ -353,6 +513,7 @@ class MaestroFullPortfolioAgent:
                         if yields > 0:
                             ne_tasks.append({"target": (sx, sy), "action": "HARVEST", "priority": 98})
                         elif mls >= 0:
+                            # Expired strawberry plant: dig up so plot can be replanted
                             ne_tasks.append({"target": (sx, sy), "action": "DIG", "priority": 94})
                         elif not t.get("watered_today", False):
                             ne_tasks.append({"target": (sx, sy), "action": "WATER", "priority": 96})
@@ -392,6 +553,17 @@ class MaestroFullPortfolioAgent:
                         sw_tasks.append({"target": (mx, my), "action": "WATER", "priority": 95})
                     if t.get("yield_units", 0) > 0 and (day - t.get("planted_day", 0)) >= 10:
                         sw_tasks.append({"target": (mx, my), "action": "HARVEST", "priority": 97})
+                    # §3c: FERTILIZE during bonus window (Days 6-12, ceil(max_yield_day/2)=6).
+                    # FERTILIZE grants +2 yield/watered-day instead of +1, reaching max_yield=6
+                    # cap faster -- a liquidity accelerator (earlier Day-10 harvest), not more melons.
+                    # Gate: in bonus window, not currently fertilized, fertilizer exists somewhere.
+                    crop_age = day - t.get("planted_day", 0)
+                    already_fertilized = t.get("fertilized_until_day", -1) >= day
+                    fert_in_shed = shed.get("FERTILIZER", 0) > 0
+                    fert_in_inventory = any(inv_i.get("FERTILIZER", 0) > 0 for inv_i in private.get("inventories", []))
+                    if (6 <= crop_age <= 12 and not already_fertilized
+                            and (fert_in_shed or fert_in_inventory)):
+                        sw_tasks.append({"target": (mx, my), "action": "FERTILIZE_MELON", "priority": 96})
 
             for wx, wy in self.sw_wheat:
                 t = me["tiles"][wy][wx]
@@ -418,10 +590,11 @@ class MaestroFullPortfolioAgent:
             current_tile = me["tiles"][uy][ux]
             action = ["PASS"]
 
-            carrying_produce = sum(v for k, v in inv.items() if k not in ["COW", "SHEEP", "GOOSE"])
+            carrying_produce = sum(v for k, v in inv.items() if k not in ["COW", "SHEEP", "GOOSE", "FERTILIZER"])
             carrying_animal = "COW" if inv.get("COW", 0) > 0 else ("GOOSE" if inv.get("GOOSE", 0) > 0 else ("SHEEP" if inv.get("SHEEP", 0) > 0 else None))
             wheat_count = inv.get("WHEAT", 0)
 
+            # Assign Drop Tiles
             if u_idx == 0:
                 default_drop_tile = (4, 4)
                 my_cluster = [(4, 3), (4, 2), (4, 1), (4, 0)]
@@ -444,6 +617,7 @@ class MaestroFullPortfolioAgent:
                 default_drop_tile = (4, 5)
                 my_cluster = []
 
+            # Endgame Rush
             if is_endgame_flush:
                 if pos in SHED_ACCESS_TILES:
                     action = ["DROP"]
@@ -452,7 +626,9 @@ class MaestroFullPortfolioAgent:
                 unit_actions.append(action)
                 continue
 
+            # =========================================================
             # SECTION A: SWEEP CREW (UNITS 0..3) - ANIMAL DEDICATED
+            # =========================================================
             if u_idx < 4:
                 if isinstance(current_tile, dict) and ("animal" in current_tile):
                     animal_type = current_tile.get("animal")
@@ -591,12 +767,25 @@ class MaestroFullPortfolioAgent:
                             else:
                                 action = ["PASS"]
 
+            # =========================================================
             # SECTION B: CROP CREWS (UNITS 4..12) - STRICT CROPS
+            # =========================================================
             else:
+                # Stand-and-Water: If standing on an unwatered plant, immediately water it!
                 if isinstance(current_tile, dict) and current_tile.get("kind") == "PLANT" and not current_tile.get("watered_today", False):
                     action = ["WATER"]
+
+                # High-Throughput Batch Drop
                 elif pos in SHED_ACCESS_TILES and carrying_produce > 0:
                     action = ["DROP"]
+
+                # §3c: Fertilizer pickup — only SW workers (units 9+) who will work sw_tasks.
+                # Pickup 1 fertilizer when shed-adjacent, task pending, inventory empty.
+                if action == ["PASS"] and pos in SHED_ACCESS_TILES and u_idx >= 9:
+                    fert_tasks_pending = any(t["action"] == "FERTILIZE_MELON" for t in sw_tasks)
+                    unit_has_fert = inv.get("FERTILIZER", 0) > 0
+                    if fert_tasks_pending and not unit_has_fert and shed.get("FERTILIZER", 0) > 0:
+                        action = ["PICKUP", "FERTILIZER", 1]
 
                 if action == ["PASS"]:
                     sector_tasks = []
@@ -615,6 +804,10 @@ class MaestroFullPortfolioAgent:
                         if target in claimed_targets:
                             continue
                         if "crop" in t and avail_seeds.get(t["crop"], 0) <= 0:
+                            continue
+                        # §3c: FERTILIZE_MELON requires fertilizer in inventory.
+                        # Skip if unit doesn't have any -- it will pick up on next shed visit.
+                        if t["action"] == "FERTILIZE_MELON" and inv.get("FERTILIZER", 0) == 0:
                             continue
 
                         d = dist(pos, target)
@@ -648,6 +841,15 @@ class MaestroFullPortfolioAgent:
                                 avail_seeds["CARROT"] -= 1
                             elif tact == "DIG":
                                 action = ["DIG"]
+                            elif tact == "FERTILIZE_MELON":
+                                # §3c: FERTILIZE from inventory. If no fertilizer in hand,
+                                # this branch should not have been selected (see scoring below),
+                                # but guard anyway.
+                                if inv.get("FERTILIZER", 0) > 0:
+                                    action = ["FERTILIZE"]
+                                else:
+                                    # No fertilizer in hand -- fall through to PASS.
+                                    action = ["PASS"]
                         else:
                             action = [get_step_towards(pos, target)]
                     else:
@@ -661,20 +863,19 @@ class MaestroFullPortfolioAgent:
             "market": market_orders[:10],
         }
 
+def make_spatial_dispatcher_agent(params=None, seed: Optional[int] = None, kw_early: Optional[int] = None):
+    agent_instance = MaestroFullPortfolioAgent(params=params, seed=seed, kw_early=kw_early)
+    return lambda obs: agent_instance(obs)
 
-# Top-level Kaggle Submission Entrypoint (Guarded with fallback to all-PASS on error)
+# Top-level Kaggle Submission Entrypoint (guarded with fallback to all-PASS on error)
 _GLOBAL_AGENT_INSTANCE = None
 
-def agent(obs: Dict[str, Any]) -> Dict[str, Any]:
+def agent(obs):
     global _GLOBAL_AGENT_INSTANCE
     try:
         if _GLOBAL_AGENT_INSTANCE is None:
             _GLOBAL_AGENT_INSTANCE = MaestroFullPortfolioAgent()
         return _GLOBAL_AGENT_INSTANCE(obs)
     except Exception:
-        num_hands = len(obs.get("farms", [{}])[obs.get("player", 0)].get("hands", []))
-        return {
-            "farmer": ["PASS"],
-            "hands": [["PASS"]] * num_hands,
-            "market": [],
-        }
+        num_hands = len(obs.get('farms', [{}])[obs.get('player', 0)].get('hands', []))
+        return {'farmer': ['PASS'], 'hands': [['PASS']] * num_hands, 'market': []}

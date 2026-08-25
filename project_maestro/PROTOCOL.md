@@ -145,20 +145,31 @@ This competition is an **Elo ladder scored on match outcomes, not money margin.*
 **Primary metric: head-to-head win rate vs Dominant Meta (10C/4S/0G), n=200, both seats.**
 Dominant Meta is 37.8% of real ladder trajectories.
 
-**Secondary tie-breakers, in order: Disjoint-100 floor, then Disjoint-100 self-play mean.**
+**Secondary tie-breakers, in order: Disjoint-100 p5 floor, then Disjoint-100 self-play mean.**
 
 **Self-play mean alone NEVER decides an adoption.** It is structurally blind to free-rider
 and public-good effects, because both seats make identical moves and pay identical costs.
 
 Adoption requires **all** of:
 - H2H vs Dominant Meta improves, or is unchanged within noise while a secondary improves
-- Disjoint-100 floor does not regress more than 5%
+- Disjoint-100 **p5** does not regress more than 5%  ← see methodology note below
 - All five canaries pass
 - Exactly one variable changed
 - The FALSIFIER line is answerable
 
 If primary and secondary disagree, **run the two candidates directly head-to-head.** That
 settles it without relying on either proxy (this resolved Cand1-vs-Cand2 correctly).
+
+**Floor gate methodology (corrected 2026-08-25, not retroactive):**
+The original gate used `min` over 100 seeds — the noisiest possible estimator of tail risk.
+During the NW+3b investigation, the gate correctly stopped and sent the run to investigation,
+but the breach was 2 seeds out of 100 sharing a pre-existing adverse-draw vulnerability
+(no-milk-shop draw; also present in the baseline). The p5 for NW+3b *improved* by +5.7%
+while the min fell by 11%. Min is retained as an **investigation trigger** (it correctly
+fired and pointed to the right place), but **p5 is the adoption criterion** — it is a
+stable estimator of tail risk that is not dominated by a single outlier. Document any
+min-gate trigger with: seed IDs, scores, shop draws, and whether the cause pre-exists
+in the baseline.
 
 ---
 

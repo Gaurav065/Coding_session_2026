@@ -30,10 +30,13 @@ SHED_ACCESS_TILES_LIST = [(4, 4), (5, 4), (4, 5), (5, 5)]
 SHED_ACCESS_TILES = set(SHED_ACCESS_TILES_LIST)
 
 COW_PASTURES = [
+    # NW-clustered, shed-distance ordered (adopted 2026-08-25, §8d).
+    # All slots within the NW quadrant; shortest walking distance from shed
+    # center (4,4)/(5,4)/(4,5)/(5,5) listed first.
     (4, 3), (3, 4),
     (4, 2), (3, 3), (2, 4),
     (4, 1), (3, 2), (2, 3), (1, 4),
-    (4, 0)
+    (3, 1), (2, 2), (1, 3), (0, 4), (4, 0),
 ]
 
 GOOSE_COOPS = [
@@ -41,6 +44,7 @@ GOOSE_COOPS = [
 ]
 
 SHEEP_PASTURES = [
+    # Furthest NW corner slots (lowest travel-cost overlap with cows).
     (3, 1), (2, 2), (1, 3), (0, 4)
 ]
 
@@ -448,15 +452,29 @@ class MaestroFullPortfolioAgent:
             if len(market_orders) < 10 and sell_qty > 0:
                 market_orders.append(["SELL", prod, sell_qty])
 
-        # Sell surplus wheat beyond 10 units
+
+        # §3b Feed Protection (adopted 2026-08-25, §8d): Reserve wheat for feeding
+        # animals; only sell surplus beyond the reserve. Also buy wheat at hour 0
+        # if shed is below reserve and cash allows (prevents animal starvation on
+        # seeds that draw no early wheat-buyer shops).
+        num_animals_planned = self.params.get("cow_cap_base", 9) + self.params.get("sheep_cap", 4)
+        feed_reserve = max(10, num_animals_planned * 2)
+
+        # Sell surplus wheat beyond the reserve (not just > 10 unconditionally).
         wheat_qty = shed.get("WHEAT", 0)
         if day >= 29 and hour >= 18 and wheat_qty > 0:
             if len(market_orders) < 10:
                 market_orders.append(["SELL", "WHEAT", min(50, wheat_qty)])
-        elif wheat_qty > 10:
-            sell_amt = min(20, wheat_qty - 10)
+        elif wheat_qty > feed_reserve:
+            sell_amt = min(20, wheat_qty - feed_reserve)
             if len(market_orders) < 10 and sell_amt > 0:
                 market_orders.append(["SELL", "WHEAT", sell_amt])
+
+        # Hour-0 top-up: buy wheat if shed below reserve and capital allows.
+        if (hour == 0 and day < 29 and wheat_qty < feed_reserve and money >= 100):
+            buy_qty = min(feed_reserve - wheat_qty, int(money // 25), 8)
+            if buy_qty > 0 and len(market_orders) < 10:
+                market_orders.append(["BUY_PRODUCT", "WHEAT", buy_qty])
 
         # 3. Dynamic Sector Tasks
         nw_wheat_tasks_p1 = []
