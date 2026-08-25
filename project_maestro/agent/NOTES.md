@@ -846,13 +846,13 @@ because it structurally cannot do anything under the current per-species caps (g
 | **Step 3: +6 Straw (22S / 2W)** | **\$51,042.55** / **\$33,376** | **\$57,002.58** / **\$32,123** | **88.0%** / **+\$5,959.05** ($t=+16.07$) | **85.5%** / **+\$3,998.60** ($t=+12.18$) | **PARETO OPTIMUM (ADOPTED)** |
 | **Step 4: +8 Straw (24S / 0W)** | \$56,733.28 / \$33,610 | \$57,723.10 / \$22,908 | 72.5% / +\$3,774.92 ($t=+8.40$) | 64.5% / +\$1,977.49 ($t=+5.47$) | Glut Penalty & Feed Deficit |
 
-- **Why Step 3 (22 Strawberry / 2 Wheat) is the Pareto Optimum**:
+- **Why Step 3 (22 Strawberry / 2 Wheat) was Selected as the Tradeoff Choice**:
   1. **Direct Head-to-Head Win Rate**: Beats §2y Previous Production Baseline with **85.5% Win Rate** (171W / 29L / 0T), Net Delta **+\$3,998.60** ($t = +12.18, p < 10^{-15}$).
   2. **Beats Dominant Meta by 88.0%**: 176W / 24L / 0T, Net Delta **+\$5,959.05** ($t = +16.07, p < 10^{-15}$).
-  3. **Robust Floor Protection**:
+  3. **Robust Disjoint-100 Floor Protection**:
      - Official 20 Min: **\$33,376.00** (+$1,086 over Step 0's \$32,290).
      - Disjoint 100 Min: **\$32,123.00** (+$5,207 over Step 0's \$26,916).
-  4. **Why Step 4 Failed**: At 24 strawberries / 0 wheat in NE, local feed supply dries up, forcing market wheat purchases, and 24 strawberries flood the AMM past town shop absorption capacity, depressing price realization along the linear glut curve (`above_target = 1.60`). Retaining 2 wheat plots in NE provides local feed stability and preserves peak strawberry prices.
+  4. **Tradeoff Context**: Step 4 achieved higher self-play means (\$56.7k / \$57.7k) and Step 1 had higher DM win rate (92.5%), but Step 3 maximizes direct §2y head-to-head win rate (85.5% vs 64.5% for Step 4) and prevents the feed deficit/glut penalty of 24 pure strawberries.
 - **New Standing Production Baseline (Honest Competition Settings, §3b 22S/2W Layout)**:
   - **Official 20 Self-Play**: **\$51,042.55** (Median: \$51,172.00, Min: **\$33,376.00**, Max: \$71,679.00)
   - **Disjoint 100 Self-Play**: **\$57,002.58** (Median: \$52,231.00, Min: **\$32,123.00**, Max: **\$102,974.00**)
@@ -862,28 +862,33 @@ because it structurally cannot do anything under the current per-species caps (g
 
 ## 3. Data Extractor & Kaggle Cloud Meta Ground Truth
 
-1. **Phase 0 Analysis on Kaggle Cloud (`gaurav065/project-maestro-phase-0-analysis`)**:
-   - Executed in-place on Kaggle Cloud across all 697 full 720-step episodes (`/kaggle/input/`).
+1. **Phase 0 Analysis on Kaggle Cloud (`gaurav065/project-maestro-phase-0-analysis` Version 5)**:
+   - Executed in-place on Kaggle Cloud across all 697 full 720-step episodes (`/kaggle/input/`) using **Exact Cash-Flow Financial Accounting**.
+   - Replaces flawed post-step shed observation bounding with exact step-by-step cash-flow tracking:
+     $$\text{Starting Money } (\$3,000) + \sum \text{Sales Revenues} - \sum \text{Transaction Costs} \equiv \text{Final Reward}$$
    - Parsed 693 winning player records.
    - **Ground-Truth Winner Reward**: Mean = **\$91,603.09** | Median = **\$90,002.00** | Max = **\$170,964.00**.
+   - **Mean Winner Base Revenue**: **\$75,520.61** (Median: **\$58,775.00**).
 
-2. **Ground-Truth Top Meta Production Volumes (Sold Units)**:
-   - **WHEAT**: Mean = **354.3** | Median = **307.0** (0.0% zero-sales)
-   - **FERTILIZER**: Mean = **112.3** | Median = **121.0** (0.0% zero-sales)
-   - **STRAWBERRY**: Mean = **43.7** | Median = **42.0** (Only 1.0% zero-sales!)
-   - **WOOL**: Mean = **18.9** | Median = **14.0** (18.5% zero-sales)
-   - **MILK**: Mean = **17.4** | Median = **8.0** (16.7% zero-sales)
-   - **MELON**: Mean = **3.4** | Median = **0.0** (65.1% zero-sales)
-   - **CARROT**: Mean = **3.3** | Median = **0.0** (84.7% zero-sales)
-   - **TOMATO**: Mean = **1.5** | Median = **0.0** (90.5% zero-sales)
-   - **EGG**: Mean = **0.8** | Median = **0.0** (94.2% zero-sales)
+2. **Reconciled Top Meta Production Volumes (Sold Units)**:
+   - **FERTILIZER**: Mean = **400.6** | Median = **123.0** (0.0% zero-sales)
+   - **WHEAT**: Mean = **227.6** | Median = **179.0** (0.1% zero-sales)
+   - **STRAWBERRY**: Mean = **55.5** | Median = **54.0** (0.0% zero-sales)
+   - **MILK**: Mean = **50.5** | Median = **47.0** (0.0% zero-sales)
+   - **WOOL**: Mean = **36.7** | Median = **34.0** (0.0% zero-sales)
+   - **MELON**: Mean = **29.6** | Median = **31.0** (0.4% zero-sales)
+   - **CARROT**: Mean = **2.9** | Median = **1.0** (43.7% zero-sales)
+   - **EGG**: Mean = **2.3** | Median = **0.0** (91.6% zero-sales)
+   - **TOMATO**: Mean = **1.4** | Median = **0.0** (85.3% zero-sales)
 
-3. **Ground-Truth Top Meta Animal & Seed Portfolio**:
-   - **Cows**: Mean = **8.3** (Median: 8.0)
-   - **Sheep**: Mean = **6.3** (Median: 4.0)
+3. **Reconciled Top Meta Animal & Seed Portfolio**:
+   - **Cows**: Mean = **8.3** (Median: 8.0, 0.0% zero)
+   - **Sheep**: Mean = **6.3** (Median: 4.0, 0.0% zero)
    - **Geese**: Mean = **0.3** (Median: 0.0, 91.6% zero)
-   - **Strawberry Seeds**: Mean = **37.5** (Median: 38.0) (Perfect match to our §3b 22-strawberry expansion!)
+   - **Strawberry Seeds**: Mean = **37.5** (Median: 38.0)
    - **Wheat Seeds**: Mean = **133.2** (Median: 132.0)
+   - **Melon Seeds**: Mean = **13.5** (Median: 12.0)
+   - **Carrot Seeds**: Mean = **10.0** (Median: 5.0)
    - **Labor**: Day 0 Hires = **4.9** (Median: 5.0), Total Season Hires = **282.8** (Median: 277.0 $\approx$ 9.5 hands/day)
    - **Land Unlocks**: NE unlocked in **100%** of games (Day 5.8), SW unlocked in **100%** of games (Day 10.4), SE unlocked in only **17.7%** of games.
 

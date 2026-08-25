@@ -434,10 +434,10 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
   ~14.3x speedup, ~6,200 steps/sec. Claude independently reproduced this. Run it as
   `PYTHONPATH=C:/Coding python project_maestro/engine/validate_fast_engine.py` (there are no
   `__init__.py` files; it relies on namespace packages, so the repo root must be on the path).
-- `data/phase0_analysis.py` — Kaggle Cloud dataset analysis (`gaurav065/project-maestro-phase-0-analysis`).
-  **Phase 0: COMPLETE & VERIFIED on Cloud.** 697 full 720-step episodes parsed, 693 winning records analyzed.
-  Ground-truth targets confirmed: Winner Mean = $91,603, Wheat = 354.3 units, Strawberry = 43.7 units,
-  Fertilizer = 112.3 units, Wool = 18.9 units, Milk = 17.4 units, Cows = 8.3, Sheep = 6.3.
+- `data/phase0_analysis.py` — Kaggle Cloud dataset analysis (`gaurav065/project-maestro-phase-0-analysis` Version 5).
+  **Phase 0: COMPLETE & RECONCILED on Cloud.** 697 full 720-step episodes parsed, 693 winning records analyzed with exact cash-flow accounting.
+  Ground-truth targets confirmed: Winner Mean = $91,603.09 (Base Rev = $75,520.61), Wheat = 227.6 units, Fertilizer = 400.6 units,
+  Strawberry = 55.5 units, Milk = 50.5 units, Wool = 36.7 units, Melon = 29.6 units, Cows = 8.3, Sheep = 6.3. All volumes physically reconciled (0.0% zero-sales on core goods).
 - `oracle/price_model.py` — **Phase 1: signed off.** Price model reproduces the engine's
   `market_price` exactly on all 27 checked values.
 - `solver/portfolio_optimizer.py` — **Phase 2: rejected twice.** See §6.
