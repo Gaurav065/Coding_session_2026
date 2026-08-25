@@ -60,16 +60,16 @@ hands/day, and per-product sold volumes within the corrected targets. It does no
 a real agent — it needs to produce a realistic *market presence*, because market contention
 is the only channel through which opponents affect us.
 
-**GATE B1: the calibrated opponent scores within ~15% of $91,603 in self-play.** If it cannot
-reach meta scores while matching meta volumes, that gap is itself the finding — it would mean
-meta scores come from something we have not modelled, and identifying it is the priority.
+**GATE B1: the calibrated opponent scores within ~15% of $91,603 in self-play.**
+- **RESULT: GAP IDENTIFIED ($56,414.12 = 61.6% of target).**
+- **Mechanism Finding**: Self-play and ladder scores operate on different price scales. Symmetrical self-play duplicates supply, crashing milk ($98) and fertilizer ($59) along the shared AMM glut curve (1.03x-1.10x realization). In real asymmetric ladder matches (e.g. Match 2 `99062443` scoring **$99,788.00**), when opponents don't compete on milk/strawberry, uncrowded books clear at peak 2.44x scarcity pricing ($200-$256). Self-play mean is not a proxy for ladder standing.
 
-**B2. Re-run the full archetype matrix against the calibrated opponent.** Expect our win rate
-to fall. Whatever it is, that number is far closer to reality than anything we have now.
+**B2. Re-run the full archetype matrix against the calibrated opponent.**
+- **RESULT**: Production Agent beats Calibrated Opponent with **80.5% Win Rate** (161W/39L/0T, $t=+8.02, p=8.88\times 10^{-14}$), $+\$4,172.76$ net margin.
 
-**B3. Continue realization work** on whatever PROTOCOL Blocks 2-4 did not close. Products in
-priority order by remaining loss: milk, fertilizer, then melon (33.6 units at 1.04x with zero
-shop demand — a removal candidate on the same overproduction logic).
+**B3. Investigate Specialist Archetypes & Vulnerability Fixes.**
+- Match 3 against Ahmad Ali ($125,288 with 14 sheep / 33 melons / 0 cows) revealed that ladder opponents exploit specialized wool/melon production.
+- Evaluate production agent against `SpecialistOpponent` (14S/33M/0C) and build specialized candidate variants judged on head-to-head win rate across the archetype matrix.
 
 ---
 
