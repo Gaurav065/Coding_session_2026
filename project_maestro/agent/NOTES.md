@@ -1431,3 +1431,42 @@ Rating: 606.4 (4W / 4L / 0T, Mean Delta +,083)
 Key ladder insights:
 1. Top opponents run 14-18 pastures with 8-11 sheep/cows and heavy strawberry integration (11-37 plants).
 2. Our mean score across the real ladder is ,545 with a +,083 mean delta.
+
+### 8i. Clean §3c Evaluation Benchmark & §3c REJECTION Record (2026-08-25)
+
+#### 1. Benchmark Execution (All 6 Canaries PASS)
+- Canary 1 (Pass opp = ,000.00): PASS
+- Canary 2 (Identity mirror 50.0% / Delta .00): PASS
+- Canary 3 (validate_fast_engine 20/20 bit-for-bit exact): PASS
+- Canary 4 (No seed parameter in agent init): PASS
+- Canary 5 (Physical ceilings): PASS (avg_fert = 8.1-8.3 ops/game across 8 SW melon tiles)
+- Canary 6 (Archetype opponent execution floor > ,000 in Control): PASS
+    * Ahmad Ali Specialist (14S / 0C): ,658 (PASS)
+    * Dominant Meta (10C / 4S): ,329 (PASS)
+    * Gould Research Pastoral (12C / 6S): ,898 (PASS)
+    * Ayushk Empire Diversified (3C / 13S): ,962 (PASS)
+    * Meta-Calibrated Opponent (8C / 6S): ,633 (PASS)
+
+#### 2. Clean Results (n=200 per archetype, 100 Disjoint Seeds x 2 seats flipped)
+
+| Archetype | Control WR (§3c Disabled) | Candidate WR (§3c Enabled) | Delta (pp) | Control Margin | Candidate Margin | Margin Delta |
+|---|---|---|---|---|---|---|
+| Ahmad Ali Specialist (14S / 0C) | 54.0% | 53.5% | -0.5pp | +,774.48 | +,096.62 | -.86 |
+| Dominant Meta (10C / 4S) | 75.5% | 73.0% | -2.5pp | +,701.98 | +,259.35 | -.64 |
+| Gould Research Pastoral (12C / 6S) | 89.5% | 89.0% | -0.5pp | +,975.08 | +,623.15 | -.93 |
+| Ayushk Empire Diversified (3C / 13S) | 98.5% | 98.0% | -0.5pp | +,683.94 | +,439.69 | -.26 |
+| Meta-Calibrated Opponent (8C / 6S) | 97.5% | 97.0% | -0.5pp | +,776.99 | +,221.74 | -.25 |
+
+Disjoint-100 Self-Play Distribution:
+- Control (NW+3b): Mean ,766 | Median ,128 | p5 ,918 | Min ,876
+- Candidate (NW+3b + §3c): Mean ,399 | Median ,848 | p5 ,156 | Min ,400
+- Delta: Mean -0.59% (-) | p5 +0.58% | Min -6.90% (-,476)
+
+#### 3. Verdict: REJECT §3c
+**Falsifier:** Regressed by -2.5pp vs Dominant Meta (75.5% -> 73.0%) and regressed by -0.5pp across all four other archetypes.
+**Physical Mechanism:** Reaching max_yield=6 on melons 2 days earlier generates no additional revenue ( 	imes ~\ = \,288$ in both arms), but fetching fertilizer from the shed consumes 16-24 worker turns, causing lost SW wheat planting/watering actions and travel waste.
+**Dead code rule:** All §3c code completely deleted from dispatcher_agent.py and main.py (grep count = 0).
+
+#### 4. Live Kaggle Ladder Update (Submission 55768154)
+- Current Elo Rating: 695.5 (4W/5L initial -> 9W/5L/0T, 64.3% WR)
+- Mean Score: ,848 (Opponent Mean: ,942 | Mean Delta: +,906)

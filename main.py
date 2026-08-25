@@ -457,24 +457,35 @@ class MaestroFullPortfolioAgent:
         # animals; only sell surplus beyond the reserve. Also buy wheat at hour 0
         # if shed is below reserve and cash allows (prevents animal starvation on
         # seeds that draw no early wheat-buyer shops).
-        num_animals_planned = self.params.get("cow_cap_base", 9) + self.params.get("sheep_cap", 4)
-        feed_reserve = max(10, num_animals_planned * 2)
+        enable_3b = self.params.get("enable_3b", True)
+        if enable_3b:
+            num_animals_planned = self.params.get("cow_cap_base", 9) + self.params.get("sheep_cap", 4)
+            feed_reserve = max(10, num_animals_planned * 2)
 
-        # Sell surplus wheat beyond the reserve (not just > 10 unconditionally).
-        wheat_qty = shed.get("WHEAT", 0)
-        if day >= 29 and hour >= 18 and wheat_qty > 0:
-            if len(market_orders) < 10:
-                market_orders.append(["SELL", "WHEAT", min(50, wheat_qty)])
-        elif wheat_qty > feed_reserve:
-            sell_amt = min(20, wheat_qty - feed_reserve)
-            if len(market_orders) < 10 and sell_amt > 0:
-                market_orders.append(["SELL", "WHEAT", sell_amt])
+            # Sell surplus wheat beyond the reserve (not just > 10 unconditionally).
+            wheat_qty = shed.get("WHEAT", 0)
+            if day >= 29 and hour >= 18 and wheat_qty > 0:
+                if len(market_orders) < 10:
+                    market_orders.append(["SELL", "WHEAT", min(50, wheat_qty)])
+            elif wheat_qty > feed_reserve:
+                sell_amt = min(20, wheat_qty - feed_reserve)
+                if len(market_orders) < 10 and sell_amt > 0:
+                    market_orders.append(["SELL", "WHEAT", sell_amt])
 
-        # Hour-0 top-up: buy wheat if shed below reserve and capital allows.
-        if (hour == 0 and day < 29 and wheat_qty < feed_reserve and money >= 100):
-            buy_qty = min(feed_reserve - wheat_qty, int(money // 25), 8)
-            if buy_qty > 0 and len(market_orders) < 10:
-                market_orders.append(["BUY_PRODUCT", "WHEAT", buy_qty])
+            # Hour-0 top-up: buy wheat if shed below reserve and capital allows.
+            if (hour == 0 and day < 29 and wheat_qty < feed_reserve and money >= 100):
+                buy_qty = min(feed_reserve - wheat_qty, int(money // 25), 8)
+                if buy_qty > 0 and len(market_orders) < 10:
+                    market_orders.append(["BUY_PRODUCT", "WHEAT", buy_qty])
+        else:
+            wheat_qty = shed.get("WHEAT", 0)
+            if day >= 29 and hour >= 18 and wheat_qty > 0:
+                if len(market_orders) < 10:
+                    market_orders.append(["SELL", "WHEAT", min(50, wheat_qty)])
+            elif wheat_qty > 10:
+                sell_amt = min(20, wheat_qty - 10)
+                if len(market_orders) < 10 and sell_amt > 0:
+                    market_orders.append(["SELL", "WHEAT", sell_amt])
 
         # 3. Dynamic Sector Tasks
         nw_wheat_tasks_p1 = []
@@ -553,17 +564,6 @@ class MaestroFullPortfolioAgent:
                         sw_tasks.append({"target": (mx, my), "action": "WATER", "priority": 95})
                     if t.get("yield_units", 0) > 0 and (day - t.get("planted_day", 0)) >= 10:
                         sw_tasks.append({"target": (mx, my), "action": "HARVEST", "priority": 97})
-                    # §3c: FERTILIZE during bonus window (Days 6-12, ceil(max_yield_day/2)=6).
-                    # FERTILIZE grants +2 yield/watered-day instead of +1, reaching max_yield=6
-                    # cap faster -- a liquidity accelerator (earlier Day-10 harvest), not more melons.
-                    # Gate: in bonus window, not currently fertilized, fertilizer exists somewhere.
-                    crop_age = day - t.get("planted_day", 0)
-                    already_fertilized = t.get("fertilized_until_day", -1) >= day
-                    fert_in_shed = shed.get("FERTILIZER", 0) > 0
-                    fert_in_inventory = any(inv_i.get("FERTILIZER", 0) > 0 for inv_i in private.get("inventories", []))
-                    if (6 <= crop_age <= 12 and not already_fertilized
-                            and (fert_in_shed or fert_in_inventory)):
-                        sw_tasks.append({"target": (mx, my), "action": "FERTILIZE_MELON", "priority": 96})
 
             for wx, wy in self.sw_wheat:
                 t = me["tiles"][wy][wx]
@@ -779,14 +779,6 @@ class MaestroFullPortfolioAgent:
                 elif pos in SHED_ACCESS_TILES and carrying_produce > 0:
                     action = ["DROP"]
 
-                # §3c: Fertilizer pickup — only SW workers (units 9+) who will work sw_tasks.
-                # Pickup 1 fertilizer when shed-adjacent, task pending, inventory empty.
-                if action == ["PASS"] and pos in SHED_ACCESS_TILES and u_idx >= 9:
-                    fert_tasks_pending = any(t["action"] == "FERTILIZE_MELON" for t in sw_tasks)
-                    unit_has_fert = inv.get("FERTILIZER", 0) > 0
-                    if fert_tasks_pending and not unit_has_fert and shed.get("FERTILIZER", 0) > 0:
-                        action = ["PICKUP", "FERTILIZER", 1]
-
                 if action == ["PASS"]:
                     sector_tasks = []
                     if u_idx in (4, 5):
@@ -804,10 +796,6 @@ class MaestroFullPortfolioAgent:
                         if target in claimed_targets:
                             continue
                         if "crop" in t and avail_seeds.get(t["crop"], 0) <= 0:
-                            continue
-                        # §3c: FERTILIZE_MELON requires fertilizer in inventory.
-                        # Skip if unit doesn't have any -- it will pick up on next shed visit.
-                        if t["action"] == "FERTILIZE_MELON" and inv.get("FERTILIZER", 0) == 0:
                             continue
 
                         d = dist(pos, target)
@@ -841,15 +829,6 @@ class MaestroFullPortfolioAgent:
                                 avail_seeds["CARROT"] -= 1
                             elif tact == "DIG":
                                 action = ["DIG"]
-                            elif tact == "FERTILIZE_MELON":
-                                # §3c: FERTILIZE from inventory. If no fertilizer in hand,
-                                # this branch should not have been selected (see scoring below),
-                                # but guard anyway.
-                                if inv.get("FERTILIZER", 0) > 0:
-                                    action = ["FERTILIZE"]
-                                else:
-                                    # No fertilizer in hand -- fall through to PASS.
-                                    action = ["PASS"]
                         else:
                             action = [get_step_towards(pos, target)]
                     else:

@@ -80,9 +80,9 @@ insight. (The reported meta figure of 2.44x is such an error.)
 
 ---
 
-# PART 2 — SELF-REPAIR: THE FIVE CANARIES
+# PART 2 — SELF-REPAIR: THE SIX CANARIES
 
-**Every harness producing a number you will report must run canaries 1-2 first** — prototypes
+**Every harness producing a number you will report must run canaries 1-2 and 6 first** — prototypes
 and one-off scripts included. All three seat-construction bugs last session were in scripts
 that skipped them.
 
@@ -93,6 +93,7 @@ that skipped them.
 | 3 | `validate_fast_engine.py` | 20/20 exact, Delta **$0.00** | fast-engine drift (has drifted silently once) |
 | 4 | Agent built with **no** `seed=` | Runs; steering stays inert | harness-only results posing as production |
 | 5 | Physical-ceiling assertions (PART 1) | No violations | extraction / attribution inflation |
+| 6 | Archetype execution floor | Every opponent **scores > $20,000** in control run | broken opponent replay/agent, all-pass fallthrough, harness failure |
 
 **If a canary fails, stop.** Fix the harness before interpreting anything from it. A number
 from a harness with a failing canary is not data.
@@ -126,7 +127,7 @@ All ten occurred last session. Each is a check to run, not advice to remember.
 EXPERIMENT: <id> <one-line description>
 SINGLE VARIABLE CHANGED: <exactly one thing>
 BASELINE: $<value> (<which build>, <which seed set>, n=<N>)
-CANARIES: 1 PASS/FAIL  2 PASS/FAIL  3 PASS/FAIL  4 PASS/FAIL  5 PASS/FAIL
+CANARIES: 1 PASS/FAIL  2 PASS/FAIL  3 PASS/FAIL  4 PASS/FAIL  5 PASS/FAIL  6 PASS/FAIL
 RESULTS (same seed set, same n, both seats):
   self-play mean  : $X (baseline $Y, delta $Z)
   self-play floor : $X (baseline $Y, delta $Z)
