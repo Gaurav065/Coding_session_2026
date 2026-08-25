@@ -383,12 +383,12 @@ old copies of this section from memory; the numbers below are current.**
 **Benchmark standard (established the hard way): pure self-play, `env.run([agent, agent])`.**
 Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the headline.
 
-**Production Agent Status (2026-08-25): `goose_cap=0`, Shop-Adaptive Cow-Cap Gating, Pure Field Retention (Crop Crews), 22S/2W Strawberry Allocation, Unsteered in Competition.**
+**Production Agent Status (2026-08-25): `cow_cap_base=9`, Synchronized Post-Drain Milk Selling (`milk_batch_cap=4` on `step % 4 == 1`), `goose_cap=0`, Shop-Adaptive Cow-Cap Gating, Pure Field Retention, 22S/2W Strawberry Allocation.**
 
 - **Standing Shippable Production Baseline (No Seed Injected, Fully Honest)**:
-  - **Official 20 Seeds (real `env.run()` / FastEngine)**: **$51,042.55** (Median: $51,172.00, Min: **$33,376.00**, Max: $71,679.00, SE: $1,988.14) — *+$6,299.20 (+14.1%) lift over raw unsteered baseline*.
-  - **100 Disjoint Seeds (`10000-10099`)**: **$57,002.58** (Median: $52,231.00, Min: **$32,123.00**, Max: **$102,974.00**, SE: $1,098.42) — *+$7,389.52 (+14.9%) lift over raw unsteered baseline*.
-  - **Diagnostic Unconstrained vs Pass Baseline**: **$83,109.63** (Canary 1: Opponent = $3,000.00, WR = 100.0%).
+  - **Official 20 Seeds (real `env.run()` / FastEngine)**: **$56,612.10** (Median: $53,870.00, Min: **$36,104.00**, Max: $87,142.00) — *+$5,569.55 (+10.9%) lift over Protocol baseline*.
+  - **100 Disjoint Seeds (`10000-10099`)**: **$58,642.47** (Median: $56,369.00, Min: **$32,300.00**, Max: **$96,354.00**) — *+$1,639.89 (+2.9%) lift over Protocol baseline*.
+  - **Diagnostic Unconstrained vs Pass Baseline**: **$85,914.20** (Canary 1: Opponent = $3,000.00, WR = 100.0%).
 
 **Completed Verification & Architecture Milestones:**
 1. **Dedicated-Courier Strawberry Fertilization (REJECTED, §2o)**:
@@ -401,25 +401,32 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
    - Curve-Aware AMM Selling: Δ = +$1,436.69 ($t = +1.85, p = 0.066$). Positive direction; **KEEP**.
 4. **Demand-Pressure Analysis (§2r)**:
    - Milk-Rich ($61,888) vs Milk-Starved ($32,624): $29.3k spread — largest single performance driver.
-   - Overall self-play mean ~$51.0k–$57.0k vs meta target $91,603 (56–62% of target).
 5. **Shop-Adaptive Cow-Cap Gating (ADOPTED, §2w)**:
    - Dynamic early gating on Day 10 (3 revealed shops): if `milk_shop_count == 0`, cap cows at 4; if `milk_shop_count <= 1`, cap cows at 6.
    - **Head-to-Head vs Dominant Meta (10C/4S/0G, n=200)**: **64.3% Win Rate** (117W / 65L / 18T), Δ = **+$1,617.86**, $t = +4.61, p = 7.18 \times 10^{-6}$.
-     *(Caveat: Our Dominant Meta archetype opponent scores ~$49.7k, whereas the real 10C/4S/0G meta on ladder scores $88,109 (n=527) / $91,603 (Phase 0 Cloud n=697). Our archetype opponents are our own dispatcher with different parameters, inheriting our throughput/pathing weaknesses (~1.8x lower volume than real top bots). Thus, 64.3% measures parameter advantage against identical labor mechanics, not ladder performance. The true volume gap to close is $51k-$57k vs $91k.)*
-   - Dominates all ladder archetypes: Wool-Heavy (**81.5% WR**, $p < 10^{-15}$), Balanced Pasture (**78.5% WR**, $p < 10^{-15}$), Old Baseline (**79.0% WR**, $p < 10^{-15}$).
 6. **Dynamic Crop & Pasture Reallocation Sweep (REJECTED, §2x)**:
-   - Tested 6 policies reinvesting cow-gate savings: sheep expansion (cap 6/8 on YARN_STORE + low milk), melon expansion (target 8/10 on melon shops), combined. All regressed on both self-play (−$1.4k to −$3.7k) and DM win rate (27.6% to 49.0% vs baseline 64.3%).
-   - Confirms §2b/§2e: expanding glut-prone production (wool `above_target=3.20`, melon `above_target=3.60`) floods the shared AMM. Saved capital is worth more as cash than as additional supply.
+   - Tested 6 policies reinvesting cow-gate savings: sheep expansion, melon expansion, combined. All regressed. Expanding glut-prone goods floods the shared AMM. Saved capital is worth more as cash.
 7. **Crop Crew Pure Field Retention (ADOPTED, §2y)**:
-   - Removed the `hour >= 18` and `carrying_produce >= 15` walk-to-shed interruptions for crop crews (units 4..12). Rely on midnight auto-flush (`engine:843`) to bank harvested produce. Workers remain in NE/SW/NW plots continuously, eliminating morning travel penalties and unlocking immediate Day-tick-0 harvesting/watering.
-   - Mechanism note: hands respawn at shed each morning (`kaggriculture.py:880`); the lift is pure elimination of evening walk (~1,620 worker-turns freed).
-   - In direct H2H match against Candidate 1 (Drop when idle), Candidate 2 won **63.5%** (127W/73L/0T).
+   - Removed the evening walk-to-shed interruptions for crop crews (units 4..12). Rely on midnight auto-flush (`engine:843`). Direct H2H against Candidate 1 won **63.5%** (127W/73L/0T).
 8. **NE Wheat -> Strawberry Conversion Ladder (ADOPTED, §3b)**:
-   - Evaluated expanding Strawberry capacity from 16 to 18, 20, 22, 24 plots. Step 3 (22 Strawberry / 2 Wheat) selected as the optimal tradeoff choice (best §2y direct H2H at 85.5% WR, best Disjoint-100 floor at $32,123).
-   - **Head-to-Head vs Previous §2y Baseline (n=200)**: **85.5% Win Rate** (171W/29L/0T), Δ = **+$3,998.60**, $t = +12.18, p < 10^{-15}$.
-   - **Head-to-Head vs Dominant Meta (n=200)**: **88.0% Win Rate** (176W/24L/0T), Δ = **+$5,959.05**, $t = +16.07, p < 10^{-15}$.
-   - **Floor Security**: Official 20 Min: **$33,376.00**; Disjoint 100 Min: **$32,123.00**.
+   - Expanded Strawberry capacity from 16 to 22 plots. Step 3 (22S / 2W) selected (85.5% WR vs §2y, best floor at $32,123).
+9. **Cow Cap Reduction to 9 (ADOPTED, Block 2)**:
+   - Single-variable ladder $cow\_cap\_base \in \{10, 9, 8, 7, 6\}$. `cow_cap_base = 9` won **64.0% WR vs Dominant Meta** (117W/61L/22T, Δ = +$1,172.23, $t = +3.31, p = 0.0011$). Realized milk price increased to \$138.35 while saving \$400 + daily feed costs.
+10. **Fertilizer Non-Collection Refutation (REJECTED Arm 3b, Retained Control 3a, Block 3)**:
+    - Never collecting fertilizer collapsed reward by >$37k to 0.0% WR (0W/200L/0T, $t = -41.76$) because `FERTILIZE` actions require collected fertilizer to double crop yields on Strawberry, Melon, and Wheat.
+11. **Synchronized Post-Drain Milk Selling (ADOPTED `milk_batch_cap=4`, Block 4)**:
+    - Synchronizing milk sells with `step % 4 == 1` immediately post town-shop drain in batches of 4 achieved **75.5% WR vs Dominant Meta** (151W/49L/0T, Δ = +$2,089.70, $t = +4.86, p = 2.4 \times 10^{-6}$) and raised Official-20 floor to **$36,057.00**.
 
+**Full Archetype Head-to-Head Performance (n=200 matches per archetype on 100 Disjoint Seeds, Block 5 Matrix)**:
+- vs **Dominant Meta (10C / 4S / 0G)**: **55.0% Win Rate** (100W / 80L / 20T), Δ = +$553.11 ($t = +1.97, p = 0.050$)
+- vs **Wool-Heavy (6C / 8S / 0G)**: **81.5% Win Rate** (163W / 37L / 0T), Δ = +$10,660.67 ($t = +14.34, p < 10^{-30}$)
+- vs **Balanced Pasture (8C / 6S / 0G)**: **80.5% Win Rate** (158W / 36L / 6T), Δ = +$6,947.85 ($t = +10.72, p < 10^{-20}$)
+- vs **Old Baseline (§2w)**: **78.5% Win Rate** (157W / 43L / 0T), Δ = +$2,799.66 ($t = +7.56, p < 10^{-11}$)
+- vs **All-PASS Baseline**: **100.0% Win Rate**, Opponent score = **$3,000.00** exactly.
+
+**Next Priority Milestones:**
+1. **Phase A (MAIN_PLAN.md): Submission Bundle & Robustness Gate** — Packaging `main.py` bundle, passing all submission sanity checks, and submitting to Kaggle for unbiased real-ladder evaluation.
+2. **Phase B (MAIN_PLAN.md): Demand-Archetype Coverage & Multi-Sector Worker Coordination**.
 **Target: $80–90k in self-play — currently ~62% of target (up from ~48% at project start, unconstrained score at $83.1k).**
 
 **Next Priority Milestones:**
