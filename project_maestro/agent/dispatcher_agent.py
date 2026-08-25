@@ -415,6 +415,16 @@ class MaestroFullPortfolioAgent:
             elif prod in GLUT_RESISTANT:
                 # above_target 0.20: barely moves even under heavy glut.
                 sell_qty = min(qty, 20)
+            elif prod == "MILK":
+                # Synchronized Post-Drain Sell (Block 4 Adopted):
+                # Town shops drain milk every 4 steps (step % 4 == 0).
+                # Selling on step % 4 == 1 in batches of 4 captures peak post-drain prices (75.5% WR vs DM, t=+4.86).
+                if shed_near_overflow:
+                    sell_qty = min(qty, 20)
+                elif (obs["step"] % 4 == 1):
+                    sell_qty = min(qty, 4)
+                else:
+                    sell_qty = 0
             elif prod in GLUT_PRONE:
                 # above_target >= 1.60: each unit sold moves price sharply,
                 # and both players dump into the same book (engine:596-597
