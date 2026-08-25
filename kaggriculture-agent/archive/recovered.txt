@@ -1,0 +1,7 @@
+{
+  "CommandLine": "python -c \"\nimport json\nwith open(r'C:\\Users\\GauravPatel\\.gemini\\antigravity\\brain\\a4ab4dc5-5b88-48a4-bc75-ba3e8146c3f5\\.system_generated\\logs\\transcript_full.jsonl', 'r', encoding='utf-8') as f:\n    lines = f.readlines()\n\nfor line in reversed(lines):\n    data = json.loads(line)\n    if 'tool_calls' in data:\n        for tc in data['tool_calls']:\n            if 'water_fill_allocate' in str(tc['args']):\n                print('FOUND water_fill_allocate!')\n                with open('recovered.txt', 'w') as out:\n                    out.write(json.dumps(tc['args'], indent=2))\n                import sys; sys.exit(0)\n\"",
+  "Cwd": "C:\\Coding\\kaggriculture-agent",
+  "WaitMsBeforeAsync": 500,
+  "toolAction": "Search transcript for water_fill_allocate",
+  "toolSummary": "Search transcript"
+}

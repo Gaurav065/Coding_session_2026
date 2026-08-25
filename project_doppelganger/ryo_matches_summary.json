@@ -1,0 +1,1354 @@
+[
+  {
+    "file": "94401941.json",
+    "seat": 0,
+    "opp_name": "Ryo Hasegawa",
+    "ryo_reward": 97451.0,
+    "opp_reward": 97451.0,
+    "margin": 0.0,
+    "shop_key": [
+      "BAKERY",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94402491.json",
+    "seat": 1,
+    "opp_name": "Co\u015fkun Ba\u011fr\u0131a\u00e7\u0131k",
+    "ryo_reward": 135205.0,
+    "opp_reward": 66037.0,
+    "margin": 69168.0,
+    "shop_key": [
+      "YARN_STORE",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94403351.json",
+    "seat": 1,
+    "opp_name": "Viacheslav Kasatkin",
+    "ryo_reward": 116888.0,
+    "opp_reward": 33902.0,
+    "margin": 82986.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94404229.json",
+    "seat": 1,
+    "opp_name": "T88",
+    "ryo_reward": 122717.0,
+    "opp_reward": 33403.0,
+    "margin": 89314.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "PET_CAFE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94405099.json",
+    "seat": 1,
+    "opp_name": "Nevska",
+    "ryo_reward": 95176.0,
+    "opp_reward": 40120.0,
+    "margin": 55056.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94405973.json",
+    "seat": 0,
+    "opp_name": "zhoujqi",
+    "ryo_reward": 117747.0,
+    "opp_reward": 76464.0,
+    "margin": 41283.0,
+    "shop_key": [
+      "BAKERY",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94406847.json",
+    "seat": 0,
+    "opp_name": "Nazariy Karpov",
+    "ryo_reward": 107086.0,
+    "opp_reward": 60918.0,
+    "margin": 46168.0,
+    "shop_key": [
+      "BAKERY",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94407724.json",
+    "seat": 1,
+    "opp_name": "Dahoui Alex Armel ",
+    "ryo_reward": 81740.0,
+    "opp_reward": 56166.0,
+    "margin": 25574.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94408599.json",
+    "seat": 1,
+    "opp_name": "Azelearn",
+    "ryo_reward": 78108.0,
+    "opp_reward": 55717.0,
+    "margin": 22391.0,
+    "shop_key": [
+      "BAKERY",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94409477.json",
+    "seat": 1,
+    "opp_name": "\u8001\u4e61",
+    "ryo_reward": 110082.0,
+    "opp_reward": 104937.0,
+    "margin": 5145.0,
+    "shop_key": [
+      "PET_CAFE",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94410350.json",
+    "seat": 1,
+    "opp_name": "apoyusiken",
+    "ryo_reward": 55785.0,
+    "opp_reward": 36860.0,
+    "margin": 18925.0,
+    "shop_key": [
+      "PET_CAFE",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94411234.json",
+    "seat": 1,
+    "opp_name": "Hossein",
+    "ryo_reward": 89755.0,
+    "opp_reward": 76144.0,
+    "margin": 13611.0,
+    "shop_key": [
+      "PET_CAFE",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94412102.json",
+    "seat": 1,
+    "opp_name": "The Coder Geek Squad Leader",
+    "ryo_reward": 154276.0,
+    "opp_reward": 138601.0,
+    "margin": 15675.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94412973.json",
+    "seat": 0,
+    "opp_name": "naphthalene",
+    "ryo_reward": 104368.0,
+    "opp_reward": 84373.0,
+    "margin": 19995.0,
+    "shop_key": [
+      "YARN_STORE",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94413334.json",
+    "seat": 1,
+    "opp_name": "Harshini Reddy",
+    "ryo_reward": 133308.0,
+    "opp_reward": 128500.0,
+    "margin": 4808.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94413859.json",
+    "seat": 1,
+    "opp_name": "Aleks Lviv",
+    "ryo_reward": 76997.0,
+    "opp_reward": 60528.0,
+    "margin": 16469.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94414743.json",
+    "seat": 0,
+    "opp_name": "JALKARNA GAUTAM",
+    "ryo_reward": 95814.0,
+    "opp_reward": 84146.0,
+    "margin": 11668.0,
+    "shop_key": [
+      "PET_CAFE",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94415637.json",
+    "seat": 0,
+    "opp_name": "Harini Panigrahi",
+    "ryo_reward": 84526.0,
+    "opp_reward": 73089.0,
+    "margin": 11437.0,
+    "shop_key": [
+      "BAKERY",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94416521.json",
+    "seat": 0,
+    "opp_name": "WBF_USA_NYC",
+    "ryo_reward": 109920.0,
+    "opp_reward": 101056.0,
+    "margin": 8864.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94417414.json",
+    "seat": 1,
+    "opp_name": "guoziyi123456",
+    "ryo_reward": 83566.0,
+    "opp_reward": 80159.0,
+    "margin": 3407.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "PET_CAFE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94418301.json",
+    "seat": 1,
+    "opp_name": "Farmer",
+    "ryo_reward": 141206.0,
+    "opp_reward": 130929.0,
+    "margin": 10277.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94419200.json",
+    "seat": 0,
+    "opp_name": "KARGI",
+    "ryo_reward": 94273.0,
+    "opp_reward": 79773.0,
+    "margin": 14500.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94420091.json",
+    "seat": 1,
+    "opp_name": "Vextrovis",
+    "ryo_reward": 102940.0,
+    "opp_reward": 87063.0,
+    "margin": 15877.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94420975.json",
+    "seat": 0,
+    "opp_name": "Jinx JK",
+    "ryo_reward": 110575.0,
+    "opp_reward": 92135.0,
+    "margin": 18440.0,
+    "shop_key": [
+      "YARN_STORE",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94421865.json",
+    "seat": 1,
+    "opp_name": "PrathamGupta",
+    "ryo_reward": 135089.0,
+    "opp_reward": 131686.0,
+    "margin": 3403.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94422746.json",
+    "seat": 1,
+    "opp_name": "Kaggs",
+    "ryo_reward": 75125.0,
+    "opp_reward": 61798.0,
+    "margin": 13327.0,
+    "shop_key": [
+      "PET_CAFE",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94423632.json",
+    "seat": 1,
+    "opp_name": "Aastik Rajan15",
+    "ryo_reward": 104602.0,
+    "opp_reward": 79437.0,
+    "margin": 25165.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94424521.json",
+    "seat": 0,
+    "opp_name": "Andrey Chankin",
+    "ryo_reward": 99095.0,
+    "opp_reward": 85250.0,
+    "margin": 13845.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94425398.json",
+    "seat": 1,
+    "opp_name": "Forrest",
+    "ryo_reward": 118487.0,
+    "opp_reward": 105890.0,
+    "margin": 12597.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94426282.json",
+    "seat": 0,
+    "opp_name": "Atakan Aldemir",
+    "ryo_reward": 168259.0,
+    "opp_reward": 154495.0,
+    "margin": 13764.0,
+    "shop_key": [
+      "YARN_STORE",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94427176.json",
+    "seat": 0,
+    "opp_name": "iamlonely",
+    "ryo_reward": 137207.0,
+    "opp_reward": 131037.0,
+    "margin": 6170.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94428069.json",
+    "seat": 0,
+    "opp_name": "d0gied",
+    "ryo_reward": 61943.0,
+    "opp_reward": 46668.0,
+    "margin": 15275.0,
+    "shop_key": [
+      "BAKERY",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94428958.json",
+    "seat": 0,
+    "opp_name": "Bruce",
+    "ryo_reward": 70266.0,
+    "opp_reward": 50035.0,
+    "margin": 20231.0,
+    "shop_key": [
+      "BAKERY",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94429849.json",
+    "seat": 0,
+    "opp_name": "Yura",
+    "ryo_reward": 138025.0,
+    "opp_reward": 99739.0,
+    "margin": 38286.0,
+    "shop_key": [
+      "YARN_STORE",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94430740.json",
+    "seat": 0,
+    "opp_name": "boatlee",
+    "ryo_reward": 56483.0,
+    "opp_reward": 41369.0,
+    "margin": 15114.0,
+    "shop_key": [
+      "BAKERY",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94431742.json",
+    "seat": 1,
+    "opp_name": "Bruce",
+    "ryo_reward": 117071.0,
+    "opp_reward": 110347.0,
+    "margin": 6724.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94432528.json",
+    "seat": 1,
+    "opp_name": "Bruce",
+    "ryo_reward": 100537.0,
+    "opp_reward": 86071.0,
+    "margin": 14466.0,
+    "shop_key": [
+      "YARN_STORE",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94433411.json",
+    "seat": 1,
+    "opp_name": "DeeperNet",
+    "ryo_reward": 74909.0,
+    "opp_reward": 63198.0,
+    "margin": 11711.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94434301.json",
+    "seat": 0,
+    "opp_name": "automatylicza",
+    "ryo_reward": 100864.0,
+    "opp_reward": 91745.0,
+    "margin": 9119.0,
+    "shop_key": [
+      "BAKERY",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94435181.json",
+    "seat": 1,
+    "opp_name": "Random Mambo",
+    "ryo_reward": 79038.0,
+    "opp_reward": 64688.0,
+    "margin": 14350.0,
+    "shop_key": [
+      "YARN_STORE",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94436066.json",
+    "seat": 1,
+    "opp_name": "NCK",
+    "ryo_reward": 157930.0,
+    "opp_reward": 137984.0,
+    "margin": 19946.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94436914.json",
+    "seat": 1,
+    "opp_name": "boatlee",
+    "ryo_reward": 131000.0,
+    "opp_reward": 124469.0,
+    "margin": 6531.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94437841.json",
+    "seat": 0,
+    "opp_name": "DeeperNet",
+    "ryo_reward": 125180.0,
+    "opp_reward": 118548.0,
+    "margin": 6632.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94438725.json",
+    "seat": 0,
+    "opp_name": "Efe Can Celiksoy",
+    "ryo_reward": 97662.0,
+    "opp_reward": 85314.0,
+    "margin": 12348.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94439616.json",
+    "seat": 0,
+    "opp_name": "Gekkotron",
+    "ryo_reward": 119992.0,
+    "opp_reward": 96888.0,
+    "margin": 23104.0,
+    "shop_key": [
+      "YARN_STORE",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94440502.json",
+    "seat": 0,
+    "opp_name": "Efe Can Celiksoy",
+    "ryo_reward": 120872.0,
+    "opp_reward": 108246.0,
+    "margin": 12626.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94441395.json",
+    "seat": 1,
+    "opp_name": "Eddy Despradel",
+    "ryo_reward": 101810.0,
+    "opp_reward": 96373.0,
+    "margin": 5437.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94442273.json",
+    "seat": 1,
+    "opp_name": "One-For-All",
+    "ryo_reward": 72957.0,
+    "opp_reward": 44883.0,
+    "margin": 28074.0,
+    "shop_key": [
+      "PET_CAFE",
+      "PET_CAFE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94443176.json",
+    "seat": 0,
+    "opp_name": "Michael Timbs",
+    "ryo_reward": 68239.0,
+    "opp_reward": 56274.0,
+    "margin": 11965.0,
+    "shop_key": [
+      "BAKERY",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94444071.json",
+    "seat": 0,
+    "opp_name": "One-For-All",
+    "ryo_reward": 65712.0,
+    "opp_reward": 52817.0,
+    "margin": 12895.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94444950.json",
+    "seat": 0,
+    "opp_name": "Michael Timbs",
+    "ryo_reward": 74515.0,
+    "opp_reward": 72018.0,
+    "margin": 2497.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94445828.json",
+    "seat": 0,
+    "opp_name": "hetspookjee",
+    "ryo_reward": 57821.0,
+    "opp_reward": 44304.0,
+    "margin": 13517.0,
+    "shop_key": [
+      "BAKERY",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94446713.json",
+    "seat": 0,
+    "opp_name": "automatylicza",
+    "ryo_reward": 91824.0,
+    "opp_reward": 84432.0,
+    "margin": 7392.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94447591.json",
+    "seat": 1,
+    "opp_name": "ReCurSiON",
+    "ryo_reward": 104080.0,
+    "opp_reward": 80595.0,
+    "margin": 23485.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94448474.json",
+    "seat": 1,
+    "opp_name": "Kobe BRYANT",
+    "ryo_reward": 99868.0,
+    "opp_reward": 85835.0,
+    "margin": 14033.0,
+    "shop_key": [
+      "YARN_STORE",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94449352.json",
+    "seat": 1,
+    "opp_name": "Kobe BRYANT",
+    "ryo_reward": 84587.0,
+    "opp_reward": 73329.0,
+    "margin": 11258.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94450242.json",
+    "seat": 1,
+    "opp_name": "peikopon",
+    "ryo_reward": 59913.0,
+    "opp_reward": 49114.0,
+    "margin": 10799.0,
+    "shop_key": [
+      "BAKERY",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94451134.json",
+    "seat": 0,
+    "opp_name": "peikopon",
+    "ryo_reward": 80780.0,
+    "opp_reward": 68355.0,
+    "margin": 12425.0,
+    "shop_key": [
+      "YARN_STORE",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94452034.json",
+    "seat": 1,
+    "opp_name": "Efe Can Celiksoy",
+    "ryo_reward": 75455.0,
+    "opp_reward": 67766.0,
+    "margin": 7689.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94452915.json",
+    "seat": 0,
+    "opp_name": "peikopon",
+    "ryo_reward": 119791.0,
+    "opp_reward": 109971.0,
+    "margin": 9820.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94453800.json",
+    "seat": 1,
+    "opp_name": "peikopon",
+    "ryo_reward": 92961.0,
+    "opp_reward": 89576.0,
+    "margin": 3385.0,
+    "shop_key": [
+      "BAKERY",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94454673.json",
+    "seat": 0,
+    "opp_name": "Kobe BRYANT",
+    "ryo_reward": 121656.0,
+    "opp_reward": 119985.0,
+    "margin": 1671.0,
+    "shop_key": [
+      "BRUNCH_SPOT",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94455554.json",
+    "seat": 1,
+    "opp_name": "Kobe BRYANT",
+    "ryo_reward": 68114.0,
+    "opp_reward": 38826.0,
+    "margin": 29288.0,
+    "shop_key": [
+      "PET_CAFE",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94456434.json",
+    "seat": 1,
+    "opp_name": "peikopon",
+    "ryo_reward": 134363.0,
+    "opp_reward": 123128.0,
+    "margin": 11235.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94457314.json",
+    "seat": 1,
+    "opp_name": "Xiaowenhao404",
+    "ryo_reward": 88232.0,
+    "opp_reward": 82306.0,
+    "margin": 5926.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94458182.json",
+    "seat": 1,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 100863.0,
+    "opp_reward": 95553.0,
+    "margin": 5310.0,
+    "shop_key": [
+      "YARN_STORE",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94458226.json",
+    "seat": 1,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 128375.0,
+    "opp_reward": 115466.0,
+    "margin": 12909.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94459078.json",
+    "seat": 0,
+    "opp_name": "ReCurSiON",
+    "ryo_reward": 95899.0,
+    "opp_reward": 81143.0,
+    "margin": 14756.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94459964.json",
+    "seat": 0,
+    "opp_name": "Galaxantic",
+    "ryo_reward": 72825.0,
+    "opp_reward": 55198.0,
+    "margin": 17627.0,
+    "shop_key": [
+      "PET_CAFE",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94460852.json",
+    "seat": 1,
+    "opp_name": "peikopon",
+    "ryo_reward": 84928.0,
+    "opp_reward": 76307.0,
+    "margin": 8621.0,
+    "shop_key": [
+      "PET_CAFE",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94461751.json",
+    "seat": 0,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 114111.0,
+    "opp_reward": 112726.0,
+    "margin": 1385.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94462645.json",
+    "seat": 1,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 80441.0,
+    "opp_reward": 72616.0,
+    "margin": 7825.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94463541.json",
+    "seat": 0,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 69093.0,
+    "opp_reward": 58123.0,
+    "margin": 10970.0,
+    "shop_key": [
+      "BAKERY",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94482951.json",
+    "seat": 0,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 90226.0,
+    "opp_reward": 75120.0,
+    "margin": 15106.0,
+    "shop_key": [
+      "YARN_STORE",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94492617.json",
+    "seat": 1,
+    "opp_name": "tetsuya",
+    "ryo_reward": 86268.0,
+    "opp_reward": 98553.0,
+    "margin": -12285.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94498793.json",
+    "seat": 0,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 96736.0,
+    "opp_reward": 90378.0,
+    "margin": 6358.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94499615.json",
+    "seat": 1,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 87650.0,
+    "opp_reward": 88182.0,
+    "margin": -532.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94507639.json",
+    "seat": 1,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 102825.0,
+    "opp_reward": 100852.0,
+    "margin": 1973.0,
+    "shop_key": [
+      "YARN_STORE",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94523511.json",
+    "seat": 0,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 108484.0,
+    "opp_reward": 115143.0,
+    "margin": -6659.0,
+    "shop_key": [
+      "YARN_STORE",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94524399.json",
+    "seat": 0,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 81574.0,
+    "opp_reward": 73574.0,
+    "margin": 8000.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94524402.json",
+    "seat": 1,
+    "opp_name": "tetsuya",
+    "ryo_reward": 70296.0,
+    "opp_reward": 63025.0,
+    "margin": 7271.0,
+    "shop_key": [
+      "BAKERY",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94541153.json",
+    "seat": 1,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 155320.0,
+    "opp_reward": 149005.0,
+    "margin": 6315.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94545578.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 104916.0,
+    "opp_reward": 111372.0,
+    "margin": -6456.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94568513.json",
+    "seat": 1,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 59747.0,
+    "opp_reward": 36966.0,
+    "margin": 22781.0,
+    "shop_key": [
+      "BAKERY",
+      "PET_CAFE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94568537.json",
+    "seat": 1,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 94709.0,
+    "opp_reward": 90841.0,
+    "margin": 3868.0,
+    "shop_key": [
+      "BAKERY",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94568538.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 94209.0,
+    "opp_reward": 93887.0,
+    "margin": 322.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94601030.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 58108.0,
+    "opp_reward": 45605.0,
+    "margin": 12503.0,
+    "shop_key": [
+      "PET_CAFE",
+      "PET_CAFE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94636230.json",
+    "seat": 0,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 136059.0,
+    "opp_reward": 119976.0,
+    "margin": 16083.0,
+    "shop_key": [
+      "YARN_STORE",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94636233.json",
+    "seat": 0,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 87973.0,
+    "opp_reward": 75808.0,
+    "margin": 12165.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94661381.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 69575.0,
+    "opp_reward": 73532.0,
+    "margin": -3957.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "BAKERY"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94661382.json",
+    "seat": 1,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 119305.0,
+    "opp_reward": 110656.0,
+    "margin": 8649.0,
+    "shop_key": [
+      "YARN_STORE",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94661384.json",
+    "seat": 1,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 119110.0,
+    "opp_reward": 117384.0,
+    "margin": 1726.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94679896.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 72776.0,
+    "opp_reward": 70082.0,
+    "margin": 2694.0,
+    "shop_key": [
+      "PIZZA_SHOP",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94679898.json",
+    "seat": 1,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 79967.0,
+    "opp_reward": 78469.0,
+    "margin": 1498.0,
+    "shop_key": [
+      "PET_CAFE",
+      "FARMERS_MARKET"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94696649.json",
+    "seat": 0,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 60871.0,
+    "opp_reward": 45147.0,
+    "margin": 15724.0,
+    "shop_key": [
+      "PET_CAFE",
+      "PET_CAFE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94696656.json",
+    "seat": 1,
+    "opp_name": "tetsuya",
+    "ryo_reward": 108821.0,
+    "opp_reward": 108728.0,
+    "margin": 93.0,
+    "shop_key": [
+      "ICE_CREAM_SHOP",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94711809.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 123571.0,
+    "opp_reward": 118893.0,
+    "margin": 4678.0,
+    "shop_key": [
+      "YARN_STORE",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94726917.json",
+    "seat": 1,
+    "opp_name": "Arman Tuganbaev",
+    "ryo_reward": 94044.0,
+    "opp_reward": 101304.0,
+    "margin": -7260.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94726918.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 123597.0,
+    "opp_reward": 107460.0,
+    "margin": 16137.0,
+    "shop_key": [
+      "YARN_STORE",
+      "PIZZA_SHOP"
+    ],
+    "route_sig": "Cows_3_Sheep_3_Quads_1"
+  },
+  {
+    "file": "94742826.json",
+    "seat": 1,
+    "opp_name": "\u30ab\u30ef\u30b7\u30ae",
+    "ryo_reward": 63931.0,
+    "opp_reward": 53801.0,
+    "margin": 10130.0,
+    "shop_key": [
+      "BAKERY",
+      "BRUNCH_SPOT"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94742829.json",
+    "seat": 1,
+    "opp_name": "tetsuya",
+    "ryo_reward": 113902.0,
+    "opp_reward": 112195.0,
+    "margin": 1707.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94767492.json",
+    "seat": 1,
+    "opp_name": "tetsuya",
+    "ryo_reward": 88031.0,
+    "opp_reward": 89444.0,
+    "margin": -1413.0,
+    "shop_key": [
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94794854.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 91569.0,
+    "opp_reward": 79962.0,
+    "margin": 11607.0,
+    "shop_key": [
+      "SMOOTHIE_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  },
+  {
+    "file": "94794860.json",
+    "seat": 0,
+    "opp_name": "tetsuya",
+    "ryo_reward": 89327.0,
+    "opp_reward": 94390.0,
+    "margin": -5063.0,
+    "shop_key": [
+      "BAKERY",
+      "YARN_STORE"
+    ],
+    "route_sig": "Cows_2_Sheep_2_Quads_2"
+  }
+]

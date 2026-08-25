@@ -1,0 +1,24 @@
+{
+  "id": "gaurav065/project-maestro-phase-0-analysis",
+  "id_no": 131626461,
+  "title": "Project Maestro Phase 0 Analysis",
+  "code_file": "project-maestro-phase-0-analysis.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "kaggle/kaggriculture-episodes-2026-08-21",
+    "kaggle/kaggriculture-episodes-index"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "kaggriculture"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:dafd4ce5668bbf1ad422e4c109e0f18c9623c3a7c7f48b0235f13142755c40b9",
+  "machine_shape": "None"
+}

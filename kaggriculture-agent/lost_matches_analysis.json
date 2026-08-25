@@ -1,0 +1,1726 @@
+[
+  {
+    "file": "94178524.json",
+    "win_score": 71143.0,
+    "lose_score": 69021.0,
+    "delta": 2122.0,
+    "win_idx": 1,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 300,
+      "WOOL": 154,
+      "MILK": 320,
+      "MELON": 126,
+      "STRAWBERRY": 300
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94179013.json",
+    "win_score": 156879.0,
+    "lose_score": 145526.0,
+    "delta": 11353.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1138,
+      "FERTILIZER": 1906,
+      "WOOL": 136,
+      "MILK": 299,
+      "MELON": 120,
+      "STRAWBERRY": 259,
+      "CARROT": 26
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94179989.json",
+    "win_score": 103272.0,
+    "lose_score": 103128.0,
+    "delta": 144.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 19,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 5
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 263,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 362,
+      "WOOL": 514,
+      "MILK": 1137,
+      "MELON": 126,
+      "STRAWBERRY": 1075
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Milk/Dairy Production Deficit"
+  },
+  {
+    "file": "94182925.json",
+    "win_score": 73047.0,
+    "lose_score": 71302.0,
+    "delta": 1745.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 262,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 464,
+      "FERTILIZER": 235,
+      "WOOL": 132,
+      "MILK": 241,
+      "MELON": 114,
+      "STRAWBERRY": 286
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94185840.json",
+    "win_score": 62141.0,
+    "lose_score": 60219.0,
+    "delta": 1922.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 10,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 5
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 266,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "FERTILIZER": 242,
+      "WHEAT": 466,
+      "WOOL": 161,
+      "MILK": 215,
+      "MELON": 114,
+      "STRAWBERRY": 299
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Market Dumping Timing / Price Cannibalization"
+  },
+  {
+    "file": "94186793.json",
+    "win_score": 75107.0,
+    "lose_score": 74226.0,
+    "delta": 881.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 481,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 423
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94187756.json",
+    "win_score": 102084.0,
+    "lose_score": 100634.0,
+    "delta": 1450.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1138,
+      "FERTILIZER": 1906,
+      "WOOL": 132,
+      "MILK": 283,
+      "MELON": 120,
+      "STRAWBERRY": 254,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94188248.json",
+    "win_score": 83976.0,
+    "lose_score": 64836.0,
+    "delta": 19140.0,
+    "win_idx": 0,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11,
+      12
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1196,
+      "FERTILIZER": 2701,
+      "WOOL": 266,
+      "MILK": 202,
+      "MELON": 72,
+      "STRAWBERRY": 271,
+      "CARROT": 2
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94188730.json",
+    "win_score": 102749.0,
+    "lose_score": 100479.0,
+    "delta": 2270.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 303,
+      "WOOL": 194,
+      "MILK": 427,
+      "MELON": 210,
+      "STRAWBERRY": 336
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94191160.json",
+    "win_score": 99339.0,
+    "lose_score": 93980.0,
+    "delta": 5359.0,
+    "win_idx": 1,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 428,
+      "FERTILIZER": 215,
+      "WOOL": 132,
+      "MILK": 215,
+      "MELON": 102,
+      "STRAWBERRY": 286
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94195366.json",
+    "win_score": 65579.0,
+    "lose_score": 48855.0,
+    "delta": 16724.0,
+    "win_idx": 0,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1012,
+      "FERTILIZER": 1843,
+      "WOOL": 207,
+      "MILK": 189,
+      "MELON": 120,
+      "STRAWBERRY": 240,
+      "CARROT": 19
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94200603.json",
+    "win_score": 106894.0,
+    "lose_score": 101507.0,
+    "delta": 5387.0,
+    "win_idx": 0,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 6000,
+      "FERTILIZER": 2012,
+      "WOOL": 365,
+      "MILK": 548,
+      "MELON": 317,
+      "STRAWBERRY": 375,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94217810.json",
+    "win_score": 93264.0,
+    "lose_score": 91779.0,
+    "delta": 1485.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 467,
+      "FERTILIZER": 301,
+      "WOOL": 230,
+      "MILK": 419,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94226669.json",
+    "win_score": 100748.0,
+    "lose_score": 100649.0,
+    "delta": 99.0,
+    "win_idx": 1,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 300,
+      "WOOL": 154,
+      "MILK": 320,
+      "MELON": 126,
+      "STRAWBERRY": 300
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94229295.json",
+    "win_score": 93042.0,
+    "lose_score": 92963.0,
+    "delta": 79.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 300,
+      "WOOL": 154,
+      "MILK": 320,
+      "MELON": 126,
+      "STRAWBERRY": 300
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94236822.json",
+    "win_score": 74563.0,
+    "lose_score": 72667.0,
+    "delta": 1896.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 15,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 967,
+      "FERTILIZER": 1927,
+      "WOOL": 151,
+      "MILK": 273,
+      "MELON": 120,
+      "STRAWBERRY": 254,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94238481.json",
+    "win_score": 96479.0,
+    "lose_score": 96335.0,
+    "delta": 144.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1138,
+      "FERTILIZER": 1906,
+      "WOOL": 120,
+      "MILK": 279,
+      "MELON": 120,
+      "STRAWBERRY": 252,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94241166.json",
+    "win_score": 105837.0,
+    "lose_score": 101014.0,
+    "delta": 4823.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 273,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 474,
+      "FERTILIZER": 303,
+      "WOOL": 238,
+      "MILK": 422,
+      "MELON": 126,
+      "STRAWBERRY": 447
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94241222.json",
+    "win_score": 134790.0,
+    "lose_score": 129359.0,
+    "delta": 5431.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 302,
+      "WOOL": 194,
+      "MILK": 427,
+      "MELON": 210,
+      "STRAWBERRY": 336
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94245995.json",
+    "win_score": 100983.0,
+    "lose_score": 97609.0,
+    "delta": 3374.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1138,
+      "FERTILIZER": 1906,
+      "WOOL": 130,
+      "MILK": 285,
+      "MELON": 120,
+      "STRAWBERRY": 254,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94281131.json",
+    "win_score": 76368.0,
+    "lose_score": 75937.0,
+    "delta": 431.0,
+    "win_idx": 1,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "lose_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 300,
+      "WOOL": 154,
+      "MILK": 320,
+      "MELON": 126,
+      "STRAWBERRY": 300
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94284956.json",
+    "win_score": 110361.0,
+    "lose_score": 95443.0,
+    "delta": 14918.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11,
+      12
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1475,
+      "FERTILIZER": 1450,
+      "WOOL": 272,
+      "MILK": 189,
+      "MELON": 72,
+      "STRAWBERRY": 281,
+      "CARROT": 6
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94289319.json",
+    "win_score": 71206.0,
+    "lose_score": 62352.0,
+    "delta": 8854.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 522,
+      "FERTILIZER": 253,
+      "WOOL": 120,
+      "MILK": 279,
+      "MELON": 120,
+      "STRAWBERRY": 223,
+      "CARROT": 20
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Market Dumping Timing / Price Cannibalization"
+  },
+  {
+    "file": "94293664.json",
+    "win_score": 86201.0,
+    "lose_score": 85722.0,
+    "delta": 479.0,
+    "win_idx": 0,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1138,
+      "FERTILIZER": 1906,
+      "WOOL": 150,
+      "MILK": 317,
+      "MELON": 120,
+      "STRAWBERRY": 254,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94308687.json",
+    "win_score": 87610.0,
+    "lose_score": 73053.0,
+    "delta": 14557.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1012,
+      "FERTILIZER": 1794,
+      "WOOL": 207,
+      "MILK": 189,
+      "MELON": 120,
+      "STRAWBERRY": 225,
+      "CARROT": 19
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94310319.json",
+    "win_score": 107131.0,
+    "lose_score": 102446.0,
+    "delta": 4685.0,
+    "win_idx": 1,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 300,
+      "WOOL": 154,
+      "MILK": 320,
+      "MELON": 126,
+      "STRAWBERRY": 300
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94317384.json",
+    "win_score": 113932.0,
+    "lose_score": 113744.0,
+    "delta": 188.0,
+    "win_idx": 0,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1138,
+      "FERTILIZER": 1906,
+      "WOOL": 142,
+      "MILK": 350,
+      "MELON": 124,
+      "STRAWBERRY": 254,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94327021.json",
+    "win_score": 125039.0,
+    "lose_score": 120058.0,
+    "delta": 4981.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1071,
+      "FERTILIZER": 1778,
+      "WOOL": 128,
+      "MILK": 279,
+      "MELON": 120,
+      "STRAWBERRY": 243,
+      "CARROT": 14
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94333105.json",
+    "win_score": 57930.0,
+    "lose_score": 56177.0,
+    "delta": 1753.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94339047.json",
+    "win_score": 92256.0,
+    "lose_score": 81053.0,
+    "delta": 11203.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1071,
+      "FERTILIZER": 1778,
+      "WOOL": 128,
+      "MILK": 279,
+      "MELON": 120,
+      "STRAWBERRY": 243,
+      "CARROT": 14
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94342540.json",
+    "win_score": 98173.0,
+    "lose_score": 91327.0,
+    "delta": 6846.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1004,
+      "FERTILIZER": 1668,
+      "WOOL": 226,
+      "MILK": 399,
+      "MELON": 286,
+      "STRAWBERRY": 379,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94349933.json",
+    "win_score": 140533.0,
+    "lose_score": 139825.0,
+    "delta": 708.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 13,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 6
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 262,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 519,
+      "FERTILIZER": 305,
+      "WOOL": 200,
+      "MILK": 296,
+      "MELON": 114,
+      "STRAWBERRY": 290
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Market Dumping Timing / Price Cannibalization"
+  },
+  {
+    "file": "94360409.json",
+    "win_score": 104840.0,
+    "lose_score": 92035.0,
+    "delta": 12805.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11,
+      12
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 880,
+      "FERTILIZER": 292,
+      "WOOL": 288,
+      "MILK": 129,
+      "MELON": 102,
+      "STRAWBERRY": 227,
+      "CARROT": 4
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Market Dumping Timing / Price Cannibalization"
+  },
+  {
+    "file": "94373732.json",
+    "win_score": 68752.0,
+    "lose_score": 56387.0,
+    "delta": 12365.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1071,
+      "FERTILIZER": 1778,
+      "WOOL": 128,
+      "MILK": 279,
+      "MELON": 120,
+      "STRAWBERRY": 243,
+      "CARROT": 14
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94391190.json",
+    "win_score": 55522.0,
+    "lose_score": 53323.0,
+    "delta": 2199.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 300,
+      "WOOL": 230,
+      "MILK": 401,
+      "MELON": 126,
+      "STRAWBERRY": 415
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  },
+  {
+    "file": "94391979.json",
+    "win_score": 116961.0,
+    "lose_score": 106040.0,
+    "delta": 10921.0,
+    "win_idx": 1,
+    "win_d0": {
+      "COW": 2,
+      "SHEEP": 2,
+      "WHEAT": 16,
+      "MELON": 12
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 277,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      11
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 1138,
+      "FERTILIZER": 1906,
+      "WOOL": 126,
+      "MILK": 285,
+      "MELON": 120,
+      "STRAWBERRY": 254,
+      "CARROT": 15
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Fertilizer Care/Collection Deficit"
+  },
+  {
+    "file": "94397162.json",
+    "win_score": 138336.0,
+    "lose_score": 132311.0,
+    "delta": 6025.0,
+    "win_idx": 0,
+    "win_d0": {
+      "WHEAT": 19,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "lose_d0": {
+      "WHEAT": 21,
+      "COW": 1,
+      "SHEEP": 4,
+      "MELON": 8
+    },
+    "win_hires": 264,
+    "lose_hires": 264,
+    "win_land": [
+      6,
+      10
+    ],
+    "lose_land": [
+      6,
+      10
+    ],
+    "win_sells": {
+      "WHEAT": 479,
+      "FERTILIZER": 302,
+      "WOOL": 246,
+      "MILK": 386,
+      "MELON": 210,
+      "STRAWBERRY": 322
+    },
+    "lose_sells": {
+      "WHEAT": 472,
+      "FERTILIZER": 302,
+      "WOOL": 230,
+      "MILK": 425,
+      "MELON": 126,
+      "STRAWBERRY": 426
+    },
+    "loss_cause": "Mirror Match AMM Glut / Turn-Order Front-Run"
+  }
+]

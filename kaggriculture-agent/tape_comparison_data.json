@@ -1,0 +1,496 @@
+{
+  "metrics": {
+    "Our_Best_151k": {
+      "total_hires": 264,
+      "avg_daily_hires": 8.8,
+      "land_buys": [
+        [
+          6,
+          16
+        ],
+        [
+          10,
+          0
+        ]
+      ],
+      "total_sells": {
+        "WHEAT": 472,
+        "FERTILIZER": 302,
+        "WOOL": 230,
+        "MILK": 425,
+        "MELON": 126,
+        "STRAWBERRY": 426
+      },
+      "total_buys": {
+        "BUY_PRODUCT WHEAT": 189,
+        "BUY_ANIMAL COW": 8,
+        "BUY_ANIMAL SHEEP": 4,
+        "BUY_SEED MELON": 20,
+        "BUY_SEED WHEAT": 144,
+        "BUY_SEED STRAWBERRY": 37
+      },
+      "ops": {
+        "WATER": 1010,
+        "CARE": 956,
+        "NORTH": 838,
+        "WEST": 811,
+        "EAST": 652,
+        "SOUTH": 554,
+        "HARVEST": 390,
+        "COLLECT_FERTILIZER": 301,
+        "FEED": 290,
+        "PASS": 274
+      },
+      "day0_market": [
+        [
+          0,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            14
+          ]
+        ],
+        [
+          0,
+          [
+            "BUY_ANIMAL",
+            "COW",
+            1
+          ]
+        ],
+        [
+          0,
+          [
+            "BUY_ANIMAL",
+            "SHEEP",
+            4
+          ]
+        ],
+        [
+          0,
+          [
+            "BUY_SEED",
+            "MELON",
+            5
+          ]
+        ],
+        [
+          0,
+          [
+            "BUY_SEED",
+            "WHEAT",
+            5
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_SEED",
+            "MELON",
+            3
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_SEED",
+            "WHEAT",
+            2
+          ]
+        ]
+      ]
+    },
+    "Rank1_165k_StrawCow": {
+      "total_hires": 309,
+      "avg_daily_hires": 10.3,
+      "land_buys": [
+        [
+          7,
+          1
+        ],
+        [
+          10,
+          1
+        ]
+      ],
+      "total_sells": {
+        "WHEAT": 269,
+        "FERTILIZER": 236,
+        "WOOL": 98,
+        "MILK": 309,
+        "STRAWBERRY": 297,
+        "MELON": 84
+      },
+      "total_buys": {
+        "BUY_PRODUCT WHEAT": 221,
+        "BUY_ANIMAL COW": 12,
+        "BUY_ANIMAL SHEEP": 3,
+        "BUY_SEED WHEAT": 119,
+        "BUY_SEED STRAWBERRY": 40,
+        "BUY_SEED MELON": 14
+      },
+      "ops": {
+        "PASS": 1419,
+        "WEST": 1065,
+        "EAST": 905,
+        "WATER": 805,
+        "NORTH": 802,
+        "SOUTH": 532,
+        "HARVEST": 403,
+        "FEED": 354,
+        "CARE": 354,
+        "COLLECT_FERTILIZER": 354
+      },
+      "day0_market": [
+        [
+          1,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            5
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_ANIMAL",
+            "COW",
+            2
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_ANIMAL",
+            "SHEEP",
+            3
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_SEED",
+            "WHEAT",
+            10
+          ]
+        ],
+        [
+          2,
+          [
+            "BUY_SEED",
+            "STRAWBERRY",
+            3
+          ]
+        ]
+      ]
+    },
+    "Rank2_154k_SheepMelon": {
+      "total_hires": 281,
+      "avg_daily_hires": 9.366666666666667,
+      "land_buys": [
+        [
+          6,
+          17
+        ],
+        [
+          10,
+          13
+        ]
+      ],
+      "total_sells": {
+        "FERTILIZER": 254,
+        "WHEAT": 212,
+        "WOOL": 135,
+        "MELON": 66,
+        "STRAWBERRY": 318,
+        "MILK": 264,
+        "CARROT": 21
+      },
+      "total_buys": {
+        "BUY_PRODUCT WHEAT": 107,
+        "BUY_SEED MELON": 11,
+        "BUY_SEED WHEAT": 140,
+        "BUY_ANIMAL SHEEP": 4,
+        "BUY_SEED STRAWBERRY": 41,
+        "BUY_ANIMAL COW": 11,
+        "BUY_SEED CARROT": 8
+      },
+      "ops": {
+        "NORTH": 1017,
+        "WATER": 970,
+        "WEST": 947,
+        "SOUTH": 764,
+        "EAST": 764,
+        "HARVEST": 416,
+        "PASS": 382,
+        "FEED": 346,
+        "CARE": 342,
+        "COLLECT_FERTILIZER": 335
+      },
+      "day0_market": [
+        [
+          1,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            4
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_SEED",
+            "MELON",
+            7
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_SEED",
+            "WHEAT",
+            5
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_ANIMAL",
+            "SHEEP",
+            4
+          ]
+        ],
+        [
+          3,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            4
+          ]
+        ]
+      ]
+    },
+    "Rank3_134k_Balanced": {
+      "total_hires": 289,
+      "avg_daily_hires": 9.633333333333333,
+      "land_buys": [
+        [
+          5,
+          1
+        ],
+        [
+          10,
+          14
+        ]
+      ],
+      "total_sells": {
+        "WHEAT": 241,
+        "FERTILIZER": 225,
+        "WOOL": 65,
+        "MILK": 302,
+        "MELON": 66,
+        "STRAWBERRY": 319,
+        "CARROT": 60
+      },
+      "total_buys": {
+        "BUY_ANIMAL SHEEP": 2,
+        "BUY_ANIMAL COW": 14,
+        "BUY_SEED MELON": 11,
+        "BUY_SEED WHEAT": 104,
+        "BUY_PRODUCT WHEAT": 190,
+        "BUY_SEED STRAWBERRY": 42,
+        "BUY_SEED CARROT": 24
+      },
+      "ops": {
+        "WATER": 1127,
+        "NORTH": 1056,
+        "WEST": 1019,
+        "EAST": 954,
+        "SOUTH": 715,
+        "HARVEST": 408,
+        "PASS": 364,
+        "FEED": 317,
+        "COLLECT_FERTILIZER": 312,
+        "CARE": 272
+      },
+      "day0_market": [
+        [
+          1,
+          [
+            "BUY_ANIMAL",
+            "SHEEP",
+            2
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_ANIMAL",
+            "COW",
+            2
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_SEED",
+            "MELON",
+            11
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_SEED",
+            "WHEAT",
+            6
+          ]
+        ],
+        [
+          1,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            4
+          ]
+        ],
+        [
+          4,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            1
+          ]
+        ],
+        [
+          8,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            1
+          ]
+        ],
+        [
+          9,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            1
+          ]
+        ],
+        [
+          12,
+          [
+            "BUY_PRODUCT",
+            "WHEAT",
+            1
+          ]
+        ]
+      ]
+    }
+  },
+  "solo_scores": {
+    "Our_Best_151k": [
+      193428.0,
+      162328.0,
+      155070.0,
+      184162.0,
+      177690.0
+    ],
+    "Rank1_165k_StrawCow": [
+      179501.0,
+      135737.0,
+      178311.0,
+      125932.0,
+      141871.0
+    ],
+    "Rank2_154k_SheepMelon": [
+      53038.0,
+      48550.0,
+      19081.0,
+      26114.0,
+      39239.0
+    ],
+    "Rank3_134k_Balanced": [
+      69064.0,
+      75924.0,
+      58284.0,
+      58211.0,
+      68797.0
+    ]
+  },
+  "h2h_results": {
+    "Our_Best_151k": {
+      "Our_Best_151k": [
+        46598.0,
+        45793.0
+      ],
+      "Rank1_165k_StrawCow": [
+        90159.0,
+        76946.0
+      ],
+      "Rank2_154k_SheepMelon": [
+        146030.0,
+        20674.0
+      ],
+      "Rank3_134k_Balanced": [
+        128426.0,
+        52185.0
+      ]
+    },
+    "Rank1_165k_StrawCow": {
+      "Our_Best_151k": [
+        78984.0,
+        87052.0
+      ],
+      "Rank1_165k_StrawCow": [
+        50430.0,
+        49538.0
+      ],
+      "Rank2_154k_SheepMelon": [
+        156025.0,
+        32310.0
+      ],
+      "Rank3_134k_Balanced": [
+        116262.0,
+        51442.0
+      ]
+    },
+    "Rank2_154k_SheepMelon": {
+      "Our_Best_151k": [
+        16738.0,
+        146928.0
+      ],
+      "Rank1_165k_StrawCow": [
+        10708.0,
+        67592.0
+      ],
+      "Rank2_154k_SheepMelon": [
+        28091.0,
+        28134.0
+      ],
+      "Rank3_134k_Balanced": [
+        31787.0,
+        65123.0
+      ]
+    },
+    "Rank3_134k_Balanced": {
+      "Our_Best_151k": [
+        38149.0,
+        96989.0
+      ],
+      "Rank1_165k_StrawCow": [
+        50347.0,
+        110905.0
+      ],
+      "Rank2_154k_SheepMelon": [
+        65079.0,
+        33502.0
+      ],
+      "Rank3_134k_Balanced": [
+        42072.0,
+        42370.0
+      ]
+    }
+  }
+}
