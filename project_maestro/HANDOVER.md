@@ -417,10 +417,10 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
 11. **Synchronized Post-Drain Milk Selling (ADOPTED `milk_batch_cap=4`, Block 4)**:
     - Synchronizing milk sells with `step % 4 == 1` immediately post town-shop drain in batches of 4 achieved **75.5% WR vs Dominant Meta** (151W/49L/0T, Δ = +$2,089.70, $t = +4.86, p = 2.4 \times 10^{-6}$) and raised Official-20 floor to **$36,057.00**.
 
-**Full Archetype Head-to-Head Performance (n=200 matches per archetype on 100 Disjoint Seeds, Block 5 Matrix)**:
-- vs **Dominant Meta (10C / 4S / 0G)**: **55.0% Win Rate** (100W / 80L / 20T), Δ = +$553.11 ($t = +1.97, p = 0.050$)
-- vs **Wool-Heavy (6C / 8S / 0G)**: **81.5% Win Rate** (163W / 37L / 0T), Δ = +$10,660.67 ($t = +14.34, p < 10^{-30}$)
-- vs **Balanced Pasture (8C / 6S / 0G)**: **80.5% Win Rate** (158W / 36L / 6T), Δ = +$6,947.85 ($t = +10.72, p < 10^{-20}$)
+**Full Archetype Head-to-Head Performance (n=200 matches per archetype on 100 Disjoint Seeds, Canonical Definitions)**:
+- vs **Dominant Meta (10C / 4S / 0G)**: **67.0% Win Rate** (134W / 66L / 0T), Δ = +$1,609.75 ($t = +3.95, p = 1.07 \times 10^{-4}$)
+- vs **Wool-Heavy (6C / 12S / 0G)**: **83.0% Win Rate** (166W / 34L / 0T), Δ = +$11,531.88 ($t = +15.13, p < 10^{-30}$)
+- vs **Balanced Pasture (6C / 8S / 0G)**: **81.5% Win Rate** (163W / 37L / 0T), Δ = +$10,673.81 ($t = +14.35, p < 10^{-30}$)
 - vs **Old Baseline (§2w)**: **78.5% Win Rate** (157W / 43L / 0T), Δ = +$2,799.66 ($t = +7.56, p < 10^{-11}$)
 - vs **All-PASS Baseline**: **100.0% Win Rate**, Opponent score = **$3,000.00** exactly.
 

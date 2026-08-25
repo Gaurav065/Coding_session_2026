@@ -166,11 +166,11 @@ def run_block5_suite():
     print(f"Disjoint 100 (Mean / Median / Min / Max): ${np.mean(sp100_rewards):,.2f} / ${np.median(sp100_rewards):,.2f} / ${np.min(sp100_rewards):,.2f} / ${np.max(sp100_rewards):,.2f}")
     print("=" * 110 + "\n")
 
-    # 2. Full Archetype Matrix (n=200 each)
+    # 2. Full Archetype Matrix (n=200 each, Canonical Definitions from fast_parallel_benchmark.py)
     archetypes = [
-        ("Dominant Meta (10C / 4S / 0G)", lambda: make_spatial_dispatcher_agent(params={"cow_cap_base": 10, "sheep_cap": 4, "goose_cap": 0})),
-        ("Wool-Heavy (6C / 8S / 0G)", lambda: make_spatial_dispatcher_agent(params={"cow_cap_base": 6, "sheep_cap": 8, "goose_cap": 0})),
-        ("Balanced Pasture (8C / 6S / 0G)", lambda: make_spatial_dispatcher_agent(params={"cow_cap_base": 8, "sheep_cap": 6, "goose_cap": 0})),
+        ("Dominant Meta (10C / 4S / 0G)", lambda: make_spatial_dispatcher_agent(params={"cow_cap_base": 10, "sheep_cap": 4, "goose_cap": 0, "cow_gate_day_early": 99, "cow_gate_day_mid": 99})),
+        ("Wool-Heavy (6C / 12S / 0G)", lambda: make_spatial_dispatcher_agent(params={"cow_cap_base": 6, "sheep_cap": 12, "goose_cap": 0, "cow_gate_day_early": 99, "cow_gate_day_mid": 99})),
+        ("Balanced Pasture (6C / 8S / 0G)", lambda: make_spatial_dispatcher_agent(params={"cow_cap_base": 6, "sheep_cap": 8, "goose_cap": 0, "cow_gate_day_early": 99, "cow_gate_day_mid": 99})),
         ("Old Production Baseline (§2w)", lambda: make_spatial_dispatcher_agent(params={"strawberry_target": 16, "cow_cap_base": 10})),
     ]
 

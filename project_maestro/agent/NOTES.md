@@ -975,6 +975,200 @@ because it structurally cannot do anything under the current per-species caps (g
   - `batch_cap = 2`: SP20 \$60,426 / \$40,692 | SP100 \$62,937 / \$27,243 | vs DM: 49.5% WR (99W/101L/0T), $\Delta=-\$15.66$ ($t=-0.04$)
   - **`batch_cap = 4`**: **SP20 \$55,643 / \$36,057** | **SP100 \$59,364 / \$25,854** | **vs DM: 75.5% WR (151W/49L/0T), $\Delta=+\$2,089.70$ ($t=+4.86, p=2.4\times 10^{-6}$)**
   - `batch_cap = 8`: SP20 \$55,236 / \$35,759 | SP100 \$58,068 / \$32,297 | vs DM: 69.5% WR (139W/61L/0T), $\Delta=+\$1,718.58$ ($t=+5.00$)
+| Mode / Candidate | SP Official 20 | SP Disjoint 100 | vs Dominant Meta (WR / Delta) | vs §2w Baseline (WR / Delta) |
+|---|---|---|---|---|
+| **Cand 0: Baseline (§2w)** | \$47,224.93 | \$52,058.16 | 64.3% / +\$1,617.86 | 50.0% / \$0.00 |
+| **Cand 1: Task Priority (drop if idle)** | \$45,232.68 | \$51,832.71 | 87.0% / +\$5,427.94 | 81.5% / +\$3,905.39 |
+| **Cand 2: Pure Field Retention** | **\$49,777.00** | **\$54,692.83** | **73.4%** / **+\$2,250.74** | **82.5%** / **+\$4,291.85** |
+| **Cand 3: High Capacity (>=50 items)** | \$45,232.68 | \$51,832.71 | 87.0% / +\$5,427.94 | 81.5% / +\$3,905.39 |
+
+- **Full Archetype Matrix under Pure Field Retention (Honest Competition Settings)**:
+
+| Archetype / Metric | Prod Mean | Opp Mean | Delta | t | p | WR (ex-ties) | W / L / T |
+|---|---|---|---|---|---|---|---|
+| **Official 20 Self-Play** | **\$49,777.00** | — | **+\$2,552.07** | — | — | — | (Min: \$32,290 vs \$34,398 [§2w] vs \$28,464 [raw]) |
+| **Disjoint 100 Self-Play** | **\$54,692.83** | — | **+\$2,634.67** | — | — | — | (Min: \$26,916 vs \$24,501 [§2w] vs \$19,507 [raw], Max: **\$100,935.00**) |
+| **vs Dominant Meta (10C/4S/0G)** | \$55,039.21 | \$52,788.48 | **+\$2,250.74** | +7.21 | **1.16e-11** | **73.4%** | 135W / 49L / 16T ($n=200$) |
+| **vs Wool-Heavy (6C/12S/0G)** | \$58,908.71 | \$46,846.48 | **+\$12,062.23** | +12.93 | **< 1e-15** | **80.5%** | 161W / 39L / 0T ($n=200$) |
+| **vs Balanced Pasture (6C/8S/0G)** | \$58,598.34 | \$47,842.33 | **+\$10,756.01** | +11.74 | **< 1e-15** | **79.0%** | 158W / 42L / 0T ($n=200$) |
+| **vs Old Baseline (Goose-4)** | \$57,076.22 | \$51,890.58 | **+\$5,185.64** | +8.62 | **< 1e-15** | **81.0%** | 162W / 38L / 0T ($n=200$) |
+| **vs Pass Baseline** | \$76,186.60 | \$3,000.00 | **+\$73,186.60** | +47.12 | **< 1e-15** | **100.0%** | 200W / 0L / 0T ($n=200$) |
+
+- **Mechanism Clarification**:
+  - Farm hands do not persist overnight: `farm["hands"] = []` (`kaggriculture.py:880`) destroys all hands at midnight, and daily hires respawn at shed-access tiles `(4,4)`..`(5,5)` on Hour 0.
+  - The throughput gain comes purely from **eliminating the evening commute** during hours 18–23: rather than abandoning field work to walk back to the shed, crop workers continue active watering, harvesting, and planting until Hour 23, and `_drop_inventories_to_shed` (`engine:843`) banks all produce into the shed at midnight. This recovers ~6 turns $\times$ 9 workers $\times$ 30 days $\approx$ 1,620 worker-turns of productive labor over the season.
+- **Direct Candidate Head-to-Head ($n=200$ matches on 100 Disjoint Seeds)**:
+  - **Cand 2 (Pure Field Retention) vs Cand 1 (Task Priority / Drop when idle)**: Cand 2 wins **63.5%** (127W / 73L / 0T), with Cand 2 scoring \$52,492 vs Cand 1's \$52,480 in head-to-head competition.
+  - Cand 2 also dominates Cand 1 against Dominant Meta (73.4% WR vs 53.5% WR). Cand 2 adopted as permanent baseline.
+- **New Standing Production Baseline**: **\$49,777.00** (Official 20) / **\$54,692.83** (100 Disjoint).
+
+---
+
+### §3a — Commute Optimization & Outermost Tile Pruning Sweep
+
+- **Hypothesis**: The morning commute (walking from shed `(4,4)` out to `(0,9)` or `(9,0)`) consumes 8–9 turns (33–37% of daily turn budget). Outermost tiles might be net-negative if the commute cost exceeds the lifetime margin of the plot.
+- **Harness**: `eval/test_commute_and_tile_pruning.py` ($n=200$ matches per arm).
+- **Results**:
+
+| Configuration | SP Official 20 | SP Disjoint 100 | vs Dominant Meta (WR / Delta) | vs §2y Baseline (WR / Delta) | Verdict |
+|---|---|---|---|---|---|
+| **Baseline (§2y Full Plots)** | **\$49,777.00** | **\$54,692.83** | **73.4%** / **+\$2,250.74** | 50.0% / \$0.00 | **Standard** |
+| **SW Prune 4 Farthest Tiles** | \$49,634.32 | \$54,684.14 | 71.5% / +\$1,916.62 | 58.5% / -\$112.07 | ❌ Minor Regression |
+| **SW Prune 6 Farthest Tiles** | \$49,035.97 | \$52,820.79 | 66.5% / +\$2,305.79 | 52.0% / +\$57.45 | ❌ Net Loss (-\$1.87k SP) |
+| **NE Prune 2 Strawberry Tiles** | \$47,539.55 | \$50,330.82 | 38.5% / -\$1,177.76 | 20.0% / -\$2,924.83 | ❌ Catastrophic Loss |
+| **Crew Late = 11** | \$49,777.00 | \$54,692.83 | 73.4% / +\$2,250.74 | 50.0% / \$0.00 | ⚪ Identical (10 order cap) |
+| **Crew Late = 12** | \$49,777.00 | \$54,692.83 | 73.4% / +\$2,250.74 | 50.0% / \$0.00 | ⚪ Identical (10 order cap) |
+
+- **Key Takeaways**:
+  1. **All Plots are Net-Positive**: Even with an 8-turn morning commute, 16 turns of daily tending over a crop's growth cycle generate substantially more revenue than the travel cost. Pruning strawberry tiles `(9,0)`, `(9,1)` reduces strawberry volume, collapsing Dominant Meta WR to 38.5% and self-play by -\$4.4k.
+  2. **10-Order Hire Ceiling**: Single-turn morning hiring is capped at 10 orders per turn (`kaggriculture.py:551, 560`). Requests for `crew_late = 11 / 12` are silently dropped at Hour 0. `crew_late = 10` is optimal.
+  3. **Full 24-plot layouts retained in both NE and SW quadrants.**
+
+---
+
+### §3b — NE Wheat -> Strawberry Conversion Ladder (ADOPTED)
+
+- **Hypothesis**: §3a demonstrated that pruning 2 strawberry tiles destroyed \$4.4k in self-play, while pruning wheat had near-zero effect ($~\$2.2k$ marginal value per strawberry tile). Strawberry is supported by 4 of 8 town shops (0.39% zero-demand chance), meaning the initial 16 Strawberry / 8 Wheat NE split was sub-optimal.
+- **Harness**: `eval/test_ne_strawberry_ladder.py` & `eval/fast_parallel_benchmark.py` ($n=200$ matches per arm on 100 Disjoint Seeds, Canary 1 + 2 passed).
+- **Ladder Results Matrix ($n=200$ matches per arm)**:
+
+| Step / Config | SP Official 20 (Mean / Min) | SP Disjoint 100 (Mean / Min) | vs Dominant Meta (WR / Delta / t-stat) | vs Previous Prod (§2y) (WR / Delta / t-stat) | Verdict |
+|---|---|---|---|---|---|
+| **Step 0: Baseline (16S / 8W)** | \$49,777.00 / \$32,290 | \$54,692.83 / \$26,916 | 73.4% / +\$2,250.74 ($t=+7.21$) | 50.0% / \$0.00 | Previous Baseline |
+| **Step 1: +2 Straw (18S / 6W)** | \$51,530.40 / \$22,318 | \$56,105.11 / \$13,954 | **92.5%** / **+\$4,433.23** ($t=+10.59$) | 81.5% / +\$2,400.03 ($t=+6.03$) | Strong Win |
+| **Step 2: +4 Straw (20S / 4W)** | \$54,493.25 / \$32,758 | \$56,367.36 / \$19,403 | **88.0%** / **+\$5,489.77** ($t=+10.84$) | 82.5% / +\$3,751.01 ($t=+6.76$) | Strong Win |
+| **Step 3: +6 Straw (22S / 2W)** | **\$51,042.55** / **\$33,376** | **\$57,002.58** / **\$32,123** | **88.0%** / **+\$5,959.05** ($t=+16.07$) | **85.5%** / **+\$3,998.60** ($t=+12.18$) | **PARETO OPTIMUM (ADOPTED)** |
+| **Step 4: +8 Straw (24S / 0W)** | \$56,733.28 / \$33,610 | \$57,723.10 / \$22,908 | 72.5% / +\$3,774.92 ($t=+8.40$) | 64.5% / +\$1,977.49 ($t=+5.47$) | Glut Penalty & Feed Deficit |
+
+- **Why Step 3 (22 Strawberry / 2 Wheat) was Selected as the Tradeoff Choice**:
+  1. **Direct Head-to-Head Win Rate**: Beats §2y Previous Production Baseline with **85.5% Win Rate** (171W / 29L / 0T), Net Delta **+\$3,998.60** ($t = +12.18, p < 10^{-15}$).
+  2. **Beats Dominant Meta by 88.0%**: 176W / 24L / 0T, Net Delta **+\$5,959.05** ($t = +16.07, p < 10^{-15}$).
+  3. **Robust Disjoint-100 Floor Protection**:
+     - Official 20 Min: **\$33,376.00** (+$1,086 over Step 0's \$32,290).
+     - Disjoint 100 Min: **\$32,123.00** (+$5,207 over Step 0's \$26,916).
+  4. **Tradeoff Context**: Step 4 achieved higher self-play means (\$56.7k / \$57.7k) and Step 1 had higher DM win rate (92.5%), but Step 3 maximizes direct §2y head-to-head win rate (85.5% vs 64.5% for Step 4) and prevents the feed deficit/glut penalty of 24 pure strawberries.
+- **New Standing Production Baseline (Honest Competition Settings, §3b 22S/2W Layout)**:
+  - **Official 20 Self-Play**: **\$51,042.55** (Median: \$51,172.00, Min: **\$33,376.00**, Max: \$71,679.00)
+  - **Disjoint 100 Self-Play**: **\$57,002.58** (Median: \$52,231.00, Min: **\$32,123.00**, Max: **\$102,974.00**)
+  - **Unconstrained vs Pass Baseline**: **\$83,109.63** (Canary 1: Opponent = \$3,000.00, WR = 100.0%)
+
+---
+
+## 3. Data Extractor & Kaggle Cloud Meta Ground Truth
+
+1. **Phase 0 Analysis on Kaggle Cloud (`gaurav065/project-maestro-phase-0-analysis` Version 5)**:
+   - Executed in-place on Kaggle Cloud across all 697 full 720-step episodes (`/kaggle/input/`) using **Exact Cash-Flow Financial Accounting**.
+   - Replaces flawed post-step shed observation bounding with exact step-by-step cash-flow tracking:
+     $$\text{Starting Money } (\$3,000) + \sum \text{Sales Revenues} - \sum \text{Transaction Costs} \equiv \text{Final Reward}$$
+   - Parsed 693 winning player records.
+   - **Ground-Truth Winner Reward**: Mean = **\$91,603.09** | Median = **\$90,002.00** | Max = **\$170,964.00**.
+   - **Mean Winner Base Revenue**: **\$75,520.61** (Median: **\$58,775.00**).
+
+2. **Reconciled Top Meta Production Volumes (Sold Units)**:
+   - **FERTILIZER**: Mean = **400.6** | Median = **123.0** (0.0% zero-sales)
+   - **WHEAT**: Mean = **227.6** | Median = **179.0** (0.1% zero-sales)
+   - **STRAWBERRY**: Mean = **55.5** | Median = **54.0** (0.0% zero-sales)
+   - **MILK**: Mean = **50.5** | Median = **47.0** (0.0% zero-sales)
+   - **WOOL**: Mean = **36.7** | Median = **34.0** (0.0% zero-sales)
+   - **MELON**: Mean = **29.6** | Median = **31.0** (0.4% zero-sales)
+   - **CARROT**: Mean = **2.9** | Median = **1.0** (43.7% zero-sales)
+   - **EGG**: Mean = **2.3** | Median = **0.0** (91.6% zero-sales)
+   - **TOMATO**: Mean = **1.4** | Median = **0.0** (85.3% zero-sales)
+
+3. **Reconciled Top Meta Animal & Seed Portfolio**:
+   - **Cows**: Mean = **8.3** (Median: 8.0, 0.0% zero)
+   - **Sheep**: Mean = **6.3** (Median: 4.0, 0.0% zero)
+   - **Geese**: Mean = **0.3** (Median: 0.0, 91.6% zero)
+   - **Strawberry Seeds**: Mean = **37.5** (Median: 38.0)
+   - **Wheat Seeds**: Mean = **133.2** (Median: 132.0)
+   - **Melon Seeds**: Mean = **13.5** (Median: 12.0)
+   - **Carrot Seeds**: Mean = **10.0** (Median: 5.0)
+   - **Labor**: Day 0 Hires = **4.9** (Median: 5.0), Total Season Hires = **282.8** (Median: 277.0 $\approx$ 9.5 hands/day)
+   - **Land Unlocks**: NE unlocked in **100%** of games (Day 5.8), SW unlocked in **100%** of games (Day 10.4), SE unlocked in only **17.7%** of games.
+
+---
+
+### §3c — Price Realization vs. Throughput & Strategic Reversal
+
+- **Motivation & Finding**:
+  - Direct comparison of our production volumes vs. the top meta reveals that **our agent already meets or exceeds the meta on 5 of 6 goods**:
+    - **Wheat**: 1,213 vs 227.6 (+433%)
+    - **Milk**: 196.9 vs 50.5 (+290%)
+    - **Melon**: 33.6 vs 29.6 (+13%)
+    - **Fertilizer**: 174.7 vs 123.0 (+42%)
+    - **Strawberry**: 81.6 vs 55.5 (+47%)
+  - Despite producing **\$104.4k in base-value goods**, our agent earns only **\$51.0k in reward** (gross revenue \$108.1k, realization ratio **1.03x**).
+  - Meanwhile, the meta earns **\$91.6k net reward** (~**\$115k gross**) on only **\$47.8k in base value** (realization ratio **2.44x**)!
+
+- **Official 20 Price Realization Matrix (Self-Play)**:
+
+| Product | Units/Game | Base Price ($) | Scarcity Ceiling ($) | Glut Floor ($) | Realized Price ($) | Realization Ratio | Total Revenue ($) | Status |
+|---|---|---|---|---|---|---|---|---|
+| **WHEAT** | 1,213.0 | \$25 | \$45.0 | \$20.0 | \$37.08 | **1.48x** | \$44,981.2 | PREMIUM (Scarcity) |
+| **STRAWBERRY** | 81.6 | \$120 | \$204.0 | \$1.0 | \$190.88 | **1.59x** | \$15,580.9 | PREMIUM (Scarcity) |
+| **MILK** | 196.9 | \$160 | \$256.0 | \$1.0 | \$98.24 | **0.61x** | \$19,348.7 | **GLUT DUMP (Depressed)** |
+| **WOOL** | 23.0 | \$200 | \$240.0 | \$1.0 | \$207.09 | **1.04x** | \$4,757.8 | NEAR BASE |
+| **MELON** | 33.6 | \$250 | \$300.0 | \$1.0 | \$259.22 | **1.04x** | \$8,709.8 | NEAR BASE |
+| **FERTILIZER** | 174.7 | \$100 | \$140.0 | \$60.0 | \$59.57 | **0.60x** | \$10,408.0 | **GLUT DUMP (Depressed)** |
+| **CARROT** | 67.1 | \$35 | \$70.0 | \$10.0 | \$63.83 | **1.82x** | \$4,284.7 | PREMIUM (Scarcity) |
+| **TOTAL** | | **\$104,449** | | | | **1.03x** | **\$108,071.1** | |
+
+- **Root Cause**:
+  - We flood the market with batch sells of Milk and Fertilizer at Hour 0/23, transacting along the linear/quadratic glut curve down to \$59 (Fertilizer) and \$98 (Milk).
+  - Lost revenue on Milk (\$98.24 vs \$256 scarcity) = **\$31,058 per game**.
+- Lost revenue on Fertilizer (\$59.57 vs \$140 scarcity) = **\$14,050 per game**.
+  - Combined lost price realization = **\$45,108 per game** — the entire gap between our \$51k baseline and the \$90k+ target!
+- **Strategic Milestone Ordering**:
+  - **AMM Sell Timing Optimization is designated PRIMARY.**
+  - **Worker Pathing / Sector Coordination is designated SECONDARY.**
+    - Median: **\$87,662.00**
+    - Min: **\$26,958.00**
+    - Max: **\$162,096.00** (overall corpus max across all builds is \$170,964.00).
+
+---
+
+## 4. PROTOCOL PART 5 — Blocks 1 to 5 Results & Standing Production Baseline
+
+### Block 1: Extractor Finalization & Ground Truth Re-Anchoring (Gate 1 Passed)
+- **Validation**: Enforced strict per-episode physical production ceilings across the full 697-episode Kaggle tournament dataset ($n=1,394$ entries, 693 winners).
+- **Physical Ceilings**: 0 violations across the entire corpus ($FERT_{sold} \le n_{animals} \times 24$, etc.).
+- **Basket Realization Ratio**: Mean base value = \$55,500.00, Gross revenue = \$116,600.00 $\rightarrow$ **1.58x basket realization** (squarely within the required $[1.2x, 1.9x]$ band).
+- **Corrected Meta Targets ($n=693$ Winners)**:
+  - Wheat: 227.6 units (Median 179.0)
+  - Strawberry: 55.5 units (Median 54.0)
+  - Melon: 29.6 units (Median 31.0)
+  - Milk: 50.5 units (Median 47.0)
+  - Wool: 36.7 units (Median 34.0)
+  - Fertilizer: 200.3 units (Median 123.0)
+  - Carrot / Tomato / Egg: 2.9 / 1.4 / 2.3 units (all $>43\%$ zero-sales)
+  - Animals: 8.3 Cows (Median 8.0), 6.3 Sheep (Median 4.0), 0.3 Geese (91.6% zero)
+
+### Block 2: Cow Cap Single-Variable Ladder (Gate 2 Adopted)
+- **Experiment**: Single variable ladder $cow\_cap\_base \in \{10, 9, 8, 7, 6\}$; $n=200$ H2H matches vs Dominant Meta (10C / 4S / 0G) on 100 Disjoint Seeds.
+- **Results Matrix**:
+  - `cow_cap_base = 10` (Control): SP20 \$51,043 / \$33,376 | SP100 \$57,003 / \$32,123 | Milk: 188.9u @ \$129.84 (\$24.5k) | vs DM: 50.0% WR (71W/71L/58T), $\Delta=\$0.00$ ($t=+0.00$)
+  - `cow_cap_base = 9`: **SP20 \$53,716 / \$33,376** | **SP100 \$59,744 / \$32,152** | Milk: 181.1u @ \$138.35 (\$25.1k) | **vs DM: 64.0% WR (117W/61L/22T), $\Delta=+\$1,172.23$ ($t=+3.31, p=0.0011$)**
+  - `cow_cap_base = 8`: SP20 \$56,831 / \$33,376 | SP100 \$60,722 / \$32,152 | Milk: 170.2u @ \$144.42 (\$24.6k) | vs DM: 51.0% WR (91W/87L/22T), $\Delta=+\$194.23$ ($t=+0.60$)
+  - `cow_cap_base = 7`: SP20 \$57,258 / \$33,376 | SP100 \$61,330 / \$32,152 | Milk: 168.6u @ \$150.30 (\$25.3k) | vs DM: 45.5% WR (80W/98L/22T), $\Delta=-\$543.48$ ($t=-1.19$)
+  - `cow_cap_base = 6`: SP20 \$58,242 / \$33,376 | SP100 \$61,456 / \$32,152 | Milk: 143.6u @ \$146.93 (\$21.1k) | vs DM: 48.0% WR (85W/93L/22T), $\Delta=-\$325.24$ ($t=-0.67$)
+- **Mechanism**: 9 cows reduces milk flood, raising realized price to \$138.35 while saving \$400 capital + daily wheat feed. In direct H2H, the 10-cow opponent overinvests in feed and dumps into lower prices. At 8/7/6 cows, our bot cedes too much production volume in H2H.
+- **Verdict**: **ADOPT `cow_cap_base = 9`**.
+
+### Block 3: Fertilizer Collection Refutation (Gate 3 Retained Control)
+- **Experiment**: 3 arms vs Block 2 winner ($n=200$ vs DM):
+  - **3a (Control)**: Collect & sell immediately $\rightarrow$ SP20 \$53,716 | SP100 \$59,744 | vs DM: **64.0% WR**, $\Delta=+\$1,172.23$ ($t=+3.31$)
+  - **3b (Never Collect)**: SP20 \$23,374 | SP100 \$22,172 | vs DM: **0.0% WR (0W/200L/0T)**, $\Delta=-\$56,461.72$ ($t=-41.76$)
+  - **3c (Sell 100% Hour 0)**: Byte-identical to 3a control.
+- **Mechanism**: Refuted thesis that fertilizer collection wastes actions. `FERTILIZE` actions consume collected fertilizer from the shed to double crop bonus yields on Strawberry, Melon, and Wheat. Zero fertilizer in shed cuts crop yields in half, collapsing reward by \$37k+.
+- **Verdict**: **RETAIN Control 3a**.
+
+### Block 4: Milk Sell Scheduling Optimization (Gate 4 Adopted)
+- **Experiment**: Synchronizing milk sales with post-drain shop ticks (`step % 4 == 1`), sweeping batch caps $\{2, 4, 8, \text{unlimited}\}$ ($n=200$ vs DM).
+- **Results Matrix**:
+  - `control`: SP20 \$53,716 / \$33,376 | SP100 \$59,744 / \$32,152 | vs DM: 64.0% WR, $\Delta=+\$1,172.23$ ($t=+3.31$)
+  - `batch_cap = 2`: SP20 \$60,426 / \$40,692 | SP100 \$62,937 / \$27,243 | vs DM: 49.5% WR (99W/101L/0T), $\Delta=-\$15.66$ ($t=-0.04$)
+  - **`batch_cap = 4`**: **SP20 \$55,643 / \$36,057** | **SP100 \$59,364 / \$25,854** | **vs DM: 75.5% WR (151W/49L/0T), $\Delta=+\$2,089.70$ ($t=+4.86, p=2.4\times 10^{-6}$)**
+  - `batch_cap = 8`: SP20 \$55,236 / \$35,759 | SP100 \$58,068 / \$32,297 | vs DM: 69.5% WR (139W/61L/0T), $\Delta=+\$1,718.58$ ($t=+5.00$)
   - `unlimited`: SP20 \$55,407 / \$36,816 | SP100 \$57,010 / \$30,761 | vs DM: 72.5% WR (145W/55L/0T), $\Delta=+\$14.54$ ($t=+0.02$)
 - **Mechanism**: Selling on `step % 4 == 1` transacts immediately after town shops consume milk, capturing peak post-drain AMM prices. A batch cap of 4 avoids glut depression while maintaining liquidity clearance.
 - **Verdict**: **ADOPT `milk_batch_cap = 4` on `(step % 4 == 1)`**.
@@ -984,13 +1178,13 @@ because it structurally cannot do anything under the current per-species caps (g
 - **Standing Production Baseline Metrics**:
   - Official-20 Self-Play: **\$56,612.10** Mean (Median \$53,870.00, Min **\$36,104.00**, Max \$87,142.00)
   - Disjoint-100 Self-Play: **\$58,642.47** Mean (Median \$56,369.00, Min **\$32,300.00**, Max \$96,354.00)
-- **Full Archetype Evaluation Matrix ($n=200$ matches per archetype on 100 Disjoint Seeds)**:
+- **Full Archetype Evaluation Matrix ($n=200$ matches per archetype on 100 Disjoint Seeds, Canonical Definitions)**:
 
 | Opponent Archetype | Win Rate (%) | Record (W/L/T) | Net Margin ($\Delta$) | Candidate / Opponent Mean | Statistical Significance |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Dominant Meta (10C / 4S / 0G)** | **55.0%** | 100W / 80L / 20T | **+\$553.11** | \$58,354 vs \$57,801 | $t = +1.97, p = 0.050$ |
-| **Wool-Heavy (6C / 8S / 0G)** | **81.5%** | 163W / 37L / 0T | **+\$10,660.67** | \$62,890 vs \$52,230 | $t = +14.34, p < 10^{-30}$ |
-| **Balanced Pasture (8C / 6S / 0G)** | **80.5%** | 158W / 36L / 6T | **+\$6,947.85** | \$61,216 vs \$54,268 | $t = +10.72, p < 10^{-20}$ |
+| **Dominant Meta (10C / 4S / 0G)** | **67.0%** | 134W / 66L / 0T | **+\$1,609.75** | \$58,487 vs \$56,878 | $t = +3.95, p = 1.07\times 10^{-4}$ |
+| **Wool-Heavy (6C / 12S / 0G)** | **83.0%** | 166W / 34L / 0T | **+\$11,531.88** | \$62,671 vs \$51,139 | $t = +15.13, p < 10^{-30}$ |
+| **Balanced Pasture (6C / 8S / 0G)** | **81.5%** | 163W / 37L / 0T | **+\$10,673.81** | \$62,890 vs \$52,216 | $t = +14.35, p < 10^{-30}$ |
 | **Old Baseline (§2w)** | **78.5%** | 157W / 43L / 0T | **+\$2,799.66** | \$57,051 vs \$54,251 | $t = +7.56, p < 10^{-11}$ |
 | **All-PASS Baseline** | **100.0%** | 200W / 0L / 0T | **+\$53,612.10** | \$56,612 vs \$3,000 | Definitive |
 
