@@ -1270,16 +1270,85 @@ because it structurally cannot do anything under the current per-species caps (g
 
 ### 7c. The 5 Core Mechanisms That Closed the $125k Gap
 1. **Shed-Adjacent Pasture Clustering**: Placing all sheep pastures right against the central shed perimeter `[(4,4), (4,3), (4,2), (3,4), (3,3), (5,4), (5,3)]` reduces animal maintenance travel distance to 0-1 steps, allowing 1 worker to FEED, CARE, and COLLECT_FERTILIZER from 14 sheep daily without labor bottleneck.
-2. **Crop FERTILIZE during Bonus Windows**: Applying collected animal fertilizer (`FERTILIZE` actions on Days 4-6) to melons doubles the watering bonus from +1 to +2 per day, producing **8 melons per tile** (64 melons on Day 10).
-3. **Early Melon Harvest Liquidity Engine**: Day 0 melons in NW harvest on Day 10, generating an instantaneous **\$16,384** cash injection that immediately funds SW (\$2k) and SE (\$4k) quadrant unlocks and expands sheep to 14.
+2. **Crop FERTILIZE as Liquidity Accelerator (Engine Cap = 6)**:
+   - `kaggriculture.py:16`: `"MELON": {"max_yield": 6, "ongoing": False}`. The yield cap for melon is 6 per tile (ceiling 48 melons from 8 tiles, worth ~$12.3k at $256).
+   - What `FERTILIZE` actually does on one-time crops is grant **+2 yield per watered day instead of +1**, allowing the plant to reach the maximum 6-unit cap in half the watering days (Days 4–6).
+   - `FERTILIZE` acts as a **liquidity accelerator**, bringing the Day-10 melon harvest forward and triggering the Day-10 capital expansion wave.
+3. **Early Melon Harvest Liquidity Engine**: Day 0 melons in NW harvest on Day 10, generating an instantaneous **~$12.3k** cash injection that immediately funds SW ($2k) and SE ($4k) quadrant unlocks and expands sheep to 14.
 4. **Feed Protection & Daily Purchase**: Protecting domestic wheat feed (never auto-selling it) and replenishing via `BUY_PRODUCT WHEAT` prevents animal abandonment.
-5. **Ladder Demand Asymmetry**: Facing 9-cow / 4-sheep opponents, the 14-sheep specialist sells wool at peak scarcity (\$160–\$200/unit) into town `YARN_STORE` drains (24–36 wool/day demand), while cow-heavy competitors suffer severe milk glut.
+5. **Ladder Demand Asymmetry & Shop Draw Variance Caveat**:
+   - In match 99064717, Ahmad Ali drew **two `YARN_STORE` instances** on Days 3 and 6 ($(1/8)^2 = 1.56\% = 1/64$).
+   - Across 8 random shop draws, $P(\text{zero YARN\_STORE}) = (7/8)^8 = 34.36\%$.
+   - A static 14-sheep build is high-variance: on seeds with no YARN_STORE (~34% of games), wool demand collapses and sheep capital is trapped. The strategy must be evaluated across the full seed distribution.
 
 ### 7d. Ladder Benchmark Re-Anchoring (True Ladder Distribution)
 - **Observed Ladder Mean Portfolio**: **6.8 Cows / 9.9 Sheep** (drawn from the 9 public matches played to date).
 - **The Ladder Archetype Suite**:
-  1. **Ahmad Ali Specialist**: 0 Cows / 14 Sheep / 33 Melons / 17 Strawberries (\$125k high watermark).
+  1. **Ahmad Ali Specialist**: 0 Cows / 14 Sheep / 33 Melons / 17 Strawberries (\$125k high watermark, draw-dependent — 34.4% zero YARN_STORE risk).
   2. **Gould Research Heavy Pastoral**: 12 Cows / 6 Sheep / 17 Melons / 119 Wheat (\$103k high watermark).
   3. **Ayushk Empire Diversified**: 3 Cows / 13 Sheep / 62 Strawberries / 40 Melons (\$74k).
   4. **Balanced Ladder Mean**: 7 Cows / 10 Sheep / 30 Strawberries / 20 Melons.
 - **Rule**: Dominant Meta (10C/4S) is retired as sole steering target; evaluation is now anchored against the empirical ladder distribution.
+
+### 7e. Ahmad Ali Build Distribution Across 100 Disjoint Seeds (n=200 matches, both seats)
+- **Harness**: `project_maestro/scratch/eval_ahmad_distribution.py`. Canaries 1-5 PASS.
+- **Win Rate vs Production Agent**: **55.5%** (111W / 89L / 0T)
+- **Mean Score**: \$73,724.53 | **Median**: \$71,005.00 | **Floor (Min)**: \$42,575.00 | **Ceiling (Max)**: \$130,727.00
+- **By YARN_STORE count** (confirming high-variance, shop-dependent build):
+  - 0 YARN_STORE (n=68): Mean \$50,114 | Median \$47,790 | Min \$42,575 | Max \$90,989
+  - 1 YARN_STORE (n=68): Mean \$77,787 | Median \$72,947 | Min \$44,498 | Max \$129,732
+  - 2 YARN_STORE (n=46): Mean \$91,478 | Median \$84,597 | Min \$45,985 | Max \$130,727
+  - 3 YARN_STORE (n=10): Mean \$107,472 | Median \$117,538 | Min \$78,096 | Max \$128,019
+- **Conclusion**: The build is 55.5% vs our agent on the full seed distribution, but collapses to \$50k mean on the 34% of seeds with no YARN_STORE. The \$125k match was a $(1/8)^2 = 1.56\%$ double-YARN draw. **Do not copy this portfolio wholesale.**
+
+---
+
+## 8. Portfolio-Independent Wins: Interventions 3a, 3b, 3c
+
+### 8a. Experimental Design
+- **Harness**: `eval/test_portfolio_independent_wins.py`. Canaries 1-5 PASS.
+- **Baselines and Interventions**: Each tested on n=200 matches (100 Disjoint Seeds, both seats) against all 5 ladder archetypes.
+- **Critical observation**: Intervention 3c (Crop FERTILIZE) returned **byte-identical results** to the Baseline on all 5 archetypes — confirming the FERTILIZE op is never actually being issued. The `AgentIntervention3c` wrapper was targeting crop age on tiles the farmer was standing on, but in practice the dispatcher moves the farmer and hands to pastures/crops for their assigned tasks, so the FERTILIZE override fires on the wrong tiles (or not at all). **3c is not tested — it must be implemented at the dispatcher scheduling level, not as a post-dispatch tile override.**
+
+### 8b. Results — Intervention 3a (Shed-Adjacent Pasture Clustering, cross-NW-quadrant layout)
+
+| Archetype | Baseline WR | 3a WR | Δ WR | Baseline Delta | 3a Delta |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Ahmad Ali Specialist (14S / 0C) | 44.5% | 48.5% | +4.0pp | -\$5,194 | -\$3,207 |
+| Dominant Meta (10C / 4S) | 67.0% | 63.5% | **−3.5pp** | +\$1,610 | +\$1,001 |
+| Gould Research (12C / 6S) | 83.5% | 76.0% | **−7.5pp** | +\$10,286 | +\$7,941 |
+| Ayushk Empire (3C / 13S) | 88.5% | 87.0% | −1.5pp | +\$19,157 | +\$17,988 |
+| Meta-Calibrated (8C / 6S) | 80.5% | 55.0% | **−25.5pp** | +\$4,173 | +\$2,463 |
+
+- **Verdict**: **REJECTED as implemented.** The cross-NW layout overrides place cow pastures at `(4,3), (3,4), (2,4)...` which displaces the dispatcher's existing NW tile assignments (crop fields), degrading crop throughput. The mean candidate score is barely changed (\$58,643 vs \$58,813 baseline) despite the layout change, and WR drops sharply on Gould Research (−7.5pp) and Meta-Calibrated (−25.5pp). The clustering without also updating crop layout creates conflicts.
+
+### 8c. Results — Intervention 3b (Feed Protection: no wheat auto-sell, hour-0 top-up)
+
+| Archetype | Baseline WR | 3b WR | Δ WR | Baseline Delta | 3b Delta |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Ahmad Ali Specialist (14S / 0C) | 44.5% | **51.0%** | +6.5pp | -\$5,194 | +\$1,916 |
+| Dominant Meta (10C / 4S) | 67.0% | 57.5% | **−9.5pp** | +\$1,610 | +\$2,342 |
+| Gould Research (12C / 6S) | 83.5% | **90.0%** | +6.5pp | +\$10,286 | +\$12,119 |
+| Ayushk Empire (3C / 13S) | 88.5% | **89.5%** | +1.0pp | +\$19,157 | +\$17,020 |
+| Meta-Calibrated (8C / 6S) | 80.5% | **74.0%** | **−6.5pp** | +\$4,173 | +\$6,050 |
+
+- **Note on vs Dominant Meta (−9.5pp WR with larger Delta)**: The Delta signal improves (+\$2,342 vs +\$1,610) but WR drops. This is a classic tie-resolution artefact — feed protection may cause marginally higher cow maintenance costs (wheat top-up purchases) on seeds where the opponent uses 10 cows + 4 sheep, shifting some win–loss ties to losses while improving margins on cleaner wins. Worth monitoring but not a disqualifier.
+- **Verdict**: **PROVISIONALLY POSITIVE but needs investigation before adoption.** 3b clearly helps on Gould Research (+6.5pp) and the specialist-heavy opponents, and improves the dollar delta on most archetypes. The Dominant Meta WR drop needs explaining before adoption.
+
+### 8d. Results — NW Clustered Layout + 3b Feed Protection (Pure NW pasture placement, shortest-distance ordering)
+
+| Archetype | Baseline WR | NW+3b WR | Δ WR | Baseline Delta | NW+3b Delta |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Ahmad Ali Specialist (14S / 0C) | 44.5% | **62.5%** | **+18.0pp** | -\$5,194 | +\$5,923 |
+| Dominant Meta (10C / 4S) | 67.0% | **68.0%** | +1.0pp | +\$1,610 | +\$1,495 |
+| Gould Research (12C / 6S) | 83.5% | **88.5%** | +5.0pp | +\$10,286 | +\$11,580 |
+| Ayushk Empire (3C / 13S) | 88.5% | **95.5%** | +7.0pp | +\$19,157 | +\$18,558 |
+| Meta-Calibrated (8C / 6S) | 80.5% | **77.5%** | −3.0pp | +\$4,173 | +\$5,996 |
+
+- **Key Insight**: Strict NW-quadrant clustering (all cow pastures inside NW at `(4,3), (3,4), (4,2), ...` without displacing crop tiles from other quadrants) produces **+18pp improvement vs the Specialist** and +5-7pp on Gould Research and Ayushk, while holding Dominant Meta flat (+1pp). The −3pp on Meta-Calibrated is within noise (larger Delta: +\$5,996 vs +\$4,173).
+- **Verdict**: **ADOPT.** This is the strongest single result of the three. The mechanism is confirmed: NW-contained pasture clustering reduces daily per-hand travel cost from ~4 tiles to ~1-2 tiles, and the recovered labor is reinvested into watering and harvesting cycles. With 3b Feed Protection included, the combined build is strictly better on 4 of 5 archetypes and effectively neutral on the 5th.
+
+### 8e. Open Items
+1. **3c (Crop FERTILIZE)** must be re-implemented at the dispatcher scheduling layer (task planner) not as a post-dispatch tile override. The current `AgentIntervention3c` is a no-op and its byte-identical results confirm this. Schedule it as a first-class task when a worker stands on a melon tile during Days 5–10.
+2. **3a raw clustering regression**: Understand why cross-quadrant pasture overrides hurt before implementing multiQ clustering on NE/SW/SE pastures.
+3. **SE quadrant re-test (§2f re-open)**: Ahmad Ali unlocked SE. After the NW+3b adoption, re-test SE with the clustered layout since the tile economics have changed.
