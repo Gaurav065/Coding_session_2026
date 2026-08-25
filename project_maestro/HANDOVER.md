@@ -427,11 +427,16 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
 
 **Kaggle Live Competition Tracking (Submission `55764143`)**:
 - Status: `SubmissionStatus.COMPLETE`
-- Current Live Rating: **810.5** (Initial 3 matches: 2W / 1L, including Match 2 scoring **$99,788.00**).
+- Current Live Rating: **648.2** (4 Wins / 5 Losses, 44.4% WR across initial 9 placement matches).
+- Dissected High Scores: Match 2 (\$99,788.00 WIN), Match 5 (\$94,404.00 vs Gould Research \$103,291.00), Match 3 (\$44,064.00 vs Ahmad Ali \$125,288.00).
 
-**Phase B Finding — Symmetrical Self-Play Glut vs Tournament Scarcity**:
-- Meta-Calibrated Opponent produces meta volumes in self-play but scores **$56,414.12** (61.6% of $91.6k target) because symmetrical self-play creates double-supply glut on milk and fertilizer ($98 milk, $59 fert).
-- In tournament play against asymmetric opponents (e.g. 0-cow wool specialists), the un-contended milk/strawberry market clears at peak scarcity prices (2.44x realization), allowing our engine to hit **$99.8k+**.
+**Phase B Finding & $125k Specialist Exact Reproduction**:
+- **Bit-for-Bit Exact Replication**: FastEngine reproduces Ahmad Ali's \$125,288.00 score with 100% exact fidelity (`eval/test_specialist_reproduction_suite.py`).
+- **The $125k Gap Resolution**:
+  1. *Shed-Adjacent Pasture Clustering*: Zero-travel maintenance adjacent to shed allows 1 worker to tend 14 sheep without travel lag.
+  2. *Crop FERTILIZE on Melons*: Applying sheep fertilizer on Days 4–6 doubles melon yields to 8 units/tile, producing \$16.4k Day 10 melon liquidity.
+  3. *Feed Protection*: Zero auto-selling of domestic wheat feed.
+  4. *Ladder Portfolio Reality*: The true ladder mean is **6.8 Cows / 9.9 Sheep** (not 10C/4S). Benchmarking is re-anchored on the empirical ladder distribution.
 
 ---
 
