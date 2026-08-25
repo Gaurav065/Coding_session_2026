@@ -535,6 +535,17 @@ class MaestroFullPortfolioAgent:
                         sw_tasks.append({"target": (mx, my), "action": "WATER", "priority": 95})
                     if t.get("yield_units", 0) > 0 and (day - t.get("planted_day", 0)) >= 10:
                         sw_tasks.append({"target": (mx, my), "action": "HARVEST", "priority": 97})
+                    # §3c: FERTILIZE during bonus window (Days 6-12, ceil(max_yield_day/2)=6).
+                    # FERTILIZE grants +2 yield/watered-day instead of +1, reaching max_yield=6
+                    # cap faster -- a liquidity accelerator (earlier Day-10 harvest), not more melons.
+                    # Gate: in bonus window, not currently fertilized, fertilizer exists somewhere.
+                    crop_age = day - t.get("planted_day", 0)
+                    already_fertilized = t.get("fertilized_until_day", -1) >= day
+                    fert_in_shed = shed.get("FERTILIZER", 0) > 0
+                    fert_in_inventory = any(inv_i.get("FERTILIZER", 0) > 0 for inv_i in private.get("inventories", []))
+                    if (6 <= crop_age <= 12 and not already_fertilized
+                            and (fert_in_shed or fert_in_inventory)):
+                        sw_tasks.append({"target": (mx, my), "action": "FERTILIZE_MELON", "priority": 96})
 
             for wx, wy in self.sw_wheat:
                 t = me["tiles"][wy][wx]
@@ -561,7 +572,7 @@ class MaestroFullPortfolioAgent:
             current_tile = me["tiles"][uy][ux]
             action = ["PASS"]
 
-            carrying_produce = sum(v for k, v in inv.items() if k not in ["COW", "SHEEP", "GOOSE"])
+            carrying_produce = sum(v for k, v in inv.items() if k not in ["COW", "SHEEP", "GOOSE", "FERTILIZER"])
             carrying_animal = "COW" if inv.get("COW", 0) > 0 else ("GOOSE" if inv.get("GOOSE", 0) > 0 else ("SHEEP" if inv.get("SHEEP", 0) > 0 else None))
             wheat_count = inv.get("WHEAT", 0)
 
@@ -750,6 +761,14 @@ class MaestroFullPortfolioAgent:
                 elif pos in SHED_ACCESS_TILES and carrying_produce > 0:
                     action = ["DROP"]
 
+                # §3c: Fertilizer pickup — only SW workers (units 9+) who will work sw_tasks.
+                # Pickup 1 fertilizer when shed-adjacent, task pending, inventory empty.
+                if action == ["PASS"] and pos in SHED_ACCESS_TILES and u_idx >= 9:
+                    fert_tasks_pending = any(t["action"] == "FERTILIZE_MELON" for t in sw_tasks)
+                    unit_has_fert = inv.get("FERTILIZER", 0) > 0
+                    if fert_tasks_pending and not unit_has_fert and shed.get("FERTILIZER", 0) > 0:
+                        action = ["PICKUP", "FERTILIZER", 1]
+
                 if action == ["PASS"]:
                     sector_tasks = []
                     if u_idx in (4, 5):
@@ -767,6 +786,10 @@ class MaestroFullPortfolioAgent:
                         if target in claimed_targets:
                             continue
                         if "crop" in t and avail_seeds.get(t["crop"], 0) <= 0:
+                            continue
+                        # §3c: FERTILIZE_MELON requires fertilizer in inventory.
+                        # Skip if unit doesn't have any -- it will pick up on next shed visit.
+                        if t["action"] == "FERTILIZE_MELON" and inv.get("FERTILIZER", 0) == 0:
                             continue
 
                         d = dist(pos, target)
@@ -800,6 +823,15 @@ class MaestroFullPortfolioAgent:
                                 avail_seeds["CARROT"] -= 1
                             elif tact == "DIG":
                                 action = ["DIG"]
+                            elif tact == "FERTILIZE_MELON":
+                                # §3c: FERTILIZE from inventory. If no fertilizer in hand,
+                                # this branch should not have been selected (see scoring below),
+                                # but guard anyway.
+                                if inv.get("FERTILIZER", 0) > 0:
+                                    action = ["FERTILIZE"]
+                                else:
+                                    # No fertilizer in hand -- fall through to PASS.
+                                    action = ["PASS"]
                         else:
                             action = [get_step_towards(pos, target)]
                     else:
