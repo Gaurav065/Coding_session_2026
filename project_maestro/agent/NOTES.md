@@ -1352,3 +1352,44 @@ because it structurally cannot do anything under the current per-species caps (g
 1. **3c (Crop FERTILIZE)** must be re-implemented at the dispatcher scheduling layer (task planner) not as a post-dispatch tile override. The current `AgentIntervention3c` is a no-op and its byte-identical results confirm this. Schedule it as a first-class task when a worker stands on a melon tile during Days 5–10.
 2. **3a raw clustering regression**: Understand why cross-quadrant pasture overrides hurt before implementing multiQ clustering on NE/SW/SE pastures.
 3. **SE quadrant re-test (§2f re-open)**: Ahmad Ali unlocked SE. After the NW+3b adoption, re-test SE with the clustered layout since the tile economics have changed.
+
+### 8f. NW+3b Floor Investigation -- ADOPT Decision
+
+Decision rule (fixed in advance): 1-2 seeds with identifiable bounded cause -> ADOPT; 3+ seeds sharing a trigger -> fix first.
+
+Result: 2 bad seeds (10074, 10086) out of 100.
+
+| Seed | NW+3b Score | Baseline Opp | Delta | Min Cash Day 0-10 | Shops |
+|---|---|---|---|---|---|
+| 10074 | 31576 | 35478 | -3902 | 20 | BAKERY, ICE_CREAM_SHOP, PET_CAFE, PIZZA_SHOP, YARN_STORE |
+| 10086 | 31573 | 31964 | -391 | 3 | BAKERY, PET_CAFE, PIZZA_SHOP |
+
+Mechanism: Both seeds hit near-zero cash on Days 1-2 (min 3 and 20) from Day 0 spend + no-milk-shop draw.
+This is a PRE-EXISTING BASELINE VULNERABILITY, not a s3b regression -- both seeds have abundant wheat
+in shed (28-46 units/day from Day 3). The block is cash, not feed.
+
+p5 for NW+3b: 39678 (improved +5.7% vs baseline 37520). Min fired as investigation trigger.
+ADOPTED per pre-specified decision rule (2 seeds, bounded cause, does not generalise).
+
+### 8g. Adoption Record and Submission (2026-08-25)
+
+Committed: 68417c1
+Submitted: ID 55768154 (2026-08-25 10:30 UTC), PENDING
+Previous: 55764143, rating 684.3 (4W/5L)
+
+Changes vs previous production baseline:
+1. COW_PASTURES: 10 -> 14 NW-clustered slots, shed-distance ordered
+2. s3b: wheat sell reserved to max(10, (cow_cap+sheep_cap)*2), hour-0 top-up
+3. s3c: FERTILIZE_MELON first-class dispatcher task Days 6-12 of melon growth
+4. carrying_produce excludes FERTILIZER (fixes pickup/DROP loop)
+
+PROTOCOL PART 3 updated: p5 is adoption criterion; min is investigation trigger. Not retroactive.
+
+---
+
+## 9. Open Queue (post-NW+3b)
+
+1. s3c benchmark: verify FERTILIZE_MELON fires at n=200 vs full ladder suite
+2. Portfolio question: 9C/4S vs ladder mean 6.8C/9.9S -- test after NW+3b adoption
+3. SE quadrant re-test (s2f re-open): rejected on mirror evidence, re-test now
+4. Live rating: log every match from 55768154; compare to internal 62.5%/68% benchmarks
