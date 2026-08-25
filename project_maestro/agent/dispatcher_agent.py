@@ -418,7 +418,7 @@ class MaestroFullPortfolioAgent:
             elif prod == "MILK":
                 # Synchronized Post-Drain Sell (Block 4 Adopted):
                 # Town shops drain milk every 4 steps (step % 4 == 0).
-                # Selling on step % 4 == 1 in batches of 4 captures peak post-drain prices (75.5% WR vs DM, t=+4.86).
+                # Selling on step % 4 == 1 in batches of 4 captures peak post-drain prices (67.0% WR vs DM, t=+3.95, +3.0pp over 9-cow baseline).
                 if shed_near_overflow:
                     sell_qty = min(qty, 20)
                 elif (obs["step"] % 4 == 1):

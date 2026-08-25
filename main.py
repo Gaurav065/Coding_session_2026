@@ -284,7 +284,7 @@ class MaestroFullPortfolioAgent:
             elif prod in GLUT_RESISTANT:
                 sell_qty = min(qty, 20)
             elif prod == "MILK":
-                # Synchronized Post-Drain Sell (Block 4 Adopted: 75.5% WR vs DM, t=+4.86)
+                # Synchronized Post-Drain Sell (Block 4 Adopted: 67.0% WR vs DM, t=+3.95, +3.0pp over 9-cow baseline)
                 if shed_near_overflow:
                     sell_qty = min(qty, 20)
                 elif (obs["step"] % 4 == 1):

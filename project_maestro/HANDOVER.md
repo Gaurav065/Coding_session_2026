@@ -415,7 +415,7 @@ Report vs-all-PASS only as a clearly labelled diagnostic ceiling, never as the h
 10. **Fertilizer Non-Collection Refutation (REJECTED Arm 3b, Retained Control 3a, Block 3)**:
     - Never collecting fertilizer collapsed reward by >$37k to 0.0% WR (0W/200L/0T, $t = -41.76$) because `FERTILIZE` actions require collected fertilizer to double crop yields on Strawberry, Melon, and Wheat.
 11. **Synchronized Post-Drain Milk Selling (ADOPTED `milk_batch_cap=4`, Block 4)**:
-    - Synchronizing milk sells with `step % 4 == 1` immediately post town-shop drain in batches of 4 achieved **75.5% WR vs Dominant Meta** (151W/49L/0T, Δ = +$2,089.70, $t = +4.86, p = 2.4 \times 10^{-6}$) and raised Official-20 floor to **$36,057.00**.
+    - Synchronizing milk sells with `step % 4 == 1` immediately post town-shop drain in batches of 4 lifted Win Rate vs Dominant Meta from 64.0% to **67.0%** (134W/66L/0T, Δ = +$1,609.75, $t = +3.95, p = 1.07 \times 10^{-4}$, +3.0pp over 9-cow baseline) and protected the floor at **$36,104.00** (SP20) / **$32,300.00** (SP100).
 
 **Full Archetype Head-to-Head Performance (n=200 matches per archetype on 100 Disjoint Seeds, Canonical Definitions)**:
 - vs **Dominant Meta (10C / 4S / 0G)**: **67.0% Win Rate** (134W / 66L / 0T), Δ = +$1,609.75 ($t = +3.95, p = 1.07 \times 10^{-4}$)

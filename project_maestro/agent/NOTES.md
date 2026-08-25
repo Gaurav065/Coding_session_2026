@@ -1159,18 +1159,19 @@ because it structurally cannot do anything under the current per-species caps (g
   - **3a (Control)**: Collect & sell immediately $\rightarrow$ SP20 \$53,716 | SP100 \$59,744 | vs DM: **64.0% WR**, $\Delta=+\$1,172.23$ ($t=+3.31$)
   - **3b (Never Collect)**: SP20 \$23,374 | SP100 \$22,172 | vs DM: **0.0% WR (0W/200L/0T)**, $\Delta=-\$56,461.72$ ($t=-41.76$)
   - **3c (Sell 100% Hour 0)**: Byte-identical to 3a control.
-- **Mechanism**: Refuted thesis that fertilizer collection wastes actions. `FERTILIZE` actions consume collected fertilizer from the shed to double crop bonus yields on Strawberry, Melon, and Wheat. Zero fertilizer in shed cuts crop yields in half, collapsing reward by \$37k+.
+- **Mechanism**: Refuted thesis that fertilizer collection wastes worker turns. In `test_block3_fertilizer.py`, replacing `COLLECT_FERTILIZER` with `PASS` while leaving `fertilizer_available` in task targeting trapped workers in infinite loops on pastures, causing animals to escape. In a clean probe (`probe_true_nofert.py`), suppressing fertilizer collection without deadlocks drops SP20 score by **$-\$13,158.10$** (\$56,612 $\rightarrow$ \$43,454) because ~175 harvested fertilizer units sold at ~\$60–\$80 generate **\$10k–\$14k in pure cash revenue**. Because animal sweepers have surplus turn budget after feeding/caring, collecting fertilizer has zero marginal labor cost. Omitting it forfeits \$13.1k cash with zero throughput gain.
 - **Verdict**: **RETAIN Control 3a**.
 
 ### Block 4: Milk Sell Scheduling Optimization (Gate 4 Adopted)
 - **Experiment**: Synchronizing milk sales with post-drain shop ticks (`step % 4 == 1`), sweeping batch caps $\{2, 4, 8, \text{unlimited}\}$ ($n=200$ vs DM).
+- **Corrected Attribution**: Block 2 (9 cows) alone gave 64.0% WR vs Dominant Meta. Synchronized post-drain milk selling (`milk_batch_cap = 4`) lifts WR vs canonical Dominant Meta to **67.0% WR** (134W/66L/0T, $\Delta=+\$1,609.75, t=+3.95, p=1.07\times 10^{-4}$), contributing a genuine **+3.0pp** win-rate gain over the 9-cow baseline. (The earlier 75.5% figure in the test wrapper arose from a test artifact where the wrapper capped milk sales at 4 even during shed overflow).
 - **Results Matrix**:
   - `control`: SP20 \$53,716 / \$33,376 | SP100 \$59,744 / \$32,152 | vs DM: 64.0% WR, $\Delta=+\$1,172.23$ ($t=+3.31$)
   - `batch_cap = 2`: SP20 \$60,426 / \$40,692 | SP100 \$62,937 / \$27,243 | vs DM: 49.5% WR (99W/101L/0T), $\Delta=-\$15.66$ ($t=-0.04$)
-  - **`batch_cap = 4`**: **SP20 \$55,643 / \$36,057** | **SP100 \$59,364 / \$25,854** | **vs DM: 75.5% WR (151W/49L/0T), $\Delta=+\$2,089.70$ ($t=+4.86, p=2.4\times 10^{-6}$)**
+  - **`batch_cap = 4` (Adopted)**: **SP20 \$56,612 / \$36,104** | **SP100 \$58,642 / \$32,300** | **vs DM: 67.0% WR (134W/66L/0T), $\Delta=+\$1,609.75$ ($t=+3.95, p=1.07\times 10^{-4}$)**
   - `batch_cap = 8`: SP20 \$55,236 / \$35,759 | SP100 \$58,068 / \$32,297 | vs DM: 69.5% WR (139W/61L/0T), $\Delta=+\$1,718.58$ ($t=+5.00$)
   - `unlimited`: SP20 \$55,407 / \$36,816 | SP100 \$57,010 / \$30,761 | vs DM: 72.5% WR (145W/55L/0T), $\Delta=+\$14.54$ ($t=+0.02$)
-- **Mechanism**: Selling on `step % 4 == 1` transacts immediately after town shops consume milk, capturing peak post-drain AMM prices. A batch cap of 4 avoids glut depression while maintaining liquidity clearance.
+- **Mechanism**: Selling on `step % 4 == 1` transacts immediately after town shops consume milk, capturing peak post-drain AMM prices. A batch cap of 4 avoids glut depression while maintaining liquidity clearance. With `shed_near_overflow` selling 20, the Disjoint-100 floor is protected at **\$32,300.00** (+$148 over baseline).
 - **Verdict**: **ADOPT `milk_batch_cap = 4` on `(step % 4 == 1)`**.
 
 ### Block 5: Consolidation & Full Archetype Matrix Sweep
@@ -1178,6 +1179,12 @@ because it structurally cannot do anything under the current per-species caps (g
 - **Standing Production Baseline Metrics**:
   - Official-20 Self-Play: **\$56,612.10** Mean (Median \$53,870.00, Min **\$36,104.00**, Max \$87,142.00)
   - Disjoint-100 Self-Play: **\$58,642.47** Mean (Median \$56,369.00, Min **\$32,300.00**, Max \$96,354.00)
+- **Historical Note on Dominant Meta Definition**:
+  - Dominant Meta has had three distinct definitions across historical benchmarks:
+    1. Early §2u: Inherited cow-gating.
+    2. §2w/§3b/Block 4: Inherited candidate's baseline sell policy.
+    3. Block 5 (Pinned Canonical): Explicitly pinned `cow_cap_base=10, sheep_cap=4, goose_cap=0, cow_gate_day_early=99, cow_gate_day_mid=99` with baseline sell policy.
+  - Due to these definition shifts, historical 64.3% / 73.4% / 88.0% figures are **not directly comparable** across sections to the pinned 67.0% canonical figure.
 - **Full Archetype Evaluation Matrix ($n=200$ matches per archetype on 100 Disjoint Seeds, Canonical Definitions)**:
 
 | Opponent Archetype | Win Rate (%) | Record (W/L/T) | Net Margin ($\Delta$) | Candidate / Opponent Mean | Statistical Significance |
