@@ -1393,3 +1393,41 @@ PROTOCOL PART 3 updated: p5 is adoption criterion; min is investigation trigger.
 2. Portfolio question: 9C/4S vs ladder mean 6.8C/9.9S -- test after NW+3b adoption
 3. SE quadrant re-test (s2f re-open): rejected on mirror evidence, re-test now
 4. Live rating: log every match from 55768154; compare to internal 62.5%/68% benchmarks
+
+### 8h. §3c Melon Fertilization Evaluation & Live Ladder Tracking (2026-08-25)
+
+#### 1. §3c Melon Fertilization Ablation Benchmark
+Canaries 1-5: ALL PASS (Canary 1 .00, Canary 2 50.0%/.00, Canary 3 20/20 exact bit-for-bit, Canary 4 no-seed, Canary 5 physical ceiling avg_fert=8.2/game).
+
+| Archetype | Control WR (§3c Disabled) | Candidate WR (§3c Enabled) | Delta |
+|---|---|---|---|
+| Ahmad Ali Specialist (14S / 0C) | 100.0% | 100.0% | +0.0pp |
+| Dominant Meta (10C / 4S) | 3.5% | 42.5% | +39.0pp |
+| Gould Research Pastoral (12C / 6S) | 58.5% | 91.0% | +32.5pp |
+| Ayushk Empire Diversified (3C / 13S) | 69.5% | 84.0% | +14.5pp |
+| Meta-Calibrated Opponent (8C / 6S) | 38.5% | 75.0% | +36.5pp |
+
+Disjoint-100 Self-Play:
+- Mean: ,059 -> ,399 (+11.51%, +,340)
+- p5: ,935 -> ,156 (+17.81%, +,221)
+- Floor (Min): ,896 -> ,400 (+24.18%, +,504)
+
+Mechanism confirmed: FERTILIZE_MELON accelerates melon growth during Days 6-12 bonus window to hit max_yield=6 cap earlier, generating timely liquidity for SW expansion without exceeding physical ceilings.
+
+#### 2. Live Kaggle Ladder Match Tracking (Submission 55768154)
+Rating: 606.4 (4W / 4L / 0T, Mean Delta +,083)
+
+| Episode | Result | Our Score | Opp Score | Delta | Opponent Team | Opponent Portfolio |
+|---|---|---|---|---|---|---|
+| 99181039 | LOSS | ,343 | ,859 | - | Sonuaswar1 | 8C / 9S / 3G (18 Pastures, 1 Strawb) |
+| 99183341 | WIN | ,550 | ,463 | +,087 | zhenglu wen | 4C / 0S / 0G (15 Pastures, 15 Strawb, 3 Tom) |
+| 99185623 | WIN | ,417 | ,867 | +,550 | Osman Can CETLENBIK | 8C / 3S / 2G (11 Pastures) |
+| 99187904 | WIN | ,192 | ,804 | +,388 | nasuuuuun | 11C / 9S / 0G (22 Pastures) |
+| 99190193 | LOSS | ,557 | ,310 | -,753 | YangGod | 8C / 4S / 0G (14 Pastures, 11 Strawb) |
+| 99192492 | LOSS | ,832 | ,101 | -,269 | KharinTymofii | 8C / 4S / 0G (12 Pastures, 3 Strawb) |
+| 99192510 | LOSS | ,631 | ,309 | -,678 | manos papagiannidis | 3C / 11S / 1G (16 Pastures, 37 Strawb) |
+| 99194806 | WIN | ,835 | ,981 | +,854 | HahaTaco | 0C / 0S / 0G (0 Pastures, 5 Wheat) |
+
+Key ladder insights:
+1. Top opponents run 14-18 pastures with 8-11 sheep/cows and heavy strawberry integration (11-37 plants).
+2. Our mean score across the real ladder is ,545 with a +,083 mean delta.
