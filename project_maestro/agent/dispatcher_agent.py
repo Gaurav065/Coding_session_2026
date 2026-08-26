@@ -30,18 +30,18 @@ SHED_ACCESS_TILES_LIST = [(4, 4), (5, 4), (4, 5), (5, 5)]
 SHED_ACCESS_TILES = set(SHED_ACCESS_TILES_LIST)
 
 COW_PASTURES = [
-    # NW-clustered, shed-distance ordered (adopted 2026-08-25, §8d).
-    # All slots within the NW quadrant; shortest walking distance from shed
-    # center (4,4)/(5,4)/(4,5)/(5,5) listed first.
+    # NW-clustered, shortest walking distance from NW shed door (4,4)
     (4, 3), (3, 4),
     (4, 2), (3, 3), (2, 4),
     (4, 1), (3, 2), (2, 3), (1, 4),
-    (3, 1), (2, 2), (1, 3), (0, 4), (4, 0),
+    (0, 4)
 ]
 
 SHEEP_PASTURES = [
-    # Furthest NW corner slots (lowest travel-cost overlap with cows).
-    (3, 1), (2, 2), (1, 3), (0, 4)
+    # NE-clustered, shortest walking distance from NE shed door (5,4)
+    (5, 3), (6, 4),
+    (6, 3), (5, 2), (7, 4),
+    (6, 2), (7, 3), (5, 1)
 ]
 
 NW_WHEAT = [
@@ -51,16 +51,14 @@ NW_WHEAT = [
     (0, 3)
 ]
 
-# NE quadrant tiles (x: 5..9, y: 0..4) sorted strictly by ascending Manhattan distance
-# from NE shed access tile (5, 4). Closest tiles (dist 1-4) planted first.
+# NE quadrant: Strawberry plots outside the Sheep ring
 NE_STRAWBERRY = [
-    (5, 3), (6, 4),
-    (5, 2), (6, 3), (7, 4),
-    (5, 1), (6, 2), (7, 3), (8, 4),
-    (5, 0), (6, 1), (7, 2), (8, 3), (9, 4),
-    (6, 0), (7, 1), (8, 2), (9, 3),
-    (7, 0), (8, 1), (9, 2),
-    (8, 0)
+    (5, 0), (6, 0), (7, 0), (8, 0), (9, 0),
+    (6, 1), (7, 1), (8, 1), (9, 1),
+    (7, 2), (8, 2), (9, 2),
+    (8, 3), (9, 3),
+    (8, 4), (9, 4),
+    (7, 0)
 ]
 
 NE_WHEAT = [
