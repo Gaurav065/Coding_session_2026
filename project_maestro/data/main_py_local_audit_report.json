@@ -1,0 +1,42 @@
+[
+  {
+    "archetype": "1. Dominant Dairy Meta (10C/4S)",
+    "win_rate": 85.0,
+    "our_mean": 55156.4,
+    "opp_mean": 52342.05,
+    "margin": 2814.3499999999985,
+    "p5_floor": 41754.55
+  },
+  {
+    "archetype": "2. Balanced Pasture Hybrid (7C/7S)",
+    "win_rate": 85.0,
+    "our_mean": 57416.05,
+    "opp_mean": 52768.45,
+    "margin": 4647.600000000006,
+    "p5_floor": 42145.9
+  },
+  {
+    "archetype": "3. All-In Sheep & Strawberries (14S)",
+    "win_rate": 85.0,
+    "our_mean": 64706.65,
+    "opp_mean": 57368.95,
+    "margin": 7337.700000000004,
+    "p5_floor": 46844.35
+  },
+  {
+    "archetype": "4. All-In Cows & Melons (14C/20M)",
+    "win_rate": 100.0,
+    "our_mean": 65067.65,
+    "opp_mean": 49474.95,
+    "margin": 15592.700000000004,
+    "p5_floor": 41331.05
+  },
+  {
+    "archetype": "5. Tomato Meta Spam",
+    "win_rate": 95.0,
+    "our_mean": 62812.7,
+    "opp_mean": 49083.3,
+    "margin": 13729.399999999994,
+    "p5_floor": 40952.8
+  }
+]

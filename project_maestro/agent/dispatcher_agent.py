@@ -378,17 +378,16 @@ class MaestroFullPortfolioAgent:
                 if wheat_needed > 0 and money >= 100:
                     market_orders.append(["BUY_SEED", "WHEAT", min(wheat_needed, 10)])
 
-            # 5. Carrot Replanting Pipeline (takes 4 days to grow; strict day <= 24 cutoff)
-            if day >= 18 and day <= 24 and private["seeds"].get("CARROT", 0) < 10 and money >= 350:
+            # 5. Carrot Replanting Pipeline (scales dynamically if Pet Cafe shops appear)
+            pet_cafe_count = sum(1 for s in unlocked_shops if s == "PET_CAFE")
+            if pet_cafe_count >= 2 and day >= 6 and day <= 24 and private["seeds"].get("CARROT", 0) < 12 and money >= 350:
+                market_orders.append(["BUY_SEED", "CARROT", 6])
+            elif day >= 18 and day <= 24 and private["seeds"].get("CARROT", 0) < 10 and money >= 350:
                 market_orders.append(["BUY_SEED", "CARROT", 10])
 
             # 6. Additive Animals only after SW land is secured
             allow_animal_expansion = ("SW" in unlocked_quads or day >= 10)
             if allow_animal_expansion:
-                # NOTE: previously gated on "not has_yarn_store", which is a
-                # wool signal with no bearing on eggs -- looked like a
-                # copy-paste leftover from the sheep condition below. Removed;
-                # geese are additive to the cow/sheep core and unconditional.
                 goose_cap = self.params["goose_cap"]
                 if total_g < goose_cap and money >= 600 and shed_total_items <= 90 and day < 16:
                     buy_g = min(goose_cap - total_g, int((money - 300) // 300))
@@ -409,9 +408,16 @@ class MaestroFullPortfolioAgent:
                         market_orders.append(["BUY_ANIMAL", "COW", min(2, buy_c)])
 
                 else:
-                    sheep_cap = self.params["sheep_cap"]
+                    yarn_store_count = sum(1 for s in unlocked_shops if s == "YARN_STORE")
+                    if yarn_store_count >= 2:
+                        sheep_cap = 8
+                    elif yarn_store_count >= 1:
+                        sheep_cap = 6
+                    else:
+                        sheep_cap = self.params["sheep_cap"]
+
                     yarn_gate_sheep = self.params.get("yarn_gate_sheep", True)
-                    if (not yarn_gate_sheep or has_yarn_store) and total_s < sheep_cap and money >= 800 and shed_total_items <= 90 and day < 20:
+                    if (not yarn_gate_sheep or has_yarn_store or yarn_store_count > 0) and total_s < sheep_cap and money >= 800 and shed_total_items <= 90 and day < 20:
                         buy_s = min(sheep_cap - total_s, int((money - 300) // 500))
                         if buy_s > 0:
                             market_orders.append(["BUY_ANIMAL", "SHEEP", min(2, buy_s)])
