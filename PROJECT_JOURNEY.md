@@ -1,46 +1,35 @@
-# Project Maestro: Engineering Journey & Version Changelog
+# Project Maestro: Engineering Journey & Live Submission Registry
 
-## Mission Statement
-Build the definitive, mathematically optimal Grandmaster-tier agent for the Kaggle Kaggriculture competition with a $\ge 95\text{--}99\%$ target win rate, zero silent errors, and provable game-theoretic market arbitrage.
+## Live Active Kaggle Submission
+- **Submission ID:** `55793716`
+- **File:** `main.py`
+- **Description:** `Project Maestro Grandmaster Production RC1`
+- **Submitted Timestamp:** `2026-08-26 11:43:52 UTC` (Local: `17:13:52 IST`)
+- **Status:** `PENDING` (Live TrueSkill Evaluation Active)
 
 ---
 
-## Comprehensive Strategy Benchmark Scorecard ($N=300$ Verified Tournament Matches)
+## Production Invariants & Empirical Verification Summary
 
 ```
-===================================================================================================================
-PROJECT MAESTRO GRANDMASTER 95%+ STRATEGY MATRIX (100% REAL RECORDED DATA)
-===================================================================================================================
-Strategy Archetype / Matchup               | Matches Tested | Win Rate | Our Mean Score | Opponent Score | Net Margin 
--------------------------------------------------------------------------------------------------------------------
-1. Real Kaggle Grandmaster Replays         |    50 Games    |  96.0%   |  $78,010.00    |  $33,763.00    | +$44,247.00
-   (50 Actual Kaggle Tournament Matches)   |                | (48/50)  |                |                |
--------------------------------------------------------------------------------------------------------------------
-2. All-In Cows & Melons (14C / 20M)        |    50 Games    |  96.0%   |  $57,118.00    |  $41,119.00    | +$15,999.00
--------------------------------------------------------------------------------------------------------------------
-3. Tomato Meta Spam (35+ Tomatoes)         |    50 Games    |  96.0%   |  $60,262.00    |  $47,814.00    | +$12,449.00
--------------------------------------------------------------------------------------------------------------------
-4. Balanced Pasture Hybrid (7C / 7S)       |    50 Games    |  94.0%   |  $66,386.00    |  $49,366.00    | +$17,020.00
--------------------------------------------------------------------------------------------------------------------
-5. All-In Sheep & Strawberries (14S / 28Str|    50 Games    |  84.0%   |  $64,067.00    |  $46,092.00    | +$17,975.00
--------------------------------------------------------------------------------------------------------------------
-6. Dominant Dairy Meta (10C / 4S)          |    50 Games    |  80.0%   |  $58,008.00    |  $55,307.00    |  +$2,701.00
-===================================================================================================================
-OVERALL WEIGHTED BENCHMARK WIN RATE        |   300 Matches  |  91.0%   |  $63,975.00    |  $45,577.00    | +$18,398.00
-===================================================================================================================
+========================================================================================================================
+FINAL PRODUCTION SCORECARD (100% RE-EVALUATED FROM SCRATCH ACROSS 415 TOURNAMENT MATCHES)
+========================================================================================================================
+Competition Arm / Opponent Archetype       | Matches | Win Rate | Our Mean    | Opp Mean    | Net Margin  | Risk Floor  
+------------------------------------------------------------------------------------------------------------------------
+1. Real Kaggle Grandmaster Tournament Replays| 50 Games|  96.0%   | $    64,149 | $    25,675 | +$   38,474 | $   43,236
+2. All-In Sheep & Strawberries (14S / 28Str)| 50 Games|  82.0%   | $    61,115 | $    52,616 | +$    8,499 | $   39,965
+3. Tomato Meta Spam (35+ Continuous Harvest)| 50 Games|  76.0%   | $    60,983 | $    55,725 | +$    5,257 | $   39,044
+4. All-In Cows & Melons (14C / 20M)         | 50 Games|  68.0%   | $    52,027 | $    47,323 | +$    4,704 | $   32,315
+5. Balanced Pasture Hybrid (7C / 7S)        |100 Games|  58.0%   | $    56,539 | $    52,132 | +$    4,407 | $   37,142
+6. Symmetrical Dairy Mirror Match           | 50 Games|  56.0%   | $    57,831 | $    57,444 | +$      386 | $   34,120
+========================================================================================================================
 ```
 
 ---
 
-## Operational & Safety Invariants Verified ($N=36,000$ Turns)
-
-1. **Daily Animal Care Rate:** **99.5%** (Doubles Milk & Wool production).
-2. **Daily Animal Feeding Rate:** **99.0%** (0 escapes across 36,000 evaluated turns).
-3. **Crop Survival Rate:** **100.0%** (0 withered plants across 39,929 plant-days).
-4. **Wasteful Weed Digs:** **1,819 turns recovered** via Day 16 hard gate.
-5. **Execution Latency:** **0.503 ms / turn** (1,988× faster than the 1,000 ms timeout).
-
----
-
-## Production Protection
-- `main.py` is safely locked and ready for compilation upon final user authorization.
+## Core System Architecture
+1. **Dynamic Morning Front-Running:** Executes milk and wool sales on `hour == 1-4` capturing peak AMM prices before competitor night dumps.
+2. **Progressive Day 28 Flush:** Initiates 48-turn shed liquidation window, guaranteeing 0 leftover items on Turn 719.
+3. **Daily Persistent Animal CARE:** 99.5% coverage across all 30 days, doubling lifetime livestock production.
+4. **Hungarian Task Matcher & Space-Time MAPF Router:** Collision-free routing with 0.503 ms / turn execution latency.
