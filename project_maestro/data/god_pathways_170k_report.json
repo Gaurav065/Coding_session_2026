@@ -1,0 +1,39 @@
+{
+  "total_tested_seeds": 150,
+  "pathway_stats": {
+    "1. Quad_Dairy_Smoothie_Titan": {
+      "mean": 90847.58,
+      "max": 126534.0,
+      "p90": 113981.0,
+      "p10": 58600.7,
+      "count_150k_plus": 0,
+      "count_170k_plus": 0
+    },
+    "2. Triple_Yarn_Wool_Syndicate": {
+      "mean": 67989.32666666666,
+      "max": 92126.0,
+      "p90": 84262.9,
+      "p10": 49110.5,
+      "count_150k_plus": 0,
+      "count_170k_plus": 0
+    },
+    "3. Balanced_Grandmaster_Metropolis": {
+      "mean": 91111.87333333334,
+      "max": 119728.0,
+      "p90": 109597.7,
+      "p10": 62160.9,
+      "count_150k_plus": 0,
+      "count_170k_plus": 0
+    },
+    "4. Maximized_Mega_Pasture_Dairy": {
+      "mean": 89963.82,
+      "max": 132103.0,
+      "p90": 116033.0,
+      "p10": 55587.1,
+      "count_150k_plus": 0,
+      "count_170k_plus": 0
+    }
+  },
+  "total_170k_matches": 0,
+  "top_records": []
+}

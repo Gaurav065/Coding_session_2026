@@ -1,0 +1,18 @@
+{
+  "seeds": 50,
+  "win_rate": 52.0,
+  "our_mean": 58819.66,
+  "opp_mean": 61874.0,
+  "margin": -3054.3399999999965,
+  "p5_floor": 42029.25,
+  "mean_leftover_shed_cash": 1122.7,
+  "crop_revenue_means": {
+    "FERTILIZER": 12226.64,
+    "WHEAT": 12026.4,
+    "WOOL": 12772.08,
+    "MILK": 23384.14,
+    "STRAWBERRY": 17458.32,
+    "MELON": 3266.16,
+    "CARROT": 3426.6
+  }
+}

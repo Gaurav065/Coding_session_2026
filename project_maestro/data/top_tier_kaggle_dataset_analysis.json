@@ -1,0 +1,30 @@
+{
+  "total_episodes": 360,
+  "elite_players_count": 388,
+  "clusters": {
+    "Dairy_Plus_Strawberry_Engine (7-11 Cows, 15+ Straw)": {
+      "count": 236,
+      "mean_score": 82498.44915254238,
+      "median_score": 79351.0,
+      "max_score": 153113.0
+    },
+    "Balanced_Pasture_Hybrid (5-8 Cows, 5-8 Sheep)": {
+      "count": 81,
+      "mean_score": 103433.3950617284,
+      "median_score": 102204.0,
+      "max_score": 156236.0
+    },
+    "Pure_Sheep_Rush (9-14 Sheep)": {
+      "count": 4,
+      "mean_score": 95752.25,
+      "median_score": 103631.0,
+      "max_score": 105073.0
+    },
+    "Mixed_Generalist": {
+      "count": 6,
+      "mean_score": 67482.83333333333,
+      "median_score": 68592.5,
+      "max_score": 81692.0
+    }
+  }
+}

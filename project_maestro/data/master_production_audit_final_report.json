@@ -1,0 +1,65 @@
+[
+  {
+    "category": "1. Real Kaggle Grandmaster Replays (N=50)",
+    "matches": 50,
+    "win_rate": 96.0,
+    "our_mean": 64149.04,
+    "opp_mean": 25675.34,
+    "margin": 38473.7,
+    "p5_floor": 43236.1
+  },
+  {
+    "category": "2. Real Matches vs Past Submissions (N=15)",
+    "matches": 15,
+    "win_rate": 0.0,
+    "our_mean": 77318.0,
+    "opp_mean": 117511.53333333334,
+    "margin": -40193.53333333334,
+    "p5_floor": 76053.9
+  },
+  {
+    "category": "3. Dominant Dairy Meta (10C/4S)",
+    "matches": 100,
+    "win_rate": 22.0,
+    "our_mean": 51094.52,
+    "opp_mean": 61044.92,
+    "margin": -9950.400000000001,
+    "p5_floor": 32314.45
+  },
+  {
+    "category": "4. Balanced Pasture Hybrid (7C/7S)",
+    "matches": 100,
+    "win_rate": 57.99999999999999,
+    "our_mean": 56539.49,
+    "opp_mean": 52132.19,
+    "margin": 4407.299999999996,
+    "p5_floor": 37142.15
+  },
+  {
+    "category": "5. All-In Sheep & Strawberries (14S)",
+    "matches": 50,
+    "win_rate": 80.0,
+    "our_mean": 60710.12,
+    "opp_mean": 52833.24,
+    "margin": 7876.880000000005,
+    "p5_floor": 39965.3
+  },
+  {
+    "category": "6. All-In Cows & Melons (14C/20M)",
+    "matches": 50,
+    "win_rate": 68.0,
+    "our_mean": 52027.08,
+    "opp_mean": 47323.36,
+    "margin": 4703.720000000001,
+    "p5_floor": 32315.15
+  },
+  {
+    "category": "7. Tomato Meta Spam",
+    "matches": 50,
+    "win_rate": 76.0,
+    "our_mean": 60982.54,
+    "opp_mean": 55725.14,
+    "margin": 5257.4000000000015,
+    "p5_floor": 39044.05
+  }
+]

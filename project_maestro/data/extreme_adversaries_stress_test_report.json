@@ -1,0 +1,34 @@
+[
+  {
+    "adversary": "1. All-In Cows + Melons (14C / 20M)",
+    "win_rate": 46.0,
+    "our_mean": 47837.7,
+    "adv_mean": 52919.78,
+    "margin": -5082.08,
+    "p5_floor": 31855.85
+  },
+  {
+    "adversary": "2. All-In Sheep + Strawberries (14S / 28Str)",
+    "win_rate": 62.0,
+    "our_mean": 53735.32,
+    "adv_mean": 49024.46,
+    "margin": 4710.86,
+    "p5_floor": 35884.6
+  },
+  {
+    "adversary": "3. Tomato Meta Spam",
+    "win_rate": 34.0,
+    "our_mean": 51491.4,
+    "adv_mean": 55092.74,
+    "margin": -3601.34,
+    "p5_floor": 34145.35
+  },
+  {
+    "adversary": "4. Hyper-Hiring Overexpansion (16 Hands)",
+    "win_rate": 24.0,
+    "our_mean": 48182.04,
+    "adv_mean": 67112.82,
+    "margin": -18930.78,
+    "p5_floor": 31720.35
+  }
+]

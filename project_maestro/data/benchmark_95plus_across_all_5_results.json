@@ -1,0 +1,42 @@
+[
+  {
+    "opponent": "1. Dominant Dairy Meta (10C/4S)",
+    "win_rate": 80.0,
+    "our_mean": 58008.0,
+    "opp_mean": 55306.6,
+    "margin": 2701.4,
+    "p5_floor": 37873.35
+  },
+  {
+    "opponent": "2. Balanced Pasture Hybrid (7C/7S)",
+    "win_rate": 94.0,
+    "our_mean": 66386.22,
+    "opp_mean": 49366.5,
+    "margin": 17019.72,
+    "p5_floor": 38763.85
+  },
+  {
+    "opponent": "3. All-In Sheep & Strawberries (14S/28Str)",
+    "win_rate": 84.0,
+    "our_mean": 64066.9,
+    "opp_mean": 46091.92,
+    "margin": 17974.98,
+    "p5_floor": 41819.0
+  },
+  {
+    "opponent": "4. All-In Cows & Melons (14C/20M)",
+    "win_rate": 96.0,
+    "our_mean": 57117.88,
+    "opp_mean": 41118.62,
+    "margin": 15999.26,
+    "p5_floor": 40783.65
+  },
+  {
+    "opponent": "5. Tomato Meta Spam",
+    "win_rate": 96.0,
+    "our_mean": 60262.46,
+    "opp_mean": 47813.72,
+    "margin": 12448.74,
+    "p5_floor": 38579.1
+  }
+]

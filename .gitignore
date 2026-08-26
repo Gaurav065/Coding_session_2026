@@ -1,1 +1,17 @@
 .aider*
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.tar.gz
+*.zip
+
+# Replay and Raw Tournament Data (kept locally, excluded from git)
+kaggle_top_tier_data/
+past_submissions_data/
+kaggle_episodes_data/
+replays/
+project_maestro/replays/
+project_maestro/data/kaggle_results/
+episode-*.json
+cash_deposit_report_spark.py

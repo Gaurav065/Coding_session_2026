@@ -1,0 +1,2377 @@
+{
+  "summary_by_archetype": {
+    "Balanced_Livestock_Hybrid": {
+      "count": 23,
+      "mean_score": 55042.47826086957,
+      "median_score": 49258.0,
+      "min_score": 13843.0,
+      "max_score": 113310.0,
+      "win_rate": 0.34782608695652173
+    },
+    "Dominant_Dairy_Meta": {
+      "count": 18,
+      "mean_score": 75909.44444444444,
+      "median_score": 79841.0,
+      "min_score": 27779.0,
+      "max_score": 103324.0,
+      "win_rate": 0.7777777777777778
+    },
+    "Ahmad_Ali_Sheep_Rush": {
+      "count": 3,
+      "mean_score": 96168.0,
+      "median_score": 89309.0,
+      "min_score": 73907.0,
+      "max_score": 125288.0,
+      "win_rate": 1.0
+    },
+    "Strawberry_Crop_Engine": {
+      "count": 5,
+      "mean_score": 45881.4,
+      "median_score": 52160.0,
+      "min_score": 21463.0,
+      "max_score": 56972.0,
+      "win_rate": 0.0
+    },
+    "Diversified_Mixed_Farm": {
+      "count": 5,
+      "mean_score": 43432.4,
+      "median_score": 48748.0,
+      "min_score": 873.0,
+      "max_score": 65383.0,
+      "win_rate": 0.2
+    },
+    "Pure_Crop_No_Animals": {
+      "count": 1,
+      "mean_score": 21981.0,
+      "median_score": 21981.0,
+      "min_score": 21981.0,
+      "max_score": 21981.0,
+      "win_rate": 0.0
+    },
+    "Goose_Egg_Experiment": {
+      "count": 3,
+      "mean_score": 70488.33333333333,
+      "median_score": 60746.0,
+      "min_score": 60391.0,
+      "max_score": 90328.0,
+      "win_rate": 1.0
+    }
+  },
+  "players": [
+    {
+      "match_id": "episode-99060165-replay",
+      "player_idx": 0,
+      "score": 29511.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 10,
+      "sheep_bought": 8,
+      "geese_bought": 0,
+      "strawberries_planted": 15,
+      "melons_planted": 7,
+      "wheat_planted": 24,
+      "carrots_planted": 0,
+      "tomatoes_planted": 4,
+      "max_hands": 12,
+      "total_hires": 231,
+      "land_unlocks": {
+        "QUAD_1": 260,
+        "QUAD_2": 434
+      },
+      "total_sales": {
+        "WHEAT": 99,
+        "MELON": 42,
+        "TOMATO": 16,
+        "MILK": 96,
+        "FERTILIZER": 168,
+        "STRAWBERRY": 63,
+        "WOOL": 29
+      },
+      "town_shops": [
+        "YARN_STORE",
+        "PET_CAFE",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "BAKERY",
+        "BAKERY",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99060165-replay",
+      "player_idx": 1,
+      "score": 50341.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 20,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 215,
+      "carrots_planted": 41,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 98,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 176,
+        "WHEAT": 553,
+        "WOOL": 20,
+        "MILK": 150,
+        "STRAWBERRY": 81,
+        "MELON": 36,
+        "CARROT": 64
+      },
+      "town_shops": [
+        "YARN_STORE",
+        "PET_CAFE",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "BAKERY",
+        "BAKERY",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99062443-replay",
+      "player_idx": 0,
+      "score": 44715.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 11,
+      "sheep_bought": 13,
+      "geese_bought": 0,
+      "strawberries_planted": 21,
+      "melons_planted": 10,
+      "wheat_planted": 101,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 14,
+      "total_hires": 262,
+      "land_unlocks": {
+        "QUAD_1": 170,
+        "QUAD_2": 242
+      },
+      "total_sales": {
+        "FERTILIZER": 237,
+        "WOOL": 167,
+        "MILK": 115,
+        "STRAWBERRY": 59,
+        "MELON": 37,
+        "WHEAT": 31
+      },
+      "town_shops": [
+        "SMOOTHIE_SHOP",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99062443-replay",
+      "player_idx": 1,
+      "score": 99788.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 24,
+      "melons_planted": 6,
+      "wheat_planted": 213,
+      "carrots_planted": 45,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 98,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 236,
+        "WHEAT": 513,
+        "WOOL": 34,
+        "MILK": 252,
+        "STRAWBERRY": 82,
+        "MELON": 36,
+        "CARROT": 68
+      },
+      "town_shops": [
+        "SMOOTHIE_SHOP",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99064717-replay",
+      "player_idx": 0,
+      "score": 125288.0,
+      "is_winner": true,
+      "archetype": "Ahmad_Ali_Sheep_Rush",
+      "cows_bought": 0,
+      "sheep_bought": 14,
+      "geese_bought": 0,
+      "strawberries_planted": 16,
+      "melons_planted": 31,
+      "wheat_planted": 44,
+      "carrots_planted": 42,
+      "tomatoes_planted": 11,
+      "max_hands": 8,
+      "total_hires": 306,
+      "land_unlocks": {
+        "QUAD_1": 156,
+        "QUAD_2": 263,
+        "QUAD_3": 265
+      },
+      "total_sales": {
+        "FERTILIZER": 2674,
+        "WOOL": 6160,
+        "MELON": 2336,
+        "WHEAT": 365,
+        "CARROT": 224,
+        "TOMATO": 401,
+        "STRAWBERRY": 1448
+      },
+      "town_shops": [
+        "YARN_STORE",
+        "YARN_STORE",
+        "BAKERY",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99064717-replay",
+      "player_idx": 1,
+      "score": 44064.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 12,
+      "sheep_bought": 5,
+      "geese_bought": 0,
+      "strawberries_planted": 25,
+      "melons_planted": 6,
+      "wheat_planted": 206,
+      "carrots_planted": 46,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 95,
+        "QUAD_2": 119,
+        "QUAD_3": 122,
+        "QUAD_4": 218
+      },
+      "total_sales": {
+        "FERTILIZER": 122,
+        "WHEAT": 529,
+        "WOOL": 24,
+        "MILK": 105,
+        "STRAWBERRY": 83,
+        "MELON": 36,
+        "CARROT": 70
+      },
+      "town_shops": [
+        "YARN_STORE",
+        "YARN_STORE",
+        "BAKERY",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99067009-replay",
+      "player_idx": 0,
+      "score": 27779.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 8,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 24,
+      "melons_planted": 6,
+      "wheat_planted": 207,
+      "carrots_planted": 40,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 95,
+        "QUAD_2": 119,
+        "QUAD_3": 122,
+        "QUAD_4": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 202,
+        "WHEAT": 536,
+        "WOOL": 34,
+        "MILK": 207,
+        "STRAWBERRY": 78,
+        "MELON": 36,
+        "CARROT": 62
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "BAKERY",
+        "BAKERY",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99067009-replay",
+      "player_idx": 1,
+      "score": 13843.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 10,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 31,
+      "melons_planted": 12,
+      "wheat_planted": 79,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 13,
+      "total_hires": 327,
+      "land_unlocks": {
+        "QUAD_1": 170,
+        "QUAD_2": 265
+      },
+      "total_sales": {
+        "WHEAT": 168,
+        "FERTILIZER": 259,
+        "WOOL": 154,
+        "MILK": 240,
+        "MELON": 59,
+        "STRAWBERRY": 179
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "BAKERY",
+        "BAKERY",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99069321-replay",
+      "player_idx": 0,
+      "score": 103291.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 12,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 16,
+      "melons_planted": 14,
+      "wheat_planted": 117,
+      "carrots_planted": 2,
+      "tomatoes_planted": 19,
+      "max_hands": 12,
+      "total_hires": 303,
+      "land_unlocks": {
+        "QUAD_1": 165,
+        "QUAD_2": 265
+      },
+      "total_sales": {
+        "WHEAT": 275,
+        "FERTILIZER": 254,
+        "WOOL": 99,
+        "MILK": 216,
+        "MELON": 66,
+        "TOMATO": 126,
+        "STRAWBERRY": 95,
+        "CARROT": 4
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP",
+        "ICE_CREAM_SHOP",
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99069321-replay",
+      "player_idx": 1,
+      "score": 94404.0,
+      "is_winner": false,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 10,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 25,
+      "melons_planted": 6,
+      "wheat_planted": 205,
+      "carrots_planted": 46,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 119,
+        "QUAD_2": 122,
+        "QUAD_3": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 235,
+        "WHEAT": 538,
+        "WOOL": 33,
+        "MILK": 252,
+        "STRAWBERRY": 83,
+        "MELON": 36,
+        "CARROT": 70
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP",
+        "ICE_CREAM_SHOP",
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99071608-replay",
+      "player_idx": 0,
+      "score": 52160.0,
+      "is_winner": false,
+      "archetype": "Strawberry_Crop_Engine",
+      "cows_bought": 7,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 25,
+      "melons_planted": 6,
+      "wheat_planted": 203,
+      "carrots_planted": 46,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 119,
+        "QUAD_2": 122,
+        "QUAD_3": 223
+      },
+      "total_sales": {
+        "FERTILIZER": 202,
+        "WHEAT": 546,
+        "WOOL": 34,
+        "MILK": 207,
+        "STRAWBERRY": 83,
+        "MELON": 36,
+        "CARROT": 70
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "FARMERS_MARKET",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "PET_CAFE"
+      ]
+    },
+    {
+      "match_id": "episode-99071608-replay",
+      "player_idx": 1,
+      "score": 73907.0,
+      "is_winner": true,
+      "archetype": "Ahmad_Ali_Sheep_Rush",
+      "cows_bought": 3,
+      "sheep_bought": 13,
+      "geese_bought": 0,
+      "strawberries_planted": 52,
+      "melons_planted": 32,
+      "wheat_planted": 58,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 12,
+      "total_hires": 290,
+      "land_unlocks": {
+        "QUAD_1": 200,
+        "QUAD_2": 306,
+        "QUAD_3": 362
+      },
+      "total_sales": {
+        "FERTILIZER": 255,
+        "MILK": 55,
+        "MELON": 138,
+        "STRAWBERRY": 210,
+        "WOOL": 75,
+        "WHEAT": 227
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "FARMERS_MARKET",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "PET_CAFE"
+      ]
+    },
+    {
+      "match_id": "episode-99073894-replay",
+      "player_idx": 0,
+      "score": 43299.0,
+      "is_winner": false,
+      "archetype": "Diversified_Mixed_Farm",
+      "cows_bought": 7,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 24,
+      "melons_planted": 6,
+      "wheat_planted": 213,
+      "carrots_planted": 45,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 98,
+        "QUAD_2": 219,
+        "QUAD_3": 223
+      },
+      "total_sales": {
+        "FERTILIZER": 202,
+        "WHEAT": 548,
+        "WOOL": 34,
+        "MILK": 207,
+        "STRAWBERRY": 82,
+        "MELON": 36,
+        "CARROT": 68
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "BAKERY",
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99073894-replay",
+      "player_idx": 1,
+      "score": 65383.0,
+      "is_winner": true,
+      "archetype": "Diversified_Mixed_Farm",
+      "cows_bought": 4,
+      "sheep_bought": 11,
+      "geese_bought": 0,
+      "strawberries_planted": 36,
+      "melons_planted": 16,
+      "wheat_planted": 32,
+      "carrots_planted": 13,
+      "tomatoes_planted": 0,
+      "max_hands": 13,
+      "total_hires": 339,
+      "land_unlocks": {
+        "QUAD_1": 170,
+        "QUAD_2": 267
+      },
+      "total_sales": {
+        "FERTILIZER": 195,
+        "WHEAT": 1091,
+        "CARROT": 39,
+        "WOOL": 136,
+        "MILK": 87,
+        "MELON": 96,
+        "STRAWBERRY": 215
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "BAKERY",
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99076193-replay",
+      "player_idx": 0,
+      "score": 49258.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 8,
+      "sheep_bought": 8,
+      "geese_bought": 4,
+      "strawberries_planted": 43,
+      "melons_planted": 16,
+      "wheat_planted": 9,
+      "carrots_planted": 5,
+      "tomatoes_planted": 3,
+      "max_hands": 12,
+      "total_hires": 279,
+      "land_unlocks": {
+        "QUAD_1": 217,
+        "QUAD_2": 266,
+        "QUAD_3": 289
+      },
+      "total_sales": {
+        "WHEAT": 44,
+        "FERTILIZER": 253,
+        "MILK": 161,
+        "MELON": 60,
+        "WOOL": 125,
+        "STRAWBERRY": 119
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP",
+        "PET_CAFE",
+        "PET_CAFE",
+        "PIZZA_SHOP",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99076193-replay",
+      "player_idx": 1,
+      "score": 61164.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 25,
+      "melons_planted": 6,
+      "wheat_planted": 205,
+      "carrots_planted": 46,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 119,
+        "QUAD_2": 122,
+        "QUAD_3": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 236,
+        "WHEAT": 565,
+        "WOOL": 34,
+        "MILK": 243,
+        "STRAWBERRY": 83,
+        "MELON": 36,
+        "CARROT": 70
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP",
+        "PET_CAFE",
+        "PET_CAFE",
+        "PIZZA_SHOP",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99078471-replay",
+      "player_idx": 0,
+      "score": 44753.0,
+      "is_winner": false,
+      "archetype": "Strawberry_Crop_Engine",
+      "cows_bought": 6,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 26,
+      "melons_planted": 6,
+      "wheat_planted": 207,
+      "carrots_planted": 46,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 119,
+        "QUAD_2": 122,
+        "QUAD_3": 227
+      },
+      "total_sales": {
+        "FERTILIZER": 183,
+        "WHEAT": 543,
+        "WOOL": 34,
+        "MILK": 186,
+        "STRAWBERRY": 83,
+        "MELON": 36,
+        "CARROT": 70
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "PET_CAFE"
+      ]
+    },
+    {
+      "match_id": "episode-99078471-replay",
+      "player_idx": 1,
+      "score": 45552.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 8,
+      "sheep_bought": 8,
+      "geese_bought": 0,
+      "strawberries_planted": 6,
+      "melons_planted": 32,
+      "wheat_planted": 47,
+      "carrots_planted": 17,
+      "tomatoes_planted": 0,
+      "max_hands": 9,
+      "total_hires": 201,
+      "land_unlocks": {
+        "QUAD_1": 202,
+        "QUAD_2": 282
+      },
+      "total_sales": {
+        "WHEAT": 1611,
+        "FERTILIZER": 255,
+        "MILK": 156,
+        "MELON": 191,
+        "WOOL": 90,
+        "STRAWBERRY": 24,
+        "CARROT": 30
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "PET_CAFE"
+      ]
+    },
+    {
+      "match_id": "episode-99181039-replay",
+      "player_idx": 0,
+      "score": 74343.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 11,
+      "sheep_bought": 5,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 204,
+      "carrots_planted": 37,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 167,
+        "WHEAT": 215,
+        "WOOL": 17,
+        "MILK": 151,
+        "STRAWBERRY": 82,
+        "MELON": 36,
+        "CARROT": 68
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99181039-replay",
+      "player_idx": 1,
+      "score": 74859.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 8,
+      "sheep_bought": 9,
+      "geese_bought": 5,
+      "strawberries_planted": 15,
+      "melons_planted": 33,
+      "wheat_planted": 27,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 12,
+      "total_hires": 311,
+      "land_unlocks": {
+        "QUAD_1": 240,
+        "QUAD_2": 312
+      },
+      "total_sales": {
+        "WHEAT": 534,
+        "FERTILIZER": 192,
+        "MILK": 157,
+        "STRAWBERRY": 49,
+        "MELON": 144,
+        "WOOL": 72
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99183341-replay",
+      "player_idx": 0,
+      "score": 72550.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 17,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 205,
+      "carrots_planted": 42,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 146,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 168,
+        "WHEAT": 202,
+        "WOOL": 23,
+        "MILK": 163,
+        "STRAWBERRY": 74,
+        "MELON": 36,
+        "CARROT": 64
+      },
+      "town_shops": [
+        "ICE_CREAM_SHOP",
+        "YARN_STORE",
+        "YARN_STORE",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99183341-replay",
+      "player_idx": 1,
+      "score": 21463.0,
+      "is_winner": false,
+      "archetype": "Strawberry_Crop_Engine",
+      "cows_bought": 7,
+      "sheep_bought": 0,
+      "geese_bought": 1,
+      "strawberries_planted": 26,
+      "melons_planted": 4,
+      "wheat_planted": 42,
+      "carrots_planted": 27,
+      "tomatoes_planted": 12,
+      "max_hands": 12,
+      "total_hires": 201,
+      "land_unlocks": {
+        "QUAD_1": 265,
+        "QUAD_2": 289,
+        "QUAD_3": 505
+      },
+      "total_sales": {
+        "FERTILIZER": 9,
+        "CARROT": 44,
+        "WHEAT": 33,
+        "EGG": 31,
+        "MILK": 64,
+        "STRAWBERRY": 61,
+        "TOMATO": 28,
+        "MELON": 9
+      },
+      "town_shops": [
+        "ICE_CREAM_SHOP",
+        "YARN_STORE",
+        "YARN_STORE",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99185623-replay",
+      "player_idx": 0,
+      "score": 90417.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 205,
+      "carrots_planted": 42,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 146,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 237,
+        "WHEAT": 140,
+        "WOOL": 34,
+        "MILK": 255,
+        "STRAWBERRY": 74,
+        "MELON": 36,
+        "CARROT": 64
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "PET_CAFE",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99185623-replay",
+      "player_idx": 1,
+      "score": 51867.0,
+      "is_winner": false,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 8,
+      "sheep_bought": 3,
+      "geese_bought": 2,
+      "strawberries_planted": 1,
+      "melons_planted": 22,
+      "wheat_planted": 0,
+      "carrots_planted": 1,
+      "tomatoes_planted": 0,
+      "max_hands": 6,
+      "total_hires": 180,
+      "land_unlocks": {
+        "QUAD_1": 1
+      },
+      "total_sales": {
+        "MELON": 126,
+        "WHEAT": 11020,
+        "FERTILIZER": 226,
+        "CARROT": 3,
+        "EGG": 51,
+        "WOOL": 25,
+        "MILK": 126
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "PET_CAFE",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99187904-replay",
+      "player_idx": 0,
+      "score": 59192.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 10,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 186,
+      "carrots_planted": 39,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 234,
+        "WHEAT": 91,
+        "WOOL": 33,
+        "MILK": 246,
+        "STRAWBERRY": 77,
+        "MELON": 36,
+        "CARROT": 60
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "FARMERS_MARKET",
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99187904-replay",
+      "player_idx": 1,
+      "score": 18804.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 13,
+      "sheep_bought": 9,
+      "geese_bought": 0,
+      "strawberries_planted": 2,
+      "melons_planted": 7,
+      "wheat_planted": 28,
+      "carrots_planted": 31,
+      "tomatoes_planted": 0,
+      "max_hands": 12,
+      "total_hires": 220,
+      "land_unlocks": {
+        "QUAD_1": 196,
+        "QUAD_2": 265
+      },
+      "total_sales": {
+        "FERTILIZER": 302,
+        "CARROT": 32,
+        "WOOL": 200,
+        "MILK": 216,
+        "MELON": 30,
+        "STRAWBERRY": 1,
+        "WHEAT": 5
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "FARMERS_MARKET",
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99190193-replay",
+      "player_idx": 0,
+      "score": 75557.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 17,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 212,
+      "carrots_planted": 37,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 168,
+        "WHEAT": 203,
+        "WOOL": 23,
+        "MILK": 163,
+        "STRAWBERRY": 82,
+        "MELON": 36,
+        "CARROT": 68
+      },
+      "town_shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99190193-replay",
+      "player_idx": 1,
+      "score": 113310.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 9,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 42,
+      "melons_planted": 24,
+      "wheat_planted": 53,
+      "carrots_planted": 9,
+      "tomatoes_planted": 0,
+      "max_hands": 11,
+      "total_hires": 264,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 220
+      },
+      "total_sales": {
+        "FERTILIZER": 78,
+        "WHEAT": 192,
+        "WOOL": 81,
+        "MILK": 176,
+        "CARROT": 24,
+        "MELON": 106,
+        "STRAWBERRY": 167
+      },
+      "town_shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "SMOOTHIE_SHOP",
+        "PET_CAFE",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99192492-replay",
+      "player_idx": 0,
+      "score": 48832.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 11,
+      "sheep_bought": 7,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 210,
+      "carrots_planted": 37,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 121,
+        "WHEAT": 260,
+        "WOOL": 10,
+        "MILK": 128,
+        "STRAWBERRY": 82,
+        "MELON": 36,
+        "CARROT": 68
+      },
+      "town_shops": [
+        "SMOOTHIE_SHOP",
+        "YARN_STORE",
+        "FARMERS_MARKET",
+        "YARN_STORE",
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99192492-replay",
+      "player_idx": 1,
+      "score": 76101.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 8,
+      "sheep_bought": 4,
+      "geese_bought": 0,
+      "strawberries_planted": 20,
+      "melons_planted": 11,
+      "wheat_planted": 116,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 12,
+      "total_hires": 309,
+      "land_unlocks": {
+        "QUAD_1": 170
+      },
+      "total_sales": {
+        "FERTILIZER": 239,
+        "WHEAT": 225,
+        "WOOL": 78,
+        "MILK": 176,
+        "MELON": 66,
+        "STRAWBERRY": 63
+      },
+      "town_shops": [
+        "SMOOTHIE_SHOP",
+        "YARN_STORE",
+        "FARMERS_MARKET",
+        "YARN_STORE",
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99192510-replay",
+      "player_idx": 0,
+      "score": 64631.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 15,
+      "sheep_bought": 7,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 199,
+      "carrots_planted": 40,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 179,
+        "WHEAT": 173,
+        "WOOL": 10,
+        "MILK": 190,
+        "STRAWBERRY": 81,
+        "MELON": 36,
+        "CARROT": 56
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "YARN_STORE",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET"
+      ]
+    },
+    {
+      "match_id": "episode-99192510-replay",
+      "player_idx": 1,
+      "score": 89309.0,
+      "is_winner": true,
+      "archetype": "Ahmad_Ali_Sheep_Rush",
+      "cows_bought": 3,
+      "sheep_bought": 13,
+      "geese_bought": 1,
+      "strawberries_planted": 54,
+      "melons_planted": 35,
+      "wheat_planted": 68,
+      "carrots_planted": 7,
+      "tomatoes_planted": 0,
+      "max_hands": 12,
+      "total_hires": 263,
+      "land_unlocks": {
+        "QUAD_1": 171,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 398,
+        "WHEAT": 115,
+        "WOOL": 121,
+        "MILK": 72,
+        "MELON": 138,
+        "EGG": 18,
+        "STRAWBERRY": 128,
+        "CARROT": 2
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "YARN_STORE",
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET"
+      ]
+    },
+    {
+      "match_id": "episode-99194806-replay",
+      "player_idx": 0,
+      "score": 102835.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 198,
+      "carrots_planted": 42,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 146,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 238,
+        "WHEAT": 134,
+        "WOOL": 33,
+        "MILK": 252,
+        "STRAWBERRY": 74,
+        "MELON": 36,
+        "CARROT": 64
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "YARN_STORE",
+        "FARMERS_MARKET"
+      ]
+    },
+    {
+      "match_id": "episode-99194806-replay",
+      "player_idx": 1,
+      "score": 21981.0,
+      "is_winner": false,
+      "archetype": "Pure_Crop_No_Animals",
+      "cows_bought": 0,
+      "sheep_bought": 0,
+      "geese_bought": 0,
+      "strawberries_planted": 0,
+      "melons_planted": 26,
+      "wheat_planted": 20,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 0,
+      "total_hires": 0,
+      "land_unlocks": {},
+      "total_sales": {
+        "MELON": 104,
+        "WHEAT": 11
+      },
+      "town_shops": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "YARN_STORE",
+        "FARMERS_MARKET"
+      ]
+    },
+    {
+      "match_id": "episode-99197094-replay",
+      "player_idx": 0,
+      "score": 54059.0,
+      "is_winner": false,
+      "archetype": "Strawberry_Crop_Engine",
+      "cows_bought": 6,
+      "sheep_bought": 0,
+      "geese_bought": 0,
+      "strawberries_planted": 30,
+      "melons_planted": 43,
+      "wheat_planted": 33,
+      "carrots_planted": 78,
+      "tomatoes_planted": 3,
+      "max_hands": 10,
+      "total_hires": 267,
+      "land_unlocks": {
+        "QUAD_1": 314
+      },
+      "total_sales": {
+        "CARROT": 87,
+        "WHEAT": 9,
+        "MILK": 150,
+        "MELON": 66,
+        "STRAWBERRY": 136,
+        "FERTILIZER": 19,
+        "TOMATO": 22
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "PET_CAFE",
+        "BAKERY",
+        "BAKERY",
+        "YARN_STORE",
+        "FARMERS_MARKET"
+      ]
+    },
+    {
+      "match_id": "episode-99197094-replay",
+      "player_idx": 1,
+      "score": 81201.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 10,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 202,
+      "carrots_planted": 45,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 238,
+        "WHEAT": 135,
+        "WOOL": 33,
+        "MILK": 252,
+        "STRAWBERRY": 70,
+        "MELON": 36,
+        "CARROT": 73
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "PET_CAFE",
+        "BAKERY",
+        "BAKERY",
+        "YARN_STORE",
+        "FARMERS_MARKET"
+      ]
+    },
+    {
+      "match_id": "episode-99199388-replay",
+      "player_idx": 0,
+      "score": 67973.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 16,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 207,
+      "carrots_planted": 45,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 169,
+        "WHEAT": 204,
+        "WOOL": 23,
+        "MILK": 163,
+        "STRAWBERRY": 70,
+        "MELON": 36,
+        "CARROT": 73
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "YARN_STORE",
+        "SMOOTHIE_SHOP",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99199388-replay",
+      "player_idx": 1,
+      "score": 90328.0,
+      "is_winner": true,
+      "archetype": "Goose_Egg_Experiment",
+      "cows_bought": 7,
+      "sheep_bought": 4,
+      "geese_bought": 9,
+      "strawberries_planted": 21,
+      "melons_planted": 2,
+      "wheat_planted": 28,
+      "carrots_planted": 7,
+      "tomatoes_planted": 2,
+      "max_hands": 9,
+      "total_hires": 207,
+      "land_unlocks": {
+        "QUAD_1": 209
+      },
+      "total_sales": {
+        "CARROT": 21,
+        "WHEAT": 135,
+        "FERTILIZER": 156,
+        "EGG": 166,
+        "WOOL": 92,
+        "MILK": 155,
+        "TOMATO": 16,
+        "STRAWBERRY": 112,
+        "MELON": 12
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "YARN_STORE",
+        "SMOOTHIE_SHOP",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99201703-replay",
+      "player_idx": 0,
+      "score": 103324.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 181,
+      "carrots_planted": 44,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 238,
+        "WHEAT": 88,
+        "WOOL": 32,
+        "MILK": 252,
+        "STRAWBERRY": 84,
+        "MELON": 36,
+        "CARROT": 68
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "PET_CAFE",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99201703-replay",
+      "player_idx": 1,
+      "score": 58859.0,
+      "is_winner": false,
+      "archetype": "Diversified_Mixed_Farm",
+      "cows_bought": 6,
+      "sheep_bought": 3,
+      "geese_bought": 0,
+      "strawberries_planted": 33,
+      "melons_planted": 17,
+      "wheat_planted": 26,
+      "carrots_planted": 48,
+      "tomatoes_planted": 3,
+      "max_hands": 10,
+      "total_hires": 253,
+      "land_unlocks": {
+        "QUAD_1": 314
+      },
+      "total_sales": {
+        "CARROT": 34,
+        "MILK": 107,
+        "WHEAT": 1,
+        "MELON": 66,
+        "STRAWBERRY": 119,
+        "FERTILIZER": 23,
+        "WOOL": 18,
+        "TOMATO": 17
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP",
+        "PET_CAFE",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99203992-replay",
+      "player_idx": 0,
+      "score": 56972.0,
+      "is_winner": false,
+      "archetype": "Strawberry_Crop_Engine",
+      "cows_bought": 0,
+      "sheep_bought": 0,
+      "geese_bought": 2,
+      "strawberries_planted": 82,
+      "melons_planted": 52,
+      "wheat_planted": 42,
+      "carrots_planted": 13,
+      "tomatoes_planted": 2,
+      "max_hands": 15,
+      "total_hires": 288,
+      "land_unlocks": {
+        "QUAD_1": 169,
+        "QUAD_2": 311,
+        "QUAD_3": 334
+      },
+      "total_sales": {
+        "FERTILIZER": 58,
+        "EGG": 100,
+        "MELON": 234,
+        "STRAWBERRY": 180,
+        "WHEAT": 75,
+        "TOMATO": 4,
+        "CARROT": 11
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99203992-replay",
+      "player_idx": 1,
+      "score": 82434.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 10,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 205,
+      "carrots_planted": 42,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 146,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 232,
+        "WHEAT": 150,
+        "WOOL": 34,
+        "MILK": 246,
+        "STRAWBERRY": 75,
+        "MELON": 36,
+        "CARROT": 64
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "PET_CAFE",
+        "SMOOTHIE_SHOP",
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99206277-replay",
+      "player_idx": 0,
+      "score": 68995.0,
+      "is_winner": false,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 12,
+      "sheep_bought": 4,
+      "geese_bought": 0,
+      "strawberries_planted": 32,
+      "melons_planted": 15,
+      "wheat_planted": 75,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 12,
+      "total_hires": 317,
+      "land_unlocks": {
+        "QUAD_1": 171,
+        "QUAD_2": 245
+      },
+      "total_sales": {
+        "FERTILIZER": 144,
+        "WHEAT": 149,
+        "WOOL": 53,
+        "MILK": 95,
+        "MELON": 90,
+        "STRAWBERRY": 116
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "PET_CAFE",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99206277-replay",
+      "player_idx": 1,
+      "score": 97126.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 24,
+      "melons_planted": 6,
+      "wheat_planted": 206,
+      "carrots_planted": 40,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 238,
+        "WHEAT": 147,
+        "WOOL": 33,
+        "MILK": 252,
+        "STRAWBERRY": 77,
+        "MELON": 36,
+        "CARROT": 66
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "PET_CAFE",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "ICE_CREAM_SHOP",
+        "BAKERY",
+        "ICE_CREAM_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99208573-replay",
+      "player_idx": 0,
+      "score": 65311.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 10,
+      "sheep_bought": 10,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 9,
+      "wheat_planted": 76,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 13,
+      "total_hires": 254,
+      "land_unlocks": {
+        "QUAD_1": 261
+      },
+      "total_sales": {
+        "FERTILIZER": 278,
+        "WHEAT": 179,
+        "MILK": 187,
+        "MELON": 54,
+        "STRAWBERRY": 72,
+        "WOOL": 140
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "BAKERY",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99208573-replay",
+      "player_idx": 1,
+      "score": 78481.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 200,
+      "carrots_planted": 42,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 146,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 238,
+        "WHEAT": 135,
+        "WOOL": 33,
+        "MILK": 252,
+        "STRAWBERRY": 74,
+        "MELON": 36,
+        "CARROT": 64
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "PIZZA_SHOP",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "BAKERY",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99212999-replay",
+      "player_idx": 0,
+      "score": 43759.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 11,
+      "sheep_bought": 7,
+      "geese_bought": 0,
+      "strawberries_planted": 24,
+      "melons_planted": 6,
+      "wheat_planted": 212,
+      "carrots_planted": 40,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 218
+      },
+      "total_sales": {
+        "FERTILIZER": 119,
+        "WHEAT": 259,
+        "WOOL": 10,
+        "MILK": 128,
+        "STRAWBERRY": 77,
+        "MELON": 36,
+        "CARROT": 62
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "BAKERY",
+        "YARN_STORE",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "PET_CAFE",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99212999-replay",
+      "player_idx": 1,
+      "score": 60746.0,
+      "is_winner": true,
+      "archetype": "Goose_Egg_Experiment",
+      "cows_bought": 7,
+      "sheep_bought": 2,
+      "geese_bought": 5,
+      "strawberries_planted": 7,
+      "melons_planted": 16,
+      "wheat_planted": 38,
+      "carrots_planted": 0,
+      "tomatoes_planted": 15,
+      "max_hands": 9,
+      "total_hires": 232,
+      "land_unlocks": {
+        "QUAD_1": 203
+      },
+      "total_sales": {
+        "WHEAT": 806,
+        "FERTILIZER": 186,
+        "MILK": 126,
+        "MELON": 83,
+        "TOMATO": 52,
+        "EGG": 100,
+        "STRAWBERRY": 20,
+        "WOOL": 22
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "BAKERY",
+        "YARN_STORE",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "PET_CAFE",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99215309-replay",
+      "player_idx": 0,
+      "score": 70292.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 17,
+      "sheep_bought": 6,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 204,
+      "carrots_planted": 42,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 146,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 165,
+        "WHEAT": 201,
+        "WOOL": 23,
+        "MILK": 163,
+        "STRAWBERRY": 74,
+        "MELON": 36,
+        "CARROT": 64
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "PET_CAFE",
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "PET_CAFE",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99215309-replay",
+      "player_idx": 1,
+      "score": 21450.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 17,
+      "sheep_bought": 17,
+      "geese_bought": 0,
+      "strawberries_planted": 32,
+      "melons_planted": 12,
+      "wheat_planted": 103,
+      "carrots_planted": 61,
+      "tomatoes_planted": 0,
+      "max_hands": 7,
+      "total_hires": 163,
+      "land_unlocks": {
+        "QUAD_1": 265,
+        "QUAD_2": 404
+      },
+      "total_sales": {
+        "FERTILIZER": 31,
+        "WHEAT": 149,
+        "MILK": 22,
+        "WOOL": 14,
+        "STRAWBERRY": 59,
+        "MELON": 72,
+        "CARROT": 54
+      },
+      "town_shops": [
+        "PIZZA_SHOP",
+        "YARN_STORE",
+        "PET_CAFE",
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP",
+        "PET_CAFE",
+        "BRUNCH_SPOT"
+      ]
+    },
+    {
+      "match_id": "episode-99217596-replay",
+      "player_idx": 0,
+      "score": 98301.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 10,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 200,
+      "carrots_planted": 37,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 233,
+        "WHEAT": 106,
+        "WOOL": 34,
+        "MILK": 249,
+        "STRAWBERRY": 82,
+        "MELON": 36,
+        "CARROT": 56
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "SMOOTHIE_SHOP",
+        "BAKERY",
+        "BAKERY",
+        "PET_CAFE",
+        "PIZZA_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99217596-replay",
+      "player_idx": 1,
+      "score": 873.0,
+      "is_winner": false,
+      "archetype": "Diversified_Mixed_Farm",
+      "cows_bought": 1,
+      "sheep_bought": 4,
+      "geese_bought": 0,
+      "strawberries_planted": 0,
+      "melons_planted": 2,
+      "wheat_planted": 10,
+      "carrots_planted": 0,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 48,
+      "land_unlocks": {
+        "QUAD_1": 370,
+        "QUAD_2": 382
+      },
+      "total_sales": {
+        "MELON": 12,
+        "WHEAT": 24
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "SMOOTHIE_SHOP",
+        "BAKERY",
+        "BAKERY",
+        "PET_CAFE",
+        "PIZZA_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99219869-replay",
+      "player_idx": 0,
+      "score": 45310.0,
+      "is_winner": true,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 9,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 23,
+      "melons_planted": 6,
+      "wheat_planted": 207,
+      "carrots_planted": 45,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 231,
+        "WHEAT": 147,
+        "WOOL": 33,
+        "MILK": 249,
+        "STRAWBERRY": 70,
+        "MELON": 36,
+        "CARROT": 73
+      },
+      "town_shops": [
+        "BAKERY",
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "BAKERY",
+        "BAKERY",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99219869-replay",
+      "player_idx": 1,
+      "score": 25619.0,
+      "is_winner": false,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 10,
+      "sheep_bought": 8,
+      "geese_bought": 0,
+      "strawberries_planted": 7,
+      "melons_planted": 22,
+      "wheat_planted": 43,
+      "carrots_planted": 17,
+      "tomatoes_planted": 4,
+      "max_hands": 12,
+      "total_hires": 226,
+      "land_unlocks": {
+        "QUAD_1": 169
+      },
+      "total_sales": {
+        "CARROT": 46,
+        "WHEAT": 64,
+        "WOOL": 152,
+        "MILK": 180,
+        "TOMATO": 16,
+        "COW": 8,
+        "MELON": 126,
+        "STRAWBERRY": 26
+      },
+      "town_shops": [
+        "BAKERY",
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "BAKERY",
+        "BAKERY",
+        "BRUNCH_SPOT",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99222160-replay",
+      "player_idx": 0,
+      "score": 60391.0,
+      "is_winner": true,
+      "archetype": "Goose_Egg_Experiment",
+      "cows_bought": 6,
+      "sheep_bought": 4,
+      "geese_bought": 10,
+      "strawberries_planted": 9,
+      "melons_planted": 24,
+      "wheat_planted": 26,
+      "carrots_planted": 45,
+      "tomatoes_planted": 2,
+      "max_hands": 12,
+      "total_hires": 317,
+      "land_unlocks": {
+        "QUAD_1": 169,
+        "QUAD_2": 285
+      },
+      "total_sales": {
+        "WHEAT": 315,
+        "FERTILIZER": 356,
+        "CARROT": 121,
+        "EGG": 390,
+        "WOOL": 116,
+        "MILK": 126,
+        "MELON": 142,
+        "STRAWBERRY": 71,
+        "TOMATO": 12
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "BAKERY",
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99222160-replay",
+      "player_idx": 1,
+      "score": 48748.0,
+      "is_winner": false,
+      "archetype": "Diversified_Mixed_Farm",
+      "cows_bought": 7,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 24,
+      "melons_planted": 6,
+      "wheat_planted": 218,
+      "carrots_planted": 41,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 122,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 197,
+        "WHEAT": 196,
+        "WOOL": 34,
+        "MILK": 207,
+        "STRAWBERRY": 78,
+        "MELON": 36,
+        "CARROT": 70
+      },
+      "town_shops": [
+        "FARMERS_MARKET",
+        "PET_CAFE",
+        "BAKERY",
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP",
+        "YARN_STORE"
+      ]
+    },
+    {
+      "match_id": "episode-99224441-replay",
+      "player_idx": 0,
+      "score": 47651.0,
+      "is_winner": false,
+      "archetype": "Dominant_Dairy_Meta",
+      "cows_bought": 8,
+      "sheep_bought": 1,
+      "geese_bought": 0,
+      "strawberries_planted": 22,
+      "melons_planted": 6,
+      "wheat_planted": 211,
+      "carrots_planted": 43,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 273,
+      "land_unlocks": {
+        "QUAD_1": 146,
+        "QUAD_2": 219
+      },
+      "total_sales": {
+        "FERTILIZER": 182,
+        "WHEAT": 211,
+        "WOOL": 34,
+        "MILK": 192,
+        "STRAWBERRY": 72,
+        "MELON": 36,
+        "CARROT": 66
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP"
+      ]
+    },
+    {
+      "match_id": "episode-99224441-replay",
+      "player_idx": 1,
+      "score": 48112.0,
+      "is_winner": true,
+      "archetype": "Balanced_Livestock_Hybrid",
+      "cows_bought": 14,
+      "sheep_bought": 11,
+      "geese_bought": 0,
+      "strawberries_planted": 14,
+      "melons_planted": 16,
+      "wheat_planted": 17,
+      "carrots_planted": 20,
+      "tomatoes_planted": 0,
+      "max_hands": 10,
+      "total_hires": 262,
+      "land_unlocks": {
+        "QUAD_1": 263,
+        "QUAD_2": 348
+      },
+      "total_sales": {
+        "FERTILIZER": 183,
+        "WOOL": 64,
+        "MILK": 206,
+        "MELON": 90,
+        "STRAWBERRY": 108,
+        "CARROT": 35,
+        "WHEAT": 30
+      },
+      "town_shops": [
+        "BRUNCH_SPOT",
+        "BAKERY",
+        "PIZZA_SHOP",
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP",
+        "BRUNCH_SPOT",
+        "SMOOTHIE_SHOP"
+      ]
+    }
+  ]
+}

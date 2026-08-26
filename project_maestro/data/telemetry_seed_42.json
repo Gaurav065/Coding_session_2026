@@ -1,0 +1,184 @@
+{
+  "seed": 42,
+  "final_score_p0": 45337.0,
+  "final_score_p1": 45565.0,
+  "winner": "Opponent (P1)",
+  "shop_spawns": [
+    {
+      "day": 3,
+      "step": 72,
+      "shop": "FARMERS_MARKET"
+    },
+    {
+      "day": 6,
+      "step": 144,
+      "shop": "PET_CAFE"
+    },
+    {
+      "day": 9,
+      "step": 216,
+      "shop": "PIZZA_SHOP"
+    },
+    {
+      "day": 12,
+      "step": 288,
+      "shop": "FARMERS_MARKET"
+    },
+    {
+      "day": 15,
+      "step": 360,
+      "shop": "PET_CAFE"
+    },
+    {
+      "day": 18,
+      "step": 432,
+      "shop": "ICE_CREAM_SHOP"
+    },
+    {
+      "day": 21,
+      "step": 504,
+      "shop": "FARMERS_MARKET"
+    },
+    {
+      "day": 24,
+      "step": 576,
+      "shop": "PIZZA_SHOP"
+    }
+  ],
+  "price_summary": {
+    "WHEAT": {
+      "start_price": 25,
+      "min_price": 25,
+      "max_price": 45,
+      "final_price": 44,
+      "avg_price": 38.1
+    },
+    "CARROT": {
+      "start_price": 35,
+      "min_price": 35,
+      "max_price": 165,
+      "final_price": 165,
+      "avg_price": 65.1
+    },
+    "TOMATO": {
+      "start_price": 60,
+      "min_price": 60,
+      "max_price": 601,
+      "final_price": 601,
+      "avg_price": 136.8
+    },
+    "STRAWBERRY": {
+      "start_price": 120,
+      "min_price": 120,
+      "max_price": 261,
+      "final_price": 261,
+      "avg_price": 196.0
+    },
+    "MELON": {
+      "start_price": 250,
+      "min_price": 250,
+      "max_price": 277,
+      "final_price": 267,
+      "avg_price": 265.8
+    },
+    "EGG": {
+      "start_price": 50,
+      "min_price": 50,
+      "max_price": 52,
+      "final_price": 52,
+      "avg_price": 50.9
+    },
+    "MILK": {
+      "start_price": 160,
+      "min_price": 1,
+      "max_price": 186,
+      "final_price": 9,
+      "avg_price": 75.3
+    },
+    "WOOL": {
+      "start_price": 200,
+      "min_price": 116,
+      "max_price": 218,
+      "final_price": 125,
+      "avg_price": 182.8
+    },
+    "FERTILIZER": {
+      "start_price": 100,
+      "min_price": 13,
+      "max_price": 100,
+      "final_price": 13,
+      "avg_price": 63.8
+    }
+  },
+  "sales_and_revenue": {
+    "FERTILIZER": {
+      "units_sold": 216,
+      "revenue": 12346.0
+    },
+    "WHEAT": {
+      "units_sold": 160,
+      "revenue": 6625.0
+    },
+    "WOOL": {
+      "units_sold": 33,
+      "revenue": 6144.0
+    },
+    "MILK": {
+      "units_sold": 228,
+      "revenue": 8311.0
+    },
+    "STRAWBERRY": {
+      "units_sold": 77,
+      "revenue": 16878.0
+    },
+    "MELON": {
+      "units_sold": 12,
+      "revenue": 3264.0
+    },
+    "CARROT": {
+      "units_sold": 61,
+      "revenue": 8027.0
+    }
+  },
+  "seed_accounting": {
+    "WHEAT": {
+      "bought": 192,
+      "planted": 192,
+      "leftover_in_slot": 0,
+      "wasted_capital": 0
+    },
+    "CARROT": {
+      "bought": 30,
+      "planted": 30,
+      "leftover_in_slot": 0,
+      "wasted_capital": 0
+    },
+    "STRAWBERRY": {
+      "bought": 24,
+      "planted": 22,
+      "leftover_in_slot": 2,
+      "wasted_capital": 240
+    },
+    "MELON": {
+      "bought": 6,
+      "planted": 6,
+      "leftover_in_slot": 0,
+      "wasted_capital": 0
+    }
+  },
+  "total_seed_capital_wasted": 240,
+  "leftover_shed_inventory": {
+    "WHEAT": 2,
+    "FERTILIZER": 3
+  },
+  "leftover_shed_market_value": 124,
+  "leftover_worker_carrying": {
+    "WHEAT": 10
+  },
+  "leftover_worker_market_value": 440,
+  "unharvested_field_yield": {
+    "WHEAT": 7
+  },
+  "unharvested_field_market_value": 308,
+  "total_unrealized_potential_cash": 1112
+}

@@ -1,0 +1,47 @@
+{
+  "1. Dominant Dairy Meta (10C/4S)": {
+    "losses": 29,
+    "mean_loss_margin": -21757.97,
+    "mean_d_milk": -12304.21,
+    "mean_d_wool": -6262.93,
+    "mean_d_straw": 4356.07,
+    "mean_d_melon": 14.9,
+    "mean_d_fert": 170.07
+  },
+  "2. Tomato Meta Spam": {
+    "losses": 18,
+    "mean_loss_margin": -12721.72,
+    "mean_d_milk": -5917.89,
+    "mean_d_wool": -9705.44,
+    "mean_d_straw": 18053.78,
+    "mean_d_melon": -39.22,
+    "mean_d_fert": 1464.28
+  },
+  "3. All-In Cows & Melons (14C/20M)": {
+    "losses": 13,
+    "mean_loss_margin": -12403.69,
+    "mean_d_milk": -19229.92,
+    "mean_d_wool": 1008.62,
+    "mean_d_straw": 13975.62,
+    "mean_d_melon": 0.0,
+    "mean_d_fert": -429.92
+  },
+  "4. Balanced Pasture Hybrid (7C/7S)": {
+    "losses": 16,
+    "mean_loss_margin": -10721.94,
+    "mean_d_milk": -3823.56,
+    "mean_d_wool": -4540.12,
+    "mean_d_straw": 5116.81,
+    "mean_d_melon": 49.88,
+    "mean_d_fert": 3159.62
+  },
+  "5. All-In Sheep & Strawberries (14S/28Str)": {
+    "losses": 12,
+    "mean_loss_margin": -5757.0,
+    "mean_d_milk": -454.42,
+    "mean_d_wool": -1821.5,
+    "mean_d_straw": 1527.42,
+    "mean_d_melon": 32.17,
+    "mean_d_fert": 4792.33
+  }
+}

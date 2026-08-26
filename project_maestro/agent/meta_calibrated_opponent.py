@@ -25,7 +25,6 @@ from project_maestro.agent.dispatcher_agent import (
     SHED_ACCESS_TILES,
     COW_PASTURES,
     SHEEP_PASTURES,
-    GOOSE_COOPS,
     NW_WHEAT,
     NE_STRAWBERRY,
     NE_WHEAT,
@@ -65,7 +64,6 @@ class MetaCalibratedOpponent(MaestroFullPortfolioAgent):
         super().__init__(params=merged_params, kw_early=kw_early, seed=seed)
         self.cow_pastures = list(META_COW_PASTURES)
         self.sheep_pastures = list(META_SHEEP_PASTURES)
-        self.goose_coops = list(GOOSE_COOPS)
 
     def __call__(self, obs: Dict[str, Any]) -> Dict[str, Any]:
         # Emits actions adhering to the 8 Cow / 6 Sheep / 18 Strawberry / 6 Melon meta portfolio

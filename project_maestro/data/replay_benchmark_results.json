@@ -1,0 +1,406 @@
+{
+  "total_matches": 50,
+  "win_rate": 94.0,
+  "results": [
+    {
+      "episode_id": "98818687",
+      "our_score": 78325.0,
+      "opp_score": 23823.0,
+      "recorded_opp_original": 105362.0,
+      "win": true,
+      "margin": 54502.0
+    },
+    {
+      "episode_id": "98818709",
+      "our_score": 56639.0,
+      "opp_score": 97239.0,
+      "recorded_opp_original": 114502.0,
+      "win": false,
+      "margin": -40600.0
+    },
+    {
+      "episode_id": "98820898",
+      "our_score": 76962.0,
+      "opp_score": 28309.0,
+      "recorded_opp_original": 103333.0,
+      "win": true,
+      "margin": 48653.0
+    },
+    {
+      "episode_id": "98823003",
+      "our_score": 76868.0,
+      "opp_score": 29333.0,
+      "recorded_opp_original": 94526.0,
+      "win": true,
+      "margin": 47535.0
+    },
+    {
+      "episode_id": "98823293",
+      "our_score": 81677.0,
+      "opp_score": 3754.0,
+      "recorded_opp_original": 93908.0,
+      "win": true,
+      "margin": 77923.0
+    },
+    {
+      "episode_id": "98827788",
+      "our_score": 76935.0,
+      "opp_score": 28527.0,
+      "recorded_opp_original": 106298.0,
+      "win": true,
+      "margin": 48408.0
+    },
+    {
+      "episode_id": "98829909",
+      "our_score": 83599.0,
+      "opp_score": 29871.0,
+      "recorded_opp_original": 119347.0,
+      "win": true,
+      "margin": 53728.0
+    },
+    {
+      "episode_id": "98832202",
+      "our_score": 83590.0,
+      "opp_score": 29878.0,
+      "recorded_opp_original": 111551.0,
+      "win": true,
+      "margin": 53712.0
+    },
+    {
+      "episode_id": "98832330",
+      "our_score": 82442.0,
+      "opp_score": 14015.0,
+      "recorded_opp_original": 112999.0,
+      "win": true,
+      "margin": 68427.0
+    },
+    {
+      "episode_id": "98832333",
+      "our_score": 83597.0,
+      "opp_score": 29871.0,
+      "recorded_opp_original": 114339.0,
+      "win": true,
+      "margin": 53726.0
+    },
+    {
+      "episode_id": "98832334",
+      "our_score": 76873.0,
+      "opp_score": 28788.0,
+      "recorded_opp_original": 134469.0,
+      "win": true,
+      "margin": 48085.0
+    },
+    {
+      "episode_id": "98832395",
+      "our_score": 76873.0,
+      "opp_score": 28793.0,
+      "recorded_opp_original": 99310.0,
+      "win": true,
+      "margin": 48080.0
+    },
+    {
+      "episode_id": "98832400",
+      "our_score": 76874.0,
+      "opp_score": 28792.0,
+      "recorded_opp_original": 71470.0,
+      "win": true,
+      "margin": 48082.0
+    },
+    {
+      "episode_id": "98834418",
+      "our_score": 76935.0,
+      "opp_score": 28614.0,
+      "recorded_opp_original": 80378.0,
+      "win": true,
+      "margin": 48321.0
+    },
+    {
+      "episode_id": "98834455",
+      "our_score": 82528.0,
+      "opp_score": 49475.0,
+      "recorded_opp_original": 100582.0,
+      "win": true,
+      "margin": 33053.0
+    },
+    {
+      "episode_id": "98836962",
+      "our_score": 81938.0,
+      "opp_score": 76483.0,
+      "recorded_opp_original": 98568.0,
+      "win": true,
+      "margin": 5455.0
+    },
+    {
+      "episode_id": "98841349",
+      "our_score": 76868.0,
+      "opp_score": 28763.0,
+      "recorded_opp_original": 77782.0,
+      "win": true,
+      "margin": 48105.0
+    },
+    {
+      "episode_id": "98841468",
+      "our_score": 80156.0,
+      "opp_score": 29573.0,
+      "recorded_opp_original": 109825.0,
+      "win": true,
+      "margin": 50583.0
+    },
+    {
+      "episode_id": "98841506",
+      "our_score": 76873.0,
+      "opp_score": 28793.0,
+      "recorded_opp_original": 114037.0,
+      "win": true,
+      "margin": 48080.0
+    },
+    {
+      "episode_id": "98846032",
+      "our_score": 57150.0,
+      "opp_score": 10512.0,
+      "recorded_opp_original": 96351.0,
+      "win": true,
+      "margin": 46638.0
+    },
+    {
+      "episode_id": "98846100",
+      "our_score": 76874.0,
+      "opp_score": 28907.0,
+      "recorded_opp_original": 139769.0,
+      "win": true,
+      "margin": 47967.0
+    },
+    {
+      "episode_id": "98850511",
+      "our_score": 76935.0,
+      "opp_score": 28527.0,
+      "recorded_opp_original": 83250.0,
+      "win": true,
+      "margin": 48408.0
+    },
+    {
+      "episode_id": "98850623",
+      "our_score": 61885.0,
+      "opp_score": 122509.0,
+      "recorded_opp_original": 73226.0,
+      "win": false,
+      "margin": -60624.0
+    },
+    {
+      "episode_id": "98850639",
+      "our_score": 76158.0,
+      "opp_score": 26979.0,
+      "recorded_opp_original": 138775.0,
+      "win": true,
+      "margin": 49179.0
+    },
+    {
+      "episode_id": "98852770",
+      "our_score": 83590.0,
+      "opp_score": 29878.0,
+      "recorded_opp_original": 94558.0,
+      "win": true,
+      "margin": 53712.0
+    },
+    {
+      "episode_id": "98852792",
+      "our_score": 78433.0,
+      "opp_score": 28945.0,
+      "recorded_opp_original": 103910.0,
+      "win": true,
+      "margin": 49488.0
+    },
+    {
+      "episode_id": "98852910",
+      "our_score": 99644.0,
+      "opp_score": 10381.0,
+      "recorded_opp_original": 70674.0,
+      "win": true,
+      "margin": 89263.0
+    },
+    {
+      "episode_id": "98852913",
+      "our_score": 76921.0,
+      "opp_score": 27824.0,
+      "recorded_opp_original": 96292.0,
+      "win": true,
+      "margin": 49097.0
+    },
+    {
+      "episode_id": "98852915",
+      "our_score": 80073.0,
+      "opp_score": 29809.0,
+      "recorded_opp_original": 98378.0,
+      "win": true,
+      "margin": 50264.0
+    },
+    {
+      "episode_id": "98852916",
+      "our_score": 65313.0,
+      "opp_score": 40848.0,
+      "recorded_opp_original": 84275.0,
+      "win": true,
+      "margin": 24465.0
+    },
+    {
+      "episode_id": "98852917",
+      "our_score": 102693.0,
+      "opp_score": 19228.0,
+      "recorded_opp_original": 122665.0,
+      "win": true,
+      "margin": 83465.0
+    },
+    {
+      "episode_id": "98852918",
+      "our_score": 76797.0,
+      "opp_score": 18781.0,
+      "recorded_opp_original": 120828.0,
+      "win": true,
+      "margin": 58016.0
+    },
+    {
+      "episode_id": "98852922",
+      "our_score": 83599.0,
+      "opp_score": 29871.0,
+      "recorded_opp_original": 114978.0,
+      "win": true,
+      "margin": 53728.0
+    },
+    {
+      "episode_id": "98857364",
+      "our_score": 81947.0,
+      "opp_score": 76470.0,
+      "recorded_opp_original": 134682.0,
+      "win": true,
+      "margin": 5477.0
+    },
+    {
+      "episode_id": "98859585",
+      "our_score": 83590.0,
+      "opp_score": 29834.0,
+      "recorded_opp_original": 78677.0,
+      "win": true,
+      "margin": 53756.0
+    },
+    {
+      "episode_id": "98861931",
+      "our_score": 76873.0,
+      "opp_score": 28793.0,
+      "recorded_opp_original": 99889.0,
+      "win": true,
+      "margin": 48080.0
+    },
+    {
+      "episode_id": "98864187",
+      "our_score": 76872.0,
+      "opp_score": 29803.0,
+      "recorded_opp_original": 71397.0,
+      "win": true,
+      "margin": 47069.0
+    },
+    {
+      "episode_id": "98866470",
+      "our_score": 76847.0,
+      "opp_score": 29892.0,
+      "recorded_opp_original": 90150.0,
+      "win": true,
+      "margin": 46955.0
+    },
+    {
+      "episode_id": "98868776",
+      "our_score": 83590.0,
+      "opp_score": 29878.0,
+      "recorded_opp_original": 109972.0,
+      "win": true,
+      "margin": 53712.0
+    },
+    {
+      "episode_id": "98871034",
+      "our_score": 76858.0,
+      "opp_score": 29577.0,
+      "recorded_opp_original": 120432.0,
+      "win": true,
+      "margin": 47281.0
+    },
+    {
+      "episode_id": "98871043",
+      "our_score": 83592.0,
+      "opp_score": 29878.0,
+      "recorded_opp_original": 87916.0,
+      "win": true,
+      "margin": 53714.0
+    },
+    {
+      "episode_id": "98871073",
+      "our_score": 75174.0,
+      "opp_score": 50824.0,
+      "recorded_opp_original": 78157.0,
+      "win": true,
+      "margin": 24350.0
+    },
+    {
+      "episode_id": "98873326",
+      "our_score": 83468.0,
+      "opp_score": 31377.0,
+      "recorded_opp_original": 124421.0,
+      "win": true,
+      "margin": 52091.0
+    },
+    {
+      "episode_id": "98873351",
+      "our_score": 81944.0,
+      "opp_score": 76469.0,
+      "recorded_opp_original": 119950.0,
+      "win": true,
+      "margin": 5475.0
+    },
+    {
+      "episode_id": "98873431",
+      "our_score": 76847.0,
+      "opp_score": 29005.0,
+      "recorded_opp_original": 121922.0,
+      "win": true,
+      "margin": 47842.0
+    },
+    {
+      "episode_id": "98873443",
+      "our_score": 77898.0,
+      "opp_score": 40117.0,
+      "recorded_opp_original": 119157.0,
+      "win": true,
+      "margin": 37781.0
+    },
+    {
+      "episode_id": "98873445",
+      "our_score": 76868.0,
+      "opp_score": 28763.0,
+      "recorded_opp_original": 70140.0,
+      "win": true,
+      "margin": 48105.0
+    },
+    {
+      "episode_id": "98873451",
+      "our_score": 40800.0,
+      "opp_score": 76826.0,
+      "recorded_opp_original": 108125.0,
+      "win": false,
+      "margin": -36026.0
+    },
+    {
+      "episode_id": "98875614",
+      "our_score": 82000.0,
+      "opp_score": 75916.0,
+      "recorded_opp_original": 104819.0,
+      "win": true,
+      "margin": 6084.0
+    },
+    {
+      "episode_id": "98877894",
+      "our_score": 78350.0,
+      "opp_score": 22346.0,
+      "recorded_opp_original": 87745.0,
+      "win": true,
+      "margin": 56004.0
+    }
+  ]
+}

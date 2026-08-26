@@ -1,0 +1,785 @@
+[
+  {
+    "file": "episode-99060165-replay.json",
+    "p0": 29511.0,
+    "p1": 50341.0,
+    "winner_score": 50341.0,
+    "shops": [
+      "YARN_STORE",
+      "PET_CAFE",
+      "PIZZA_SHOP",
+      "PIZZA_SHOP",
+      "YARN_STORE",
+      "BAKERY",
+      "BAKERY",
+      "YARN_STORE"
+    ],
+    "final_prices": {
+      "CARROT": 55,
+      "EGG": 59,
+      "FERTILIZER": 34,
+      "MELON": 227,
+      "MILK": 197,
+      "STRAWBERRY": 1,
+      "TOMATO": 101,
+      "WHEAT": 44,
+      "WOOL": 254
+    }
+  },
+  {
+    "file": "episode-99062443-replay.json",
+    "p0": 44715.0,
+    "p1": 99788.0,
+    "winner_score": 99788.0,
+    "shops": [
+      "SMOOTHIE_SHOP",
+      "BAKERY",
+      "PIZZA_SHOP",
+      "PIZZA_SHOP",
+      "PIZZA_SHOP",
+      "ICE_CREAM_SHOP",
+      "PIZZA_SHOP",
+      "ICE_CREAM_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 28,
+      "EGG": 60,
+      "FERTILIZER": 5,
+      "MELON": 232,
+      "MILK": 313,
+      "STRAWBERRY": 226,
+      "TOMATO": 317,
+      "WHEAT": 51,
+      "WOOL": 5
+    }
+  },
+  {
+    "file": "episode-99064717-replay.json",
+    "p0": 125288.0,
+    "p1": 44064.0,
+    "winner_score": 125288.0,
+    "shops": [
+      "YARN_STORE",
+      "YARN_STORE",
+      "BAKERY",
+      "SMOOTHIE_SHOP",
+      "PET_CAFE",
+      "SMOOTHIE_SHOP",
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT"
+    ],
+    "final_prices": {
+      "CARROT": 43,
+      "EGG": 62,
+      "FERTILIZER": 33,
+      "MELON": 1,
+      "MILK": 270,
+      "STRAWBERRY": 195,
+      "TOMATO": 66,
+      "WHEAT": 41,
+      "WOOL": 248
+    }
+  },
+  {
+    "file": "episode-99067009-replay.json",
+    "p0": 27779.0,
+    "p1": 13843.0,
+    "winner_score": 27779.0,
+    "shops": [
+      "PET_CAFE",
+      "BAKERY",
+      "BAKERY",
+      "BAKERY",
+      "PIZZA_SHOP",
+      "PIZZA_SHOP",
+      "BAKERY",
+      "SMOOTHIE_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 58,
+      "EGG": 102,
+      "FERTILIZER": 8,
+      "MELON": 208,
+      "MILK": 40,
+      "STRAWBERRY": 14,
+      "TOMATO": 83,
+      "WHEAT": 51,
+      "WOOL": 5
+    }
+  },
+  {
+    "file": "episode-99069321-replay.json",
+    "p0": 103291.0,
+    "p1": 94404.0,
+    "winner_score": 103291.0,
+    "shops": [
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP",
+      "ICE_CREAM_SHOP",
+      "ICE_CREAM_SHOP",
+      "BRUNCH_SPOT",
+      "ICE_CREAM_SHOP",
+      "PIZZA_SHOP",
+      "ICE_CREAM_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 44,
+      "EGG": 57,
+      "FERTILIZER": 2,
+      "MELON": 198,
+      "MILK": 248,
+      "STRAWBERRY": 324,
+      "TOMATO": 74,
+      "WHEAT": 51,
+      "WOOL": 5
+    }
+  },
+  {
+    "file": "episode-99071608-replay.json",
+    "p0": 52160.0,
+    "p1": 73907.0,
+    "winner_score": 73907.0,
+    "shops": [
+      "BRUNCH_SPOT",
+      "BRUNCH_SPOT",
+      "PIZZA_SHOP",
+      "FARMERS_MARKET",
+      "FARMERS_MARKET",
+      "BRUNCH_SPOT",
+      "PET_CAFE",
+      "PET_CAFE"
+    ],
+    "final_prices": {
+      "CARROT": 61,
+      "EGG": 83,
+      "FERTILIZER": 27,
+      "MELON": 43,
+      "MILK": 11,
+      "STRAWBERRY": 269,
+      "TOMATO": 216,
+      "WHEAT": 51,
+      "WOOL": 5
+    }
+  },
+  {
+    "file": "episode-99073894-replay.json",
+    "p0": 43299.0,
+    "p1": 65383.0,
+    "winner_score": 65383.0,
+    "shops": [
+      "BRUNCH_SPOT",
+      "BAKERY",
+      "BRUNCH_SPOT",
+      "PET_CAFE",
+      "BRUNCH_SPOT",
+      "SMOOTHIE_SHOP",
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 50,
+      "EGG": 154,
+      "FERTILIZER": 21,
+      "MELON": 146,
+      "MILK": 22,
+      "STRAWBERRY": 259,
+      "TOMATO": 70,
+      "WHEAT": 51,
+      "WOOL": 1
+    }
+  },
+  {
+    "file": "episode-99076193-replay.json",
+    "p0": 49258.0,
+    "p1": 61164.0,
+    "winner_score": 61164.0,
+    "shops": [
+      "BRUNCH_SPOT",
+      "FARMERS_MARKET",
+      "SMOOTHIE_SHOP",
+      "ICE_CREAM_SHOP",
+      "PET_CAFE",
+      "PET_CAFE",
+      "PIZZA_SHOP",
+      "YARN_STORE"
+    ],
+    "final_prices": {
+      "CARROT": 68,
+      "EGG": 62,
+      "FERTILIZER": 4,
+      "MELON": 206,
+      "MILK": 36,
+      "STRAWBERRY": 281,
+      "TOMATO": 91,
+      "WHEAT": 50,
+      "WOOL": 107
+    }
+  },
+  {
+    "file": "episode-99078471-replay.json",
+    "p0": 44753.0,
+    "p1": 45552.0,
+    "winner_score": 45552.0,
+    "shops": [
+      "PET_CAFE",
+      "BRUNCH_SPOT",
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT",
+      "FARMERS_MARKET",
+      "SMOOTHIE_SHOP",
+      "PET_CAFE",
+      "PET_CAFE"
+    ],
+    "final_prices": {
+      "CARROT": 83,
+      "EGG": 67,
+      "FERTILIZER": 14,
+      "MELON": 4,
+      "MILK": 28,
+      "STRAWBERRY": 274,
+      "TOMATO": 100,
+      "WHEAT": 47,
+      "WOOL": 5
+    }
+  },
+  {
+    "file": "episode-99181039-replay.json",
+    "p0": 74343.0,
+    "p1": 74859.0,
+    "winner_score": 74859.0,
+    "shops": [
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP",
+      "SMOOTHIE_SHOP",
+      "PIZZA_SHOP",
+      "YARN_STORE",
+      "ICE_CREAM_SHOP",
+      "BAKERY",
+      "BRUNCH_SPOT"
+    ],
+    "final_prices": {
+      "CARROT": 45,
+      "EGG": 57,
+      "FERTILIZER": 31,
+      "MELON": 25,
+      "MILK": 274,
+      "STRAWBERRY": 296,
+      "TOMATO": 144,
+      "WHEAT": 50,
+      "WOOL": 241
+    }
+  },
+  {
+    "file": "episode-99183341-replay.json",
+    "p0": 72550.0,
+    "p1": 21463.0,
+    "winner_score": 72550.0,
+    "shops": [
+      "ICE_CREAM_SHOP",
+      "YARN_STORE",
+      "YARN_STORE",
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT",
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 32,
+      "EGG": 55,
+      "FERTILIZER": 67,
+      "MELON": 248,
+      "MILK": 271,
+      "STRAWBERRY": 268,
+      "TOMATO": 82,
+      "WHEAT": 45,
+      "WOOL": 254
+    }
+  },
+  {
+    "file": "episode-99185623-replay.json",
+    "p0": 90417.0,
+    "p1": 51867.0,
+    "winner_score": 90417.0,
+    "shops": [
+      "PIZZA_SHOP",
+      "ICE_CREAM_SHOP",
+      "BAKERY",
+      "PET_CAFE",
+      "FARMERS_MARKET",
+      "BRUNCH_SPOT",
+      "FARMERS_MARKET",
+      "ICE_CREAM_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 60,
+      "EGG": 61,
+      "FERTILIZER": 9,
+      "MELON": 76,
+      "MILK": 141,
+      "STRAWBERRY": 278,
+      "TOMATO": 189,
+      "WHEAT": 54,
+      "WOOL": 151
+    }
+  },
+  {
+    "file": "episode-99187904-replay.json",
+    "p0": 59192.0,
+    "p1": 18804.0,
+    "winner_score": 59192.0,
+    "shops": [
+      "PET_CAFE",
+      "SMOOTHIE_SHOP",
+      "PET_CAFE",
+      "FARMERS_MARKET",
+      "PIZZA_SHOP",
+      "SMOOTHIE_SHOP",
+      "PET_CAFE",
+      "SMOOTHIE_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 200,
+      "EGG": 52,
+      "FERTILIZER": 1,
+      "MELON": 237,
+      "MILK": 40,
+      "STRAWBERRY": 268,
+      "TOMATO": 91,
+      "WHEAT": 48,
+      "WOOL": 1
+    }
+  },
+  {
+    "file": "episode-99190193-replay.json",
+    "p0": 75557.0,
+    "p1": 113310.0,
+    "winner_score": 113310.0,
+    "shops": [
+      "SMOOTHIE_SHOP",
+      "PIZZA_SHOP",
+      "YARN_STORE",
+      "SMOOTHIE_SHOP",
+      "PET_CAFE",
+      "ICE_CREAM_SHOP",
+      "PIZZA_SHOP",
+      "PIZZA_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 44,
+      "EGG": 52,
+      "FERTILIZER": 53,
+      "MELON": 125,
+      "MILK": 302,
+      "STRAWBERRY": 213,
+      "TOMATO": 111,
+      "WHEAT": 39,
+      "WOOL": 244
+    }
+  },
+  {
+    "file": "episode-99192492-replay.json",
+    "p0": 48832.0,
+    "p1": 76101.0,
+    "winner_score": 76101.0,
+    "shops": [
+      "SMOOTHIE_SHOP",
+      "YARN_STORE",
+      "FARMERS_MARKET",
+      "YARN_STORE",
+      "FARMERS_MARKET",
+      "PET_CAFE",
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT"
+    ],
+    "final_prices": {
+      "CARROT": 60,
+      "EGG": 54,
+      "FERTILIZER": 30,
+      "MELON": 198,
+      "MILK": 38,
+      "STRAWBERRY": 265,
+      "TOMATO": 144,
+      "WHEAT": 28,
+      "WOOL": 252
+    }
+  },
+  {
+    "file": "episode-99192510-replay.json",
+    "p0": 64631.0,
+    "p1": 89309.0,
+    "winner_score": 89309.0,
+    "shops": [
+      "FARMERS_MARKET",
+      "PIZZA_SHOP",
+      "YARN_STORE",
+      "YARN_STORE",
+      "ICE_CREAM_SHOP",
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT",
+      "FARMERS_MARKET"
+    ],
+    "final_prices": {
+      "CARROT": 48,
+      "EGG": 54,
+      "FERTILIZER": 25,
+      "MELON": 43,
+      "MILK": 235,
+      "STRAWBERRY": 227,
+      "TOMATO": 399,
+      "WHEAT": 48,
+      "WOOL": 251
+    }
+  },
+  {
+    "file": "episode-99194806-replay.json",
+    "p0": 102835.0,
+    "p1": 21981.0,
+    "winner_score": 102835.0,
+    "shops": [
+      "PET_CAFE",
+      "SMOOTHIE_SHOP",
+      "ICE_CREAM_SHOP",
+      "BAKERY",
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT",
+      "YARN_STORE",
+      "FARMERS_MARKET"
+    ],
+    "final_prices": {
+      "CARROT": 60,
+      "EGG": 63,
+      "FERTILIZER": 55,
+      "MELON": 129,
+      "MILK": 262,
+      "STRAWBERRY": 274,
+      "TOMATO": 79,
+      "WHEAT": 44,
+      "WOOL": 240
+    }
+  },
+  {
+    "file": "episode-99197094-replay.json",
+    "p0": 54059.0,
+    "p1": 81201.0,
+    "winner_score": 81201.0,
+    "shops": [
+      "PIZZA_SHOP",
+      "ICE_CREAM_SHOP",
+      "BAKERY",
+      "PET_CAFE",
+      "BAKERY",
+      "BAKERY",
+      "YARN_STORE",
+      "FARMERS_MARKET"
+    ],
+    "final_prices": {
+      "CARROT": 44,
+      "EGG": 69,
+      "FERTILIZER": 51,
+      "MELON": 198,
+      "MILK": 22,
+      "STRAWBERRY": 137,
+      "TOMATO": 85,
+      "WHEAT": 50,
+      "WOOL": 240
+    }
+  },
+  {
+    "file": "episode-99199388-replay.json",
+    "p0": 67973.0,
+    "p1": 90328.0,
+    "winner_score": 90328.0,
+    "shops": [
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT",
+      "YARN_STORE",
+      "SMOOTHIE_SHOP",
+      "BRUNCH_SPOT",
+      "SMOOTHIE_SHOP",
+      "BAKERY",
+      "SMOOTHIE_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 26,
+      "EGG": 59,
+      "FERTILIZER": 37,
+      "MELON": 247,
+      "MILK": 242,
+      "STRAWBERRY": 265,
+      "TOMATO": 81,
+      "WHEAT": 47,
+      "WOOL": 244
+    }
+  },
+  {
+    "file": "episode-99201703-replay.json",
+    "p0": 103324.0,
+    "p1": 58859.0,
+    "winner_score": 103324.0,
+    "shops": [
+      "PIZZA_SHOP",
+      "ICE_CREAM_SHOP",
+      "PET_CAFE",
+      "BRUNCH_SPOT",
+      "PIZZA_SHOP",
+      "BRUNCH_SPOT",
+      "PET_CAFE",
+      "YARN_STORE"
+    ],
+    "final_prices": {
+      "CARROT": 57,
+      "EGG": 63,
+      "FERTILIZER": 50,
+      "MELON": 198,
+      "MILK": 231,
+      "STRAWBERRY": 223,
+      "TOMATO": 112,
+      "WHEAT": 51,
+      "WOOL": 234
+    }
+  },
+  {
+    "file": "episode-99203992-replay.json",
+    "p0": 56972.0,
+    "p1": 82434.0,
+    "winner_score": 82434.0,
+    "shops": [
+      "BRUNCH_SPOT",
+      "PET_CAFE",
+      "SMOOTHIE_SHOP",
+      "BRUNCH_SPOT",
+      "ICE_CREAM_SHOP",
+      "FARMERS_MARKET",
+      "PET_CAFE",
+      "BRUNCH_SPOT"
+    ],
+    "final_prices": {
+      "CARROT": 68,
+      "EGG": 64,
+      "FERTILIZER": 44,
+      "MELON": 7,
+      "MILK": 160,
+      "STRAWBERRY": 281,
+      "TOMATO": 72,
+      "WHEAT": 44,
+      "WOOL": 199
+    }
+  },
+  {
+    "file": "episode-99206277-replay.json",
+    "p0": 68995.0,
+    "p1": 97126.0,
+    "winner_score": 97126.0,
+    "shops": [
+      "PIZZA_SHOP",
+      "PIZZA_SHOP",
+      "PET_CAFE",
+      "ICE_CREAM_SHOP",
+      "BAKERY",
+      "ICE_CREAM_SHOP",
+      "BAKERY",
+      "ICE_CREAM_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 52,
+      "EGG": 60,
+      "FERTILIZER": 28,
+      "MELON": 158,
+      "MILK": 284,
+      "STRAWBERRY": 181,
+      "TOMATO": 189,
+      "WHEAT": 46,
+      "WOOL": 18
+    }
+  },
+  {
+    "file": "episode-99208573-replay.json",
+    "p0": 65311.0,
+    "p1": 78481.0,
+    "winner_score": 78481.0,
+    "shops": [
+      "BRUNCH_SPOT",
+      "PIZZA_SHOP",
+      "PIZZA_SHOP",
+      "PIZZA_SHOP",
+      "FARMERS_MARKET",
+      "BRUNCH_SPOT",
+      "BAKERY",
+      "YARN_STORE"
+    ],
+    "final_prices": {
+      "CARROT": 39,
+      "EGG": 69,
+      "FERTILIZER": 1,
+      "MELON": 214,
+      "MILK": 95,
+      "STRAWBERRY": 241,
+      "TOMATO": 546,
+      "WHEAT": 54,
+      "WOOL": 125
+    }
+  },
+  {
+    "file": "episode-99212999-replay.json",
+    "p0": 43759.0,
+    "p1": 60746.0,
+    "winner_score": 60746.0,
+    "shops": [
+      "PIZZA_SHOP",
+      "YARN_STORE",
+      "BAKERY",
+      "YARN_STORE",
+      "BAKERY",
+      "PIZZA_SHOP",
+      "PET_CAFE",
+      "YARN_STORE"
+    ],
+    "final_prices": {
+      "CARROT": 41,
+      "EGG": 59,
+      "FERTILIZER": 39,
+      "MELON": 171,
+      "MILK": 187,
+      "STRAWBERRY": 1,
+      "TOMATO": 86,
+      "WHEAT": 43,
+      "WOOL": 255
+    }
+  },
+  {
+    "file": "episode-99215309-replay.json",
+    "p0": 70292.0,
+    "p1": 21450.0,
+    "winner_score": 70292.0,
+    "shops": [
+      "PIZZA_SHOP",
+      "YARN_STORE",
+      "PET_CAFE",
+      "ICE_CREAM_SHOP",
+      "BRUNCH_SPOT",
+      "PIZZA_SHOP",
+      "PET_CAFE",
+      "BRUNCH_SPOT"
+    ],
+    "final_prices": {
+      "CARROT": 56,
+      "EGG": 59,
+      "FERTILIZER": 61,
+      "MELON": 189,
+      "MILK": 279,
+      "STRAWBERRY": 216,
+      "TOMATO": 111,
+      "WHEAT": 43,
+      "WOOL": 248
+    }
+  },
+  {
+    "file": "episode-99217596-replay.json",
+    "p0": 98301.0,
+    "p1": 873.0,
+    "winner_score": 98301.0,
+    "shops": [
+      "FARMERS_MARKET",
+      "BRUNCH_SPOT",
+      "SMOOTHIE_SHOP",
+      "SMOOTHIE_SHOP",
+      "BAKERY",
+      "BAKERY",
+      "PET_CAFE",
+      "PIZZA_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 54,
+      "EGG": 70,
+      "FERTILIZER": 53,
+      "MELON": 247,
+      "MILK": 222,
+      "STRAWBERRY": 306,
+      "TOMATO": 91,
+      "WHEAT": 46,
+      "WOOL": 199
+    }
+  },
+  {
+    "file": "episode-99219869-replay.json",
+    "p0": 45310.0,
+    "p1": 25619.0,
+    "winner_score": 45310.0,
+    "shops": [
+      "BAKERY",
+      "FARMERS_MARKET",
+      "PET_CAFE",
+      "BAKERY",
+      "BAKERY",
+      "BRUNCH_SPOT",
+      "FARMERS_MARKET",
+      "SMOOTHIE_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 63,
+      "EGG": 102,
+      "FERTILIZER": 54,
+      "MELON": 76,
+      "MILK": 1,
+      "STRAWBERRY": 250,
+      "TOMATO": 86,
+      "WHEAT": 51,
+      "WOOL": 1
+    }
+  },
+  {
+    "file": "episode-99222160-replay.json",
+    "p0": 60391.0,
+    "p1": 48748.0,
+    "winner_score": 60391.0,
+    "shops": [
+      "FARMERS_MARKET",
+      "PET_CAFE",
+      "BAKERY",
+      "BRUNCH_SPOT",
+      "ICE_CREAM_SHOP",
+      "FARMERS_MARKET",
+      "SMOOTHIE_SHOP",
+      "YARN_STORE"
+    ],
+    "final_prices": {
+      "CARROT": 63,
+      "EGG": 43,
+      "FERTILIZER": 1,
+      "MELON": 31,
+      "MILK": 5,
+      "STRAWBERRY": 281,
+      "TOMATO": 103,
+      "WHEAT": 51,
+      "WOOL": 185
+    }
+  },
+  {
+    "file": "episode-99224441-replay.json",
+    "p0": 47651.0,
+    "p1": 48112.0,
+    "winner_score": 48112.0,
+    "shops": [
+      "BRUNCH_SPOT",
+      "BAKERY",
+      "PIZZA_SHOP",
+      "FARMERS_MARKET",
+      "BRUNCH_SPOT",
+      "SMOOTHIE_SHOP",
+      "BRUNCH_SPOT",
+      "SMOOTHIE_SHOP"
+    ],
+    "final_prices": {
+      "CARROT": 38,
+      "EGG": 111,
+      "FERTILIZER": 27,
+      "MELON": 158,
+      "MILK": 28,
+      "STRAWBERRY": 282,
+      "TOMATO": 111,
+      "WHEAT": 53,
+      "WOOL": 5
+    }
+  }
+]

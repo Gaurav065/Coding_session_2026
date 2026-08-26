@@ -39,10 +39,6 @@ COW_PASTURES = [
     (3, 1), (2, 2), (1, 3), (0, 4), (4, 0),
 ]
 
-GOOSE_COOPS = [
-    (3, 1), (2, 2), (1, 3), (0, 4)
-]
-
 SHEEP_PASTURES = [
     # Furthest NW corner slots (lowest travel-cost overlap with cows).
     (3, 1), (2, 2), (1, 3), (0, 4)
@@ -55,29 +51,35 @@ NW_WHEAT = [
     (0, 3)
 ]
 
+# NE quadrant tiles (x: 5..9, y: 0..4) sorted strictly by ascending Manhattan distance
+# from NE shed access tile (5, 4). Closest tiles (dist 1-4) planted first.
 NE_STRAWBERRY = [
-    (5, 0), (6, 0), (7, 0), (8, 0), (9, 0),
-    (5, 1), (6, 1), (7, 1), (8, 1), (9, 1),
-    (5, 2), (6, 2), (7, 2), (8, 2), (9, 2),
-    (5, 3), (6, 3), (7, 3), (8, 3), (9, 3),
-    (6, 4), (7, 4)
+    (5, 3), (6, 4),
+    (5, 2), (6, 3), (7, 4),
+    (5, 1), (6, 2), (7, 3), (8, 4),
+    (5, 0), (6, 1), (7, 2), (8, 3), (9, 4),
+    (6, 0), (7, 1), (8, 2), (9, 3),
+    (7, 0), (8, 1), (9, 2),
+    (8, 0)
 ]
 
 NE_WHEAT = [
-    (8, 4), (9, 4)
+    (9, 1), (9, 0)
 ]
 
+# SW quadrant: SW_WHEAT occupies tiles closest to SW shed access tile (4, 5).
+# SW_MELON occupies a contiguous 6-tile block at moderate distance.
 SW_MELON = [
     (0, 6), (1, 6), (2, 6),
     (0, 7), (1, 7), (2, 7)
 ]
 
 SW_WHEAT = [
-    (0, 5), (1, 5), (2, 5), (3, 5),
-    (0, 8), (1, 8), (2, 8), (3, 8),
-    (0, 9), (1, 9), (2, 9), (3, 9),
-    (4, 6), (4, 7), (4, 8), (4, 9),
-    (3, 6), (3, 7)
+    (3, 5), (4, 6),
+    (2, 5), (3, 6), (4, 7),
+    (1, 5), (2, 6), (3, 7), (4, 8),
+    (0, 5), (1, 6), (2, 7), (3, 8), (4, 9),
+    (0, 8), (1, 8), (2, 8), (3, 9)
 ]
 
 # Verified against kaggriculture.py MARKET_PARAMS (engine:41-51). The previous
@@ -220,7 +222,6 @@ class MaestroFullPortfolioAgent:
         self.kw_early = kw_early
         self._planned_steering = (kw_early is not None)
         self.cow_pastures = list(COW_PASTURES)
-        self.goose_coops = list(GOOSE_COOPS)
         self.sheep_pastures = list(SHEEP_PASTURES)
         self.nw_wheat = list(NW_WHEAT[:kw_early]) if kw_early is not None else list(NW_WHEAT)
         self.ne_strawberry = list(NE_STRAWBERRY)
@@ -348,18 +349,38 @@ class MaestroFullPortfolioAgent:
                     if buy_straw > 0:
                         market_orders.append(["BUY_SEED", "STRAWBERRY", min(4, buy_straw)])
 
-            # 3. Melon Seeds
-            melon_target = self.params["melon_seed_target"]
-            if "SW" in unlocked_quads and private["seeds"].get("MELON", 0) < melon_target and money >= 300 and day < 16:
-                market_orders.append(["BUY_SEED", "MELON", melon_target])
+            # 3. Melon Seeds: Exact-fit purchase (takes 12 days to grow; strict day <= 12 cutoff)
+            if "SW" in unlocked_quads and day <= 12:
+                melon_plants = 0
+                for mx, my in self.sw_melon:
+                    t = me["tiles"][my][mx]
+                    if isinstance(t, dict) and t.get("kind") == "PLANT" and t.get("crop") == "MELON":
+                        melon_plants += 1
+                melon_target = len(self.sw_melon)
+                melon_needed = max(0, melon_target - melon_plants - private["seeds"].get("MELON", 0))
+                if melon_needed > 0 and money >= 300:
+                    market_orders.append(["BUY_SEED", "MELON", min(melon_needed, 6)])
 
-            # 4. Wheat Seeds (Continuous Supply)
-            if private["seeds"].get("WHEAT", 0) < 40 and money >= 300 and day < 28:
-                market_orders.append(["BUY_SEED", "WHEAT", 40])
+            # 4. Wheat Seeds: Maturity-aware buffer management (takes 2 days to grow; strict day <= 27 cutoff)
+            wheat_seeds_held = private["seeds"].get("WHEAT", 0)
+            if day <= 25:
+                if wheat_seeds_held < 15 and money >= 250:
+                    buy_w = min(15, 25 - wheat_seeds_held)
+                    if buy_w > 0:
+                        market_orders.append(["BUY_SEED", "WHEAT", buy_w])
+            elif day in (26, 27):
+                empty_wheat_plots = 0
+                for wx, wy in self.nw_wheat + self.ne_wheat + self.sw_wheat:
+                    t = me["tiles"][wy][wx]
+                    if t is None:
+                        empty_wheat_plots += 1
+                wheat_needed = max(0, empty_wheat_plots - wheat_seeds_held)
+                if wheat_needed > 0 and money >= 100:
+                    market_orders.append(["BUY_SEED", "WHEAT", min(wheat_needed, 10)])
 
-            # 5. Carrot Replanting Pipeline (Days 18-27)
-            if day >= 18 and day < 27 and private["seeds"].get("CARROT", 0) < 16 and money >= 350:
-                market_orders.append(["BUY_SEED", "CARROT", 16])
+            # 5. Carrot Replanting Pipeline (takes 4 days to grow; strict day <= 24 cutoff)
+            if day >= 18 and day <= 24 and private["seeds"].get("CARROT", 0) < 10 and money >= 350:
+                market_orders.append(["BUY_SEED", "CARROT", 10])
 
             # 6. Additive Animals only after SW land is secured
             allow_animal_expansion = ("SW" in unlocked_quads or day >= 10)
@@ -663,16 +684,10 @@ class MaestroFullPortfolioAgent:
                 if action == ["PASS"] and carrying_animal:
                     if carrying_animal == "COW":
                         target_coords = self.cow_pastures
-                        req_struct = "PASTURE"
-                        build_act = "BUILD_PASTURE"
-                    elif carrying_animal == "GOOSE":
-                        target_coords = self.goose_coops
-                        req_struct = "COOP"
-                        build_act = "BUILD_COOP"
                     else:
                         target_coords = self.sheep_pastures
-                        req_struct = "PASTURE"
-                        build_act = "BUILD_PASTURE"
+                    req_struct = "PASTURE"
+                    build_act = "BUILD_PASTURE"
 
                     target_spot = None
                     for px, py in target_coords:
@@ -719,11 +734,11 @@ class MaestroFullPortfolioAgent:
                                         best_target = (px, py)
 
                         if not best_target:
-                            for px, py in self.cow_pastures + self.goose_coops:
+                            for px, py in self.cow_pastures + self.sheep_pastures:
                                 if (px, py) in claimed_targets:
                                     continue
                                 t = me["tiles"][py][px]
-                                if t is None and total_c + total_g + total_s < 14 and day < 18:
+                                if t is None and total_c + total_s < 14 and day < 18:
                                     best_target = (px, py)
                                     break
                                 elif isinstance(t, dict) and t.get("kind") == "WEED":
@@ -744,9 +759,8 @@ class MaestroFullPortfolioAgent:
                             tx, ty = best_target
                             if pos == best_target:
                                 t = me["tiles"][ty][tx]
-                                is_coop_tile = (tx, ty) in self.goose_coops
                                 if t is None:
-                                    action = ["BUILD_COOP" if is_coop_tile else "BUILD_PASTURE"]
+                                    action = ["BUILD_PASTURE"]
                                 elif isinstance(t, dict) and t.get("kind") == "WEED":
                                     action = ["DIG"]
                                 elif isinstance(t, dict) and ("animal" in t):

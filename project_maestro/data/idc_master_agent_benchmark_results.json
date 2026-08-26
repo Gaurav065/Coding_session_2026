@@ -1,0 +1,60 @@
+{
+  "seeds": 100,
+  "tournament_results": [
+    {
+      "opponent": "Dominant_Dairy_Meta (10C/4S)",
+      "win_rate": 39.0,
+      "cand_mean": 52343.83,
+      "opp_mean": 58484.34,
+      "margin": -6140.51,
+      "cand_p5": 35895.15,
+      "cand_median": 49272.5,
+      "min": 22832.0,
+      "max": 89137.0,
+      "elapsed_sec": 88.35
+    },
+    {
+      "opponent": "Balanced_Pasture_Hybrid (7C/7S)",
+      "win_rate": 76.0,
+      "cand_mean": 58214.03,
+      "opp_mean": 50814.17,
+      "margin": 7399.86,
+      "cand_p5": 40290.9,
+      "cand_median": 54243.5,
+      "min": 23261.0,
+      "max": 91569.0,
+      "elapsed_sec": 89.96
+    },
+    {
+      "opponent": "Meta_Calibrated_Opponent (8C/6S)",
+      "win_rate": 10.0,
+      "cand_mean": 50638.43,
+      "opp_mean": 63353.32,
+      "margin": -12714.89,
+      "cand_p5": 31895.05,
+      "cand_median": 47362.0,
+      "min": 26753.0,
+      "max": 90632.0,
+      "elapsed_sec": 63.56
+    },
+    {
+      "opponent": "Self_Play_Mirror",
+      "win_rate": 36.0,
+      "cand_mean": 54480.7,
+      "opp_mean": 54502.88,
+      "margin": -22.18,
+      "cand_p5": 36301.6,
+      "cand_median": 51086.0,
+      "min": 27450.0,
+      "max": 90926.0,
+      "elapsed_sec": 91.13
+    }
+  ],
+  "replay_results": {
+    "matches": 50,
+    "win_rate": 96.0,
+    "our_mean": 54132.58,
+    "opp_mean": 24854.56,
+    "margin": 29278.02
+  }
+}

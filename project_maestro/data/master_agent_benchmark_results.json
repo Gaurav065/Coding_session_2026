@@ -1,0 +1,57 @@
+{
+  "seeds": 100,
+  "results": [
+    {
+      "opponent": "Dominant_Dairy_Meta (10C/4S)",
+      "win_rate": 49.0,
+      "cand_mean": 54568.44,
+      "opp_mean": 58080.9,
+      "margin": -3512.46,
+      "cand_p5": 39367.5,
+      "cand_median": 50284.0,
+      "min": 29382.0,
+      "max": 101836.0,
+      "canary_pass": true,
+      "elapsed_sec": 98.31
+    },
+    {
+      "opponent": "Balanced_Pasture_Hybrid (7C/7S)",
+      "win_rate": 87.0,
+      "cand_mean": 62652.89,
+      "opp_mean": 50774.79,
+      "margin": 11878.1,
+      "cand_p5": 38616.0,
+      "cand_median": 60948.5,
+      "min": 25669.0,
+      "max": 104951.0,
+      "canary_pass": true,
+      "elapsed_sec": 89.22
+    },
+    {
+      "opponent": "Meta_Calibrated_Opponent (8C/6S)",
+      "win_rate": 49.0,
+      "cand_mean": 70038.5,
+      "opp_mean": 76529.3,
+      "margin": -6490.8,
+      "cand_p5": 46276.05,
+      "cand_median": 68437.0,
+      "min": 42700.0,
+      "max": 104753.0,
+      "canary_pass": true,
+      "elapsed_sec": 65.18
+    },
+    {
+      "opponent": "Self_Play_Mirror",
+      "win_rate": 47.0,
+      "cand_mean": 57127.8,
+      "opp_mean": 57202.27,
+      "margin": -74.47,
+      "cand_p5": 41179.7,
+      "cand_median": 55096.5,
+      "min": 34376.0,
+      "max": 100074.0,
+      "canary_pass": true,
+      "elapsed_sec": 98.5
+    }
+  ]
+}

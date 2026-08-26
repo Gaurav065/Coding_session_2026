@@ -1,0 +1,11 @@
+{
+  "seeds": 50,
+  "passed": true,
+  "illegal_actions": 0,
+  "animal_escapes": 0,
+  "mean_latency_ms": 0.5031518776966155,
+  "p99_latency_ms": 0.4235569946467891,
+  "max_latency_ms": 425.00960000324994,
+  "mean_score": 65146.96,
+  "p5_score": 46386.6
+}

@@ -1,0 +1,123 @@
+{
+  "metadata": {
+    "timestamp": "2026-08-26T06:49:19Z",
+    "num_seeds": 50,
+    "opponent": "MetaCalibratedOpponent(8C/6S)",
+    "best_mean_pathway": "6C_4S_SmoothieRush",
+    "best_p5_floor_pathway": "6C_4S_SmoothieRush"
+  },
+  "pathways": {
+    "9C_4S_Balanced": {
+      "params": {
+        "cow_cap_base": 9,
+        "sheep_cap": 4,
+        "strawberry_target": 18,
+        "melon_seed_target": 6,
+        "crew_mid": 10
+      },
+      "mean_profit": 70353.54,
+      "median_profit": 66498.5,
+      "p5_floor": 47502.5,
+      "min_profit": 44566.0,
+      "max_profit": 99931.0
+    },
+    "4C_10S_YarnBurst": {
+      "params": {
+        "cow_cap_base": 4,
+        "sheep_cap": 10,
+        "strawberry_target": 16,
+        "melon_seed_target": 4,
+        "crew_mid": 10
+      },
+      "mean_profit": 55353.78,
+      "median_profit": 55066.5,
+      "p5_floor": 38314.0,
+      "min_profit": 27439.0,
+      "max_profit": 71093.0
+    },
+    "6C_8S_WoolHybrid": {
+      "params": {
+        "cow_cap_base": 6,
+        "sheep_cap": 8,
+        "strawberry_target": 18,
+        "melon_seed_target": 4,
+        "crew_mid": 10
+      },
+      "mean_profit": 62115.0,
+      "median_profit": 56328.5,
+      "p5_floor": 42514.3,
+      "min_profit": 38334.0,
+      "max_profit": 85928.0
+    },
+    "11C_3S_DairyPower": {
+      "params": {
+        "cow_cap_base": 11,
+        "sheep_cap": 3,
+        "strawberry_target": 18,
+        "melon_seed_target": 6,
+        "crew_mid": 10
+      },
+      "mean_profit": 67926.0,
+      "median_profit": 62757.5,
+      "p5_floor": 45166.3,
+      "min_profit": 42375.0,
+      "max_profit": 107983.0
+    },
+    "6C_4S_SmoothieRush": {
+      "params": {
+        "cow_cap_base": 6,
+        "sheep_cap": 4,
+        "strawberry_target": 22,
+        "melon_seed_target": 4,
+        "crew_mid": 10
+      },
+      "mean_profit": 73205.64,
+      "median_profit": 74559.0,
+      "p5_floor": 58368.2,
+      "min_profit": 36406.0,
+      "max_profit": 95574.0
+    },
+    "8C_6S_MetaCalibrated": {
+      "params": {
+        "cow_cap_base": 8,
+        "sheep_cap": 6,
+        "strawberry_target": 18,
+        "melon_seed_target": 6,
+        "crew_mid": 10
+      },
+      "mean_profit": 66954.06,
+      "median_profit": 67355.0,
+      "p5_floor": 46894.4,
+      "min_profit": 45712.0,
+      "max_profit": 94709.0
+    },
+    "14S_0C_AhmadSpecialist": {
+      "params": {
+        "cow_cap_base": 0,
+        "sheep_cap": 14,
+        "strawberry_target": 14,
+        "melon_seed_target": 0,
+        "crew_mid": 10
+      },
+      "mean_profit": 53485.02,
+      "median_profit": 55538.0,
+      "p5_floor": 25487.55,
+      "min_profit": 17163.0,
+      "max_profit": 70301.0
+    },
+    "12C_0C_PureDairy": {
+      "params": {
+        "cow_cap_base": 12,
+        "sheep_cap": 0,
+        "strawberry_target": 18,
+        "melon_seed_target": 6,
+        "crew_mid": 10
+      },
+      "mean_profit": 65241.92,
+      "median_profit": 58483.5,
+      "p5_floor": 41956.1,
+      "min_profit": 39583.0,
+      "max_profit": 102501.0
+    }
+  }
+}

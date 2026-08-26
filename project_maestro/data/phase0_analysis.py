@@ -226,7 +226,7 @@ def parse_episode_data(data, source_id=""):
                 elif cmd == "SELL":
                     sell_orders.append((item, qty))
 
-            # Exact step revenue attribution
+            # Exact step revenue attribution bounded by physical caps
             step_rev = delta_m + step_cost
             if step_rev > 0 and sell_orders:
                 if len(sell_orders) == 1:
@@ -248,6 +248,43 @@ def parse_episode_data(data, source_id=""):
                             sells_by_product[item] += actual_units
                             revenue_by_product[item] += part_rev
 
+        # Physical ceiling enforcement (PROTOCOL PART 1)
+        n_cows = animals_bought.get("COW", 0)
+        n_sheep = animals_bought.get("SHEEP", 0)
+        n_geese = animals_bought.get("GOOSE", 0)
+        n_animals = n_cows + n_sheep + n_geese
+
+        fert_cap = n_animals * 24
+        milk_cap = n_cows * 12 * 3
+        wool_cap = n_sheep * 9 * 4
+        egg_cap = n_geese * 27 * 2
+        straw_cap = seeds_bought.get("STRAWBERRY", 0) * 8
+        melon_cap = seeds_bought.get("MELON", 0) * 6
+        wheat_cap = seeds_bought.get("WHEAT", 0) * 6 + 500
+        carrot_cap = seeds_bought.get("CARROT", 0) * 4
+        tomato_cap = seeds_bought.get("TOMATO", 0) * 8
+
+        caps = {
+            "FERTILIZER": fert_cap,
+            "MILK": milk_cap,
+            "WOOL": wool_cap,
+            "EGG": egg_cap,
+            "STRAWBERRY": straw_cap,
+            "MELON": melon_cap,
+            "WHEAT": wheat_cap,
+            "CARROT": carrot_cap,
+            "TOMATO": tomato_cap,
+        }
+
+        ceiling_violations = {}
+        for item, cap in caps.items():
+            if sells_by_product[item] > cap:
+                ceiling_violations[item] = (sells_by_product[item], cap)
+                sells_by_product[item] = cap
+                # Adjust revenue proportionally
+                if sells_by_product[item] > 0 and cap > 0:
+                    revenue_by_product[item] = revenue_by_product[item] * (cap / ceiling_violations[item][0])
+
         player_data.append({
             "name": p_name,
             "reward": p_reward,
@@ -261,6 +298,7 @@ def parse_episode_data(data, source_id=""):
             "seeds_bought": dict(seeds_bought),
             "sells_by_product": dict(sells_by_product),
             "revenue_by_product": dict(revenue_by_product),
+            "ceiling_violations": ceiling_violations,
         })
 
     price_stats = {}
