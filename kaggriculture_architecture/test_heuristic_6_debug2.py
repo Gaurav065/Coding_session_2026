@@ -1,0 +1,9 @@
+import sys
+from kaggle_environments import make
+
+env = make("kaggriculture", configuration={"randomSeed": 42})
+env.run(["C:\\Coding\\kaggriculture_architecture\\heuristic_agent6.py", "random"])
+
+for i in range(50):
+    print(f"Step {i}:")
+    print(env.steps[i][0]["action"])
