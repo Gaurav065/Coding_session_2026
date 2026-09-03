@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,8 +7,8 @@ from torch.distributions import Normal
 import gymnasium as gym
 from gymnasium import spaces
 
-sys.path.insert(0, r"C:\Coding\kaggriculture_architecture")
-sys.path.insert(0, r"C:\Coding\kaggriculture")
+sys.path.insert(0, r"c:\Programming\Coding_session_2026\kaggriculture_architecture")
+sys.path.insert(0, r"c:\Programming\Coding_session_2026")
 
 from custom_architecture import KaggricultureResNet
 from project_maestro.engine.fast_engine import FastGame
