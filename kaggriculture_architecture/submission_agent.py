@@ -4,6 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import hrl_heuristic_agent
 
 # --- 1. ResNet Architecture ---
 BOARD_SIZE = 10
@@ -47,18 +48,10 @@ class KaggricultureResNet(nn.Module):
 device = torch.device("cpu") # Kaggle submission runs on CPU
 model = KaggricultureResNet().to(device)
 
-# When submitting to Kaggle, we zip this script with the .pth file
 WEIGHTS_FILE = "ppo_resnet_day30.pth"
 if os.path.exists(WEIGHTS_FILE):
     model.load_state_dict(torch.load(WEIGHTS_FILE, map_location=device, weights_only=True))
     model.eval()
-
-# To connect our PyTorch model to the Heuristic, we track the target portfolio globally
-GLOBAL_TARGET_PORTFOLIO = {
-    "BUY_TARGETS": {},
-    "SELL_RATIOS": {},
-    "HIRE_TARGET": 0
-}
 
 # --- 3. Observation Parsing ---
 def get_obs_tensors(obs):
@@ -95,52 +88,11 @@ def get_obs_tensors(obs):
         
     return torch.Tensor(grid).unsqueeze(0), torch.Tensor(vec).unsqueeze(0)
 
-# --- 4. Fallback Heuristic Pathfinding (Miniaturized for Kaggle) ---
-# We simulate the exact BFS low-level logic here to execute the Macro actions.
-def fallback_bfs_agent(obs):
-    # This is a simplified fallback that executes the GLOBAL_TARGET_PORTFOLIO
-    # In a real submission, we would paste the full hrl_heuristic_agent.py BFS logic here.
-    # We will just do a basic implementation to satisfy the Kaggle API for now.
-    commands = {"farmer": ["PASS"], "hands": [], "market": []}
-    
-    farm = obs["farms"][0]
-    money = farm.get("money", 0)
-    market_prices = obs.get("market", {}).get("prices", {})
-    
-    # 1. HIRE
-    current_hands = len(farm.get("hands", []))
-    if current_hands < GLOBAL_TARGET_PORTFOLIO["HIRE_TARGET"] and money >= 100:
-        commands["market"].append(["HIRE"])
-        money -= 100
-        
-    # 2. BUY
-    for item, target_amt in GLOBAL_TARGET_PORTFOLIO["BUY_TARGETS"].items():
-        if target_amt > 0:
-            cost = market_prices.get(item, 999)
-            if money >= cost:
-                prefix = "BUY_ANIMAL" if item in ["COW", "SHEEP", "GOOSE"] else "BUY_SEED"
-                commands["market"].append([prefix, item, 1])
-                money -= cost
-                
-    # 3. SELL
-    shed = obs.get("private", {}).get("shed", {})
-    for item, ratio in GLOBAL_TARGET_PORTFOLIO["SELL_RATIOS"].items():
-        count = shed.get(item, 0)
-        sell_amt = int(count * ratio)
-        if sell_amt > 0:
-            commands["market"].append(["SELL", item, sell_amt])
-            
-    # Keep hands passing (BFS logic would replace this with actual movement)
-    for _ in range(current_hands):
-        commands["hands"].append(["PASS"])
-        
-    return commands
-
-# --- 5. The Main Kaggle Entrypoint ---
+# --- 4. The Main Kaggle Entrypoint ---
 def agent(obs):
     step = obs.get("step", 0)
     
-    # Every 24 micro-steps (1 macro-step / 1 day), we ask the PyTorch Brain for a new strategy
+    # Every 24 micro-steps (1 macro-step / 1 day), ask the PyTorch Brain for a new strategy
     if step % 24 == 0:
         spat, scal = get_obs_tensors(obs)
         with torch.no_grad():
@@ -155,9 +107,12 @@ def agent(obs):
         for i, item in enumerate(buy_items[:5]): targets[item] = int(action[i] * 50)
         for i, item in enumerate(buy_items[5:]): targets[item] = int(action[i+5] * 20)
         
-        GLOBAL_TARGET_PORTFOLIO["BUY_TARGETS"] = targets
-        GLOBAL_TARGET_PORTFOLIO["SELL_RATIOS"] = {item: float(action[9+i]) for i, item in enumerate(sell_items)}
-        GLOBAL_TARGET_PORTFOLIO["HIRE_TARGET"] = max(2, int(action[8] * 10))
+        hrl_heuristic_agent.TARGET_PORTFOLIO["BUY_TARGETS"] = targets
+        hrl_heuristic_agent.TARGET_PORTFOLIO["SELL_RATIOS"] = {item: float(action[9+i]) for i, item in enumerate(sell_items)}
+        hrl_heuristic_agent.TARGET_PORTFOLIO["HIRE_TARGET"] = max(2, int(action[8] * 10))
         
-    # Execute the portfolio strategy using the low-level BFS Pathfinder
-    return fallback_bfs_agent(obs)
+    # Execute the portfolio strategy using the true low-level BFS Pathfinder!
+    try:
+        return hrl_heuristic_agent.agent(obs)
+    except:
+        return {"farmer": ["PASS"], "hands": [], "market": []}
