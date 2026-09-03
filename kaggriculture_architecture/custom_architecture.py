@@ -19,7 +19,8 @@ class ResBlock(nn.Module):
         return F.relu(x + res)
 
 class KaggricultureLSTM(nn.Module):
-    def __init__(self, scalar_dim=50, spatial_channels=4, action_dim=17, hidden_size=256):
+    # Action Dim reduced to 13 (Removed Tomato, Goose, Egg)
+    def __init__(self, scalar_dim=50, spatial_channels=4, action_dim=13, hidden_size=256):
         super().__init__()
         self.hidden_size = hidden_size
         
@@ -46,7 +47,6 @@ class KaggricultureLSTM(nn.Module):
         self.critic_head = nn.Linear(hidden_size, 1)
 
     def forward(self, spatial, scalar, hidden_state=None):
-        # Handle both Sequence (Batch, Seq, C, H, W) and Single-Step (Batch, C, H, W) inputs
         is_sequence = len(spatial.shape) == 5
         
         if is_sequence:
@@ -61,16 +61,13 @@ class KaggricultureLSTM(nn.Module):
         if is_sequence:
             fused_features = fused_features.view(B, S, -1)
         else:
-            fused_features = fused_features.unsqueeze(1) # (Batch, 1, Features)
+            fused_features = fused_features.unsqueeze(1)
             
-        # Run through LSTM Memory
         lstm_out, hidden_state = self.lstm(fused_features, hidden_state)
         
         if is_sequence:
-            # For BC training, we want the predictions for all steps in the sequence
             lstm_out = lstm_out.view(B*S, -1)
         else:
-            # For PPO/Inference, we just take the single output
             lstm_out = lstm_out.squeeze(1)
             
         actions = self.actor_head(lstm_out)
