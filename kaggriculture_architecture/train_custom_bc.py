@@ -9,13 +9,19 @@ class LSTMReplayDataset(Dataset):
     def __init__(self, X_scal, X_spat, Y):
         self.X_scal = torch.FloatTensor(X_scal)
         self.X_spat = torch.FloatTensor(X_spat)
-        self.Y = torch.FloatTensor(Y)
+        
+        # SLICE THE 17D Y TENSOR TO 13D (Remove Tomato, Goose, Egg)
+        # 17D Indices: 
+        # Buy: [0:W, 1:C, 2:T, 3:S, 4:M, 5:G, 6:Cow, 7:Sheep] -> Drop 2, 5
+        # Hire: [8] -> Keep 8
+        # Sell: [9:W, 10:C, 11:T, 12:S, 13:M, 14:E, 15:Milk, 16:Wool] -> Drop 11, 14
+        indices_to_keep = [0, 1, 3, 4, 6, 7, 8, 9, 10, 12, 13, 15, 16]
+        self.Y = torch.FloatTensor(Y)[:, :, indices_to_keep]
         
     def __len__(self):
         return len(self.Y)
         
     def __getitem__(self, idx):
-        # Returns sequences of length 10
         return self.X_spat[idx], self.X_scal[idx], self.Y[idx]
 
 def train():
@@ -30,17 +36,15 @@ def train():
         
     print(f"Loaded {len(X_scalar)} sequences of length 10.")
     
-    # 90-10 Split
     split = int(0.9 * len(X_scalar))
     train_ds = LSTMReplayDataset(X_scalar[:split], X_spatial[:split], Y_actions[:split])
     val_ds = LSTMReplayDataset(X_scalar[split:], X_spatial[split:], Y_actions[split:])
     
-    # Because these are massive 5D tensors, we lower batch size slightly to save GPU VRAM
     train_loader = DataLoader(train_ds, batch_size=64, shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=64, shuffle=False)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Training LSTM on {device}...")
+    print(f"Training 13D LSTM on {device}...")
     
     model = KaggricultureLSTM().to(device)
     optimizer = optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-5)
@@ -56,7 +60,6 @@ def train():
             spat, scal, y = spat.to(device), scal.to(device), y.to(device)
             optimizer.zero_grad()
             
-            # Reset hidden state for each batch
             batch_size = spat.size(0)
             h0 = torch.zeros(1, batch_size, model.hidden_size).to(device)
             c0 = torch.zeros(1, batch_size, model.hidden_size).to(device)
