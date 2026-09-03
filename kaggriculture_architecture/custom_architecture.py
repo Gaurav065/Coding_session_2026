@@ -40,26 +40,33 @@ class KaggricultureResNet(nn.Module):
             nn.ReLU()
         )
         
-        # Fusion Layer
+        # Shared Fusion Layer
         self.fusion = nn.Sequential(
             nn.Linear(32 + 128, 256),
             nn.LayerNorm(256),
-            nn.ReLU(),
-            nn.Linear(256, action_dim),
-            nn.Sigmoid() # Binds our 17D outputs to [0, 1] exactly like SB3
+            nn.ReLU()
         )
+        
+        # ACTOR HEAD (What action to take)
+        self.actor_head = nn.Sequential(
+            nn.Linear(256, action_dim),
+            nn.Sigmoid() # Binds outputs to [0, 1]
+        )
+        
+        # CRITIC HEAD (State Value for PPO)
+        self.critic_head = nn.Linear(256, 1)
 
     def forward(self, spatial, scalar):
-        # 1. Process 10x10 Farm Grid
         x_sp = self.spatial_stem(spatial)
         x_sp = self.res1(x_sp)
         x_sp = self.res2(x_sp)
         x_sp = self.spatial_pool(x_sp).view(x_sp.size(0), -1)
         
-        # 2. Process Bank Balance / Prices
         x_sc = self.scalar_mlp(scalar)
         
-        # 3. Fuse and predict actions
         combined = torch.cat([x_sp, x_sc], dim=1)
-        actions = self.fusion(combined)
-        return actions
+        shared = self.fusion(combined)
+        
+        actions = self.actor_head(shared)
+        value = self.critic_head(shared)
+        return actions, value
