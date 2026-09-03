@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,8 +7,8 @@ from torch.distributions import Normal
 import gymnasium as gym
 from gymnasium import spaces
 
-sys.path.insert(0, r"C:\Coding\kaggriculture_architecture")
-sys.path.insert(0, r"C:\Coding\kaggriculture")
+sys.path.insert(0, r"c:\Programming\Coding_session_2026\kaggriculture_architecture")
+sys.path.insert(0, r"c:\Programming\Coding_session_2026")
 
 from custom_architecture import KaggricultureResNet
 from project_maestro.engine.fast_engine import FastGame
@@ -179,9 +179,9 @@ def train_ppo():
             with torch.no_grad():
                 a_mean, v = model(next_spat, next_scal)
                 values[step] = v.flatten()
-            probs = Normal(a_mean, torch.exp(action_logstd))
-            a = probs.sample()
-            actions[step], logprobs[step] = a[0], probs.log_prob(a)[0]
+                probs = Normal(a_mean, torch.exp(action_logstd))
+                a = probs.sample()
+                actions[step], logprobs[step] = a[0], probs.log_prob(a)[0]
             
             obs_dict, r, d, _, _ = env.step(torch.clamp(a, 0.0, 1.0)[0].cpu().numpy())
             rewards[step] = r
