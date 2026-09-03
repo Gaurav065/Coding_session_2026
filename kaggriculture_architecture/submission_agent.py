@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import hrl_heuristic_agent
 
-# --- 1. ResNet Architecture ---
+# --- 1. LSTM Architecture (13D) ---
 BOARD_SIZE = 10
 
 class ResBlock(nn.Module):
@@ -23,9 +23,11 @@ class ResBlock(nn.Module):
         x = self.bn2(self.conv2(x))
         return F.relu(x + res)
 
-class KaggricultureResNet(nn.Module):
-    def __init__(self, scalar_dim=50, spatial_channels=4, action_dim=17):
+class KaggricultureLSTM(nn.Module):
+    def __init__(self, scalar_dim=50, spatial_channels=4, action_dim=13, hidden_size=256):
         super().__init__()
+        self.hidden_size = hidden_size
+        
         self.spatial_stem = nn.Sequential(nn.Conv2d(spatial_channels, 32, 3, padding=1), nn.BatchNorm2d(32), nn.ReLU())
         self.res1 = ResBlock(32)
         self.res2 = ResBlock(32)
@@ -36,22 +38,47 @@ class KaggricultureResNet(nn.Module):
             nn.Linear(128, 128), nn.LayerNorm(128), nn.ReLU()
         )
         self.fusion = nn.Sequential(nn.Linear(32 + 128, 256), nn.LayerNorm(256), nn.ReLU())
-        self.actor_head = nn.Sequential(nn.Linear(256, action_dim), nn.Sigmoid())
-        self.critic_head = nn.Linear(256, 1)
+        self.lstm = nn.LSTM(input_size=256, hidden_size=hidden_size, num_layers=1, batch_first=True)
+        self.actor_head = nn.Sequential(nn.Linear(hidden_size, action_dim), nn.Sigmoid())
+        self.critic_head = nn.Linear(hidden_size, 1)
 
-    def forward(self, spatial, scalar):
+    def forward(self, spatial, scalar, hidden_state=None):
+        is_sequence = len(spatial.shape) == 5
+        if is_sequence:
+            B, S, C, H, W = spatial.shape
+            spatial = spatial.view(B*S, C, H, W)
+            scalar = scalar.view(B*S, -1)
+            
         x_sp = self.spatial_pool(self.res2(self.res1(self.spatial_stem(spatial)))).view(spatial.size(0), -1)
-        shared = self.fusion(torch.cat([x_sp, self.scalar_mlp(scalar)], dim=1))
-        return self.actor_head(shared), self.critic_head(shared)
+        x_sc = self.scalar_mlp(scalar)
+        fused = self.fusion(torch.cat([x_sp, x_sc], dim=1))
+        
+        if is_sequence:
+            fused = fused.view(B, S, -1)
+        else:
+            fused = fused.unsqueeze(1)
+            
+        lstm_out, hidden_state = self.lstm(fused, hidden_state)
+        
+        if is_sequence:
+            lstm_out = lstm_out.view(B*S, -1)
+        else:
+            lstm_out = lstm_out.squeeze(1)
+            
+        actions = self.actor_head(lstm_out)
+        return actions, None, hidden_state
 
-# --- 2. Global State & Pre-loaded Weights ---
-device = torch.device("cpu") # Kaggle submission runs on CPU
-model = KaggricultureResNet().to(device)
+# --- 2. Global State & Weights ---
+device = torch.device("cpu")
+model = KaggricultureLSTM(action_dim=13).to(device)
 
-WEIGHTS_FILE = "ppo_resnet_day30.pth"
+WEIGHTS_FILE = "ppo_lstm_day30.pth"
 if os.path.exists(WEIGHTS_FILE):
     model.load_state_dict(torch.load(WEIGHTS_FILE, map_location=device, weights_only=True))
     model.eval()
+
+# Kaggle agent is stateful, we must persist the LSTM memory across steps
+GLOBAL_MEMORY_STATE = None
 
 # --- 3. Observation Parsing ---
 def get_obs_tensors(obs):
@@ -88,30 +115,40 @@ def get_obs_tensors(obs):
         
     return torch.Tensor(grid).unsqueeze(0), torch.Tensor(vec).unsqueeze(0)
 
-# --- 4. The Main Kaggle Entrypoint ---
+# --- 4. Kaggle Entrypoint ---
 def agent(obs):
+    global GLOBAL_MEMORY_STATE
     step = obs.get("step", 0)
     
-    # Every 24 micro-steps (1 macro-step / 1 day), ask the PyTorch Brain for a new strategy
+    if step == 0:
+        h0 = torch.zeros(1, 1, model.hidden_size).to(device)
+        c0 = torch.zeros(1, 1, model.hidden_size).to(device)
+        GLOBAL_MEMORY_STATE = (h0, c0)
+    
     if step % 24 == 0:
         spat, scal = get_obs_tensors(obs)
         with torch.no_grad():
-            action_mean, _ = model(spat, scal)
+            action_mean, _, GLOBAL_MEMORY_STATE = model(spat, scal, GLOBAL_MEMORY_STATE)
             action = torch.clamp(action_mean[0], 0.0, 1.0).numpy()
             
-        # Decode PyTorch [0,1] vector into discrete economic targets
-        buy_items = ["WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON", "GOOSE", "COW", "SHEEP"]
-        sell_items = ["WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON", "EGG", "MILK", "WOOL"]
+        buy_items = ["WHEAT", "CARROT", "STRAWBERRY", "MELON", "COW", "SHEEP"]
+        sell_items = ["WHEAT", "CARROT", "STRAWBERRY", "MELON", "MILK", "WOOL"]
         
-        targets = {}
-        for i, item in enumerate(buy_items[:5]): targets[item] = int(action[i] * 50)
-        for i, item in enumerate(buy_items[5:]): targets[item] = int(action[i+5] * 20)
+        targets = {"TOMATO": 0, "GOOSE": 0}
+        for i, item in enumerate(buy_items[:4]): targets[item] = int(action[i] * 50)
+        for i, item in enumerate(buy_items[4:]): targets[item] = int(action[i+4] * 20)
         
+        sell_ratios = {"TOMATO": 1.0, "GOOSE": 1.0, "EGG": 1.0}
+        for i, item in enumerate(sell_items): sell_ratios[item] = float(action[7+i])
+        
+        # Hardcoded Liquidation on Day 29 (Step 690+) just to be absolutely safe
+        if step >= 690:
+            for item in sell_ratios: sell_ratios[item] = 1.0
+            
         hrl_heuristic_agent.TARGET_PORTFOLIO["BUY_TARGETS"] = targets
-        hrl_heuristic_agent.TARGET_PORTFOLIO["SELL_RATIOS"] = {item: float(action[9+i]) for i, item in enumerate(sell_items)}
-        hrl_heuristic_agent.TARGET_PORTFOLIO["HIRE_TARGET"] = max(2, int(action[8] * 10))
+        hrl_heuristic_agent.TARGET_PORTFOLIO["SELL_RATIOS"] = sell_ratios
+        hrl_heuristic_agent.TARGET_PORTFOLIO["HIRE_TARGET"] = max(2, int(action[6] * 10))
         
-    # Execute the portfolio strategy using the true low-level BFS Pathfinder!
     try:
         return hrl_heuristic_agent.agent(obs)
     except:
