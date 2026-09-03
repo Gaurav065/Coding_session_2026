@@ -1,0 +1,1822 @@
+[
+  {
+    "file": "102531712.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 159633.0,
+    "p1_reward": 121454.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101511604.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 141522.0,
+    "p1_reward": 145218.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102062874.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 140865.0,
+    "p1_reward": 145132.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103848464.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 142409.0,
+    "p1_reward": 59848.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102551911.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 140930.0,
+    "p1_reward": 113657.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103808184.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 106346.0,
+    "p1_reward": 140700.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "100939869.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 128257.0,
+    "p1_reward": 140659.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103821636.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 109169.0,
+    "p1_reward": 138672.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103031625.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 136555.0,
+    "p1_reward": 136449.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103556239.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 128418.0,
+    "p1_reward": 135514.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103420243.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 130144.0,
+    "p1_reward": 135078.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103685622.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 124615.0,
+    "p1_reward": 134385.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103609700.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 134246.0,
+    "p1_reward": 114937.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102940116.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 133776.0,
+    "p1_reward": 126849.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103743662.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 130170.0,
+    "p1_reward": 102347.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103045040.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 130105.0,
+    "p1_reward": 129541.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103770498 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 127865.0,
+    "p1_reward": 99938.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103770498.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 127865.0,
+    "p1_reward": 99938.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103024916.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 126858.0,
+    "p1_reward": 111860.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103643135.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 125744.0,
+    "p1_reward": 114071.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103574098 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 95582.0,
+    "p1_reward": 124699.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103574098.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 95582.0,
+    "p1_reward": 124699.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103817168.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 93259.0,
+    "p1_reward": 124532.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103553971.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 121303.0,
+    "p1_reward": 124303.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102165685.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 97483.0,
+    "p1_reward": 123937.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102091898.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 122917.0,
+    "p1_reward": 113334.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103857429.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 122610.0,
+    "p1_reward": 80266.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103846258.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 121916.0,
+    "p1_reward": 75219.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102078571.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 121390.0,
+    "p1_reward": 108361.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103839536.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 120831.0,
+    "p1_reward": 77192.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102094229.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 94705.0,
+    "p1_reward": 120715.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103210321.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 120464.0,
+    "p1_reward": 115503.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103268400.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 115304.0,
+    "p1_reward": 119462.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103634240.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 117385.0,
+    "p1_reward": 96944.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103864150.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 117340.0,
+    "p1_reward": 99880.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103362216.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 116164.0,
+    "p1_reward": 116871.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101306165.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 90251.0,
+    "p1_reward": 116594.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102574290.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 116114.0,
+    "p1_reward": 73329.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103826107.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 90693.0,
+    "p1_reward": 115074.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102565304.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 114432.0,
+    "p1_reward": 110683.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102538447.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 114237.0,
+    "p1_reward": 100803.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103855200.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 89537.0,
+    "p1_reward": 113816.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103803699.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 93221.0,
+    "p1_reward": 113131.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102730697.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 112805.0,
+    "p1_reward": 98114.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102922366.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 112467.0,
+    "p1_reward": 100309.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102958099.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 111558.0,
+    "p1_reward": 100325.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103839650.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 110696.0,
+    "p1_reward": 97052.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103355465.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 104033.0,
+    "p1_reward": 110521.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103823873.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 87517.0,
+    "p1_reward": 109939.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102958096.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 109480.0,
+    "p1_reward": 91046.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103040562.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 109286.0,
+    "p1_reward": 99443.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102589974.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 105154.0,
+    "p1_reward": 108893.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103841774.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 108641.0,
+    "p1_reward": 83659.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102567547.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 108458.0,
+    "p1_reward": 108160.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102565183.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 108000.0,
+    "p1_reward": 101306.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103060671.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 107623.0,
+    "p1_reward": 105005.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103116566.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 107622.0,
+    "p1_reward": 93472.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102775250 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 106888.0,
+    "p1_reward": 93461.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102775250.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 106888.0,
+    "p1_reward": 93461.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103897492.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 102550.0,
+    "p1_reward": 106604.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103844010.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 78972.0,
+    "p1_reward": 106546.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102569808.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 96554.0,
+    "p1_reward": 106385.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103850678.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 97491.0,
+    "p1_reward": 106299.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103447005.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 105757.0,
+    "p1_reward": 83878.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102533949.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 91808.0,
+    "p1_reward": 105658.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103805936.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 105077.0,
+    "p1_reward": 74008.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103185757.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 98660.0,
+    "p1_reward": 103618.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103591971.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 101591.0,
+    "p1_reward": 103197.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101408778.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 99498.0,
+    "p1_reward": 102909.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101306164.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 90782.0,
+    "p1_reward": 102809.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103850778.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 83775.0,
+    "p1_reward": 102221.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103123100.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 101859.0,
+    "p1_reward": 102195.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102980427.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 101592.0,
+    "p1_reward": 99673.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "100736599.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 101468.0,
+    "p1_reward": 51827.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102757361.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 101356.0,
+    "p1_reward": 83901.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101567447.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 98302.0,
+    "p1_reward": 101072.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102592085.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 100841.0,
+    "p1_reward": 91822.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103877605 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 84220.0,
+    "p1_reward": 100467.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103877605.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 84220.0,
+    "p1_reward": 100467.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103830584.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 77996.0,
+    "p1_reward": 100113.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103814918.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 75614.0,
+    "p1_reward": 99617.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103248144.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 91381.0,
+    "p1_reward": 99595.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103629806.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 79653.0,
+    "p1_reward": 99163.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103096410 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 99124.0,
+    "p1_reward": 85565.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103096410.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 99124.0,
+    "p1_reward": 85565.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103232646.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 98864.0,
+    "p1_reward": 97084.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102563063.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 97626.0,
+    "p1_reward": 95305.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102556360.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 88619.0,
+    "p1_reward": 97369.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103710265.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 94977.0,
+    "p1_reward": 97255.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "100490315.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 86062.0,
+    "p1_reward": 97155.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101612090.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 76092.0,
+    "p1_reward": 95636.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103484956.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 94722.0,
+    "p1_reward": 72743.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102585501.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 94647.0,
+    "p1_reward": 79494.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102386803.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 75586.0,
+    "p1_reward": 93934.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102998072.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 93073.0,
+    "p1_reward": 89427.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103819404.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 67534.0,
+    "p1_reward": 92681.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102612351.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 91030.0,
+    "p1_reward": 75406.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103832819.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 70717.0,
+    "p1_reward": 89876.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103739238.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 89749.0,
+    "p1_reward": 83687.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103489351.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 89335.0,
+    "p1_reward": 75939.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101985106.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 89217.0,
+    "p1_reward": 84392.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103859676 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 88453.0,
+    "p1_reward": 77550.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103859676.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 88453.0,
+    "p1_reward": 77550.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102572045.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 87959.0,
+    "p1_reward": 83715.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102980169.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 87872.0,
+    "p1_reward": 85050.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103812679.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 63089.0,
+    "p1_reward": 87223.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102603273.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 75713.0,
+    "p1_reward": 86698.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103132097.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 86492.0,
+    "p1_reward": 84059.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103873117.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 86224.0,
+    "p1_reward": 86033.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103835064.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 86124.0,
+    "p1_reward": 66049.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103149996.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 85134.0,
+    "p1_reward": 85450.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103861937.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 85292.0,
+    "p1_reward": 33271.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103371149 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 83721.0,
+    "p1_reward": 84620.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103371149.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 83721.0,
+    "p1_reward": 84620.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103685623.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 69297.0,
+    "p1_reward": 84430.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "100417157.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 83558.0,
+    "p1_reward": 83871.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103004927.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 83350.0,
+    "p1_reward": 83662.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103496086.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 77482.0,
+    "p1_reward": 82849.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103268402.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 82320.0,
+    "p1_reward": 82827.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102583251.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 82773.0,
+    "p1_reward": 77493.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103801469.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 60107.0,
+    "p1_reward": 82608.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102576520.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 81795.0,
+    "p1_reward": 80187.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103658787.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 81524.0,
+    "p1_reward": 62951.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102580888.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 81394.0,
+    "p1_reward": 78885.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103031743.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 67348.0,
+    "p1_reward": 80603.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103087456.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 78851.0,
+    "p1_reward": 80528.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103643138 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 66494.0,
+    "p1_reward": 80437.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103643138.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 66494.0,
+    "p1_reward": 80437.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103087458.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 79353.0,
+    "p1_reward": 80215.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101240783.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 76607.0,
+    "p1_reward": 80173.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102536198.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 79710.0,
+    "p1_reward": 61325.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102587748.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 79699.0,
+    "p1_reward": 72126.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103518329.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 76651.0,
+    "p1_reward": 79265.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103828341.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 66967.0,
+    "p1_reward": 78001.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103803660.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 77847.0,
+    "p1_reward": 63702.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102607749.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 74215.0,
+    "p1_reward": 77223.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102975690.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 76686.0,
+    "p1_reward": 65530.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103676730.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 76534.0,
+    "p1_reward": 74509.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102759575.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 76429.0,
+    "p1_reward": 67465.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103185759.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 71765.0,
+    "p1_reward": 75648.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101126961.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 74944.0,
+    "p1_reward": 73299.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102529476.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 69272.0,
+    "p1_reward": 74882.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103623130.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 74721.0,
+    "p1_reward": 72692.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103803977.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 74700.0,
+    "p1_reward": 71920.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103116565 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 74356.0,
+    "p1_reward": 71054.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103116565.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 74356.0,
+    "p1_reward": 71054.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102545173.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 72521.0,
+    "p1_reward": 74264.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102578653.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 68497.0,
+    "p1_reward": 73974.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102567431.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 72567.0,
+    "p1_reward": 72874.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102527239.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 70016.0,
+    "p1_reward": 72343.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103277254.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 71940.0,
+    "p1_reward": 64803.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101359714.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 70812.0,
+    "p1_reward": 67314.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102605518.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 69397.0,
+    "p1_reward": 67995.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "101942650.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 68370.0,
+    "p1_reward": 63503.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103386795.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 68238.0,
+    "p1_reward": 65321.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103852961.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 62847.0,
+    "p1_reward": 67953.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103743661 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 64126.0,
+    "p1_reward": 66964.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103743661.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 64126.0,
+    "p1_reward": 66964.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103607479.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 55794.0,
+    "p1_reward": 66896.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103147754.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 64692.0,
+    "p1_reward": 65915.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103752568.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 65701.0,
+    "p1_reward": 64086.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103529407 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 60932.0,
+    "p1_reward": 65207.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103529407.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 60932.0,
+    "p1_reward": 65207.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103837306.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 63601.0,
+    "p1_reward": 52715.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103295212.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 63295.0,
+    "p1_reward": 61757.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102908979 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 62212.0,
+    "p1_reward": 47290.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102908979.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 62212.0,
+    "p1_reward": 47290.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103201329.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 62178.0,
+    "p1_reward": 61146.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103362222.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 61422.0,
+    "p1_reward": 54950.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103268398.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 50627.0,
+    "p1_reward": 61352.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103850715.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 61199.0,
+    "p1_reward": 50860.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103819579.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 60918.0,
+    "p1_reward": 57300.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103143386.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 60413.0,
+    "p1_reward": 60208.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103810436.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 42286.0,
+    "p1_reward": 59724.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102977931.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 46174.0,
+    "p1_reward": 57750.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103004935.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 57474.0,
+    "p1_reward": 56718.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103598557 (1).json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 55330.0,
+    "p1_reward": 56904.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103598557.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 55330.0,
+    "p1_reward": 56904.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "102594329.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 55948.0,
+    "p1_reward": 54820.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103607571.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 53229.0,
+    "p1_reward": 49906.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103022681.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 49569.0,
+    "p1_reward": 50615.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  },
+  {
+    "file": "103839649.json",
+    "p0_name": "Player 0",
+    "p1_name": "Player 1",
+    "p0_reward": 48314.0,
+    "p1_reward": 47058.0,
+    "p0_status": "DONE",
+    "p1_status": "DONE",
+    "total_steps": 720
+  }
+]

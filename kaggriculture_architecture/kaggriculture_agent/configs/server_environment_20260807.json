@@ -1,0 +1,21 @@
+{
+  "evidence": {
+    "dataset": "kaggle/kaggriculture-episodes-2026-08-07",
+    "episodes_checked": 12,
+    "module_version": "1.32.6",
+    "exact_replay_checks": [90848410, 90848437]
+  },
+  "configuration": {
+    "boardSize": 10,
+    "startingMoney": 3000,
+    "maxMarketOrdersPerTurn": 10,
+    "turnsPerDay": 24,
+    "shedCapacity": 100,
+    "weedSpawnChance": 0.005,
+    "townShopUnlockInterval": 3,
+    "townShopSellInterval": 4,
+    "townCenterSellInterval": 24,
+    "farmHandCostMult": 1,
+    "marketParams": {}
+  }
+}

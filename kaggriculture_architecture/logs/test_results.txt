@@ -1,0 +1,3 @@
+Melons sold: 0
+Final money: 9.0
+Final reward: 9.0
