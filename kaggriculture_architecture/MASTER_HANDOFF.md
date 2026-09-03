@@ -1,7 +1,8 @@
-﻿# 🚀 Kaggriculture Master Handoff Document (Phase 2 GPU)
+# 🚜 Kaggriculture Master Handoff Document (Phase 3: BC LSTM + Distributed Training)
 
 **ATTENTION GEMINI AGENT**: 
-You are picking up a highly complex, multi-day Reinforcement Learning project for the Kaggle competition **Kaggriculture**. The user has specifically transitioned to this laptop to leverage its **RTX 3050 (6GB) GPU** and Intel i5 H-Series CPU for advanced CNN training. 
+You are picking up a highly complex, multi-day Reinforcement Learning and Behavioral Cloning project for the Kaggle competition **Kaggriculture**. 
+**CRITICAL CONTEXT**: This machine (with the RTX 3050 6GB GPU) will now act as a **dedicated GPU training node**. It will receive instructions/jobs from a master orchestration machine.
 
 Read this document meticulously. Do not deviate from this established architecture.
 
@@ -14,36 +15,30 @@ Read this document meticulously. Do not deviate from this established architectu
 * **Mechanics**: You plant crops (wheat, carrot, tomato, etc.) and raise animals (cows, sheep, geese). Crops take time to grow. Prices dynamically fluctuate based on market supply/demand.
 * **Shops**: Every 3 days (approx. 72 steps), a new shop unlocks offering better seeds.
 
-## 🪤 2. The Core Challenge: "The Greedy Trap"
-Standard RL completely fails at this game because of the 2000-step horizon. An RL agent trained on the full 30 days will quickly learn to buy fast-growing crops (wheat) and immediately dump them for small profits, refusing to invest in high-yield, slow-growing assets like Geese or Cows.
-* **Our Solution**: **Time-Chunked Curriculum RL**. We train the agent on only 3 days at a time (corresponding to the shop unlock cadence). 
-* **The Net Worth Fix**: To prevent the agent from panic-selling at the end of the 3-day window, our custom environment calculates "Unrealized Net Worth" (valuing planted crops and shed inventory) as the reward function instead of raw cash.
-
-## ⚙️ 3. The Architecture (HRL + FastGame)
-We do **not** train the RL agent to output raw physical moves (like `NORTH`, `SOUTH`). Pathfinding is too inefficient for RL right now.
-Instead, we use a **Hierarchical RL (HRL)** approach:
-1. **The Heuristic Agent (`hrl_heuristic_agent.py`)**: We acquired the exact logic from the 169th-place competitor. It flawlessly handles BFS pathfinding, moving the worker to plant and harvest.
-2. **The RL Macro-Agent**: Our PPO agent acts as the "Brain". It observes the state and outputs a 17-dimensional vector:
+## 🛠 2. The Architecture (HRL + FastGame)
+We use a **Hierarchical RL (HRL)** approach:
+1. **The Heuristic Agent (`hrl_heuristic_agent.py`)**: Flawlessly handles BFS pathfinding, moving the worker to plant and harvest.
+2. **The Macro-Agent (RL / BC)**: The "Brain". Observes the state and outputs a 17-dimensional vector:
    * 8 `BUY_TARGETS` (How many of each seed to hoard).
    * 8 `SELL_RATIOS` (What percentage of inventory to dump to the market).
    * 1 `HIRE_TARGET` (How many workers to hire).
-3. **Fast Engine (`project_maestro/engine/fast_engine.py`)**: We use a highly optimized pure Python port of the Kaggle environment capable of running at 100+ FPS to accelerate RL training.
+3. **Fast Engine (`project_maestro/engine/fast_engine.py`)**: Pure Python port of the Kaggle environment for 100+ FPS fast-forwarding.
 
-## 🏆 4. Current Progress
-We have successfully completed **Phase 1**.
-* We wrote `train_day3_curriculum.py`.
-* We trained a purely scalar MLP model on Days 0-3 that perfectly optimizes the opening sequence.
-* The finalized weights are stored in **`ppo_day3_opening.zip`**.
+## ✅ 3. Completed Work (Phase 1 & Phase 2)
+* **Phase 1 (Opening Theory)**: Trained a purely scalar MLP on Days 0-3 that perfectly optimizes the opening sequence (`ppo_day3_opening.zip`).
+* **Phase 2 (Spatial Vision & Handover)**: 
+  - Upgraded PyTorch to `cu124` for full RTX 3050 acceleration on Python 3.13.
+  - Implemented `train_day6_curriculum.py` utilizing an **IMPALA-style Residual CNN** (Espeholt et al.) merged with a LayerNorm MLP to process the 10x10 grid spatially.
+  - Successfully handed over control from Day 3 to Day 6 to avoid the "Greedy Trap", resulting in `ppo_day6_curriculum.zip`.
+* **Data Engineering**: Created `download_from_urls.py` and successfully extracted 600 JSON replays from the exact Top 20 Grandmasters by parsing raw Kaggle Submission IDs. The dataset currently resides in `D:\replays`.
 
-## 🚀 5. Your Mission: Phase 2 (CNN "Eyes" + Day 6 Curriculum)
-Currently, our RL agent only sees a 50D numerical vector (bank balance, prices, shed inventory). It is completely blind to the physical 2D farm.
+## 🚀 4. Your Mission: Phase 3 (Distributed Behavioral Cloning)
+Pure RL is currently underperforming Grandmaster static tapes ($6,800 vs $74,000) due to "Jitter" and "Temporal Blindness" (see `BC_IMPROVEMENT_NOTES.md`). 
+Our new strategy is to Behavioral Clone (BC) the 600 Top Replays using LSTMs, and then use that as a seed for Self-Play PPO.
 
-**Your Tasks:**
-1. **CUDA Setup**: Ensure PyTorch is using the RTX 3050:
-   `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`
-2. **Observation Space Upgrade**: Modify our observation space to be a `spaces.Dict`. It must include both the existing 50D scalar vector AND a `10x10xN` spatial grid representing the physical tiles (crop type, maturity, worker positions).
-3. **Build the CNN Feature Extractor**: Write a custom SB3 `BaseFeaturesExtractor`. Use a 2-layer Convolutional Neural Network (CNN) to process the `10x10xN` grid using the RTX 3050's Tensor Cores, and concatenate it with the processed scalar vector.
-4. **Train Day 6**: Write `train_day6_curriculum.py`. This script must:
-   * Load `ppo_day3_opening.zip`.
-   * Force the environment to use the Day 3 weights for steps 0-71 (auto-pilot the opening).
-   * Hand over control to your newly initialized CNN-PPO agent from step 72 to 144 (Days 3-6) so it can learn how to exploit Shop 1 unlocks.
+**Since this machine is now a GPU Worker Node**, your tasks are:
+1. **Wait for Instructions**: Acknowledge commands from the master orchestration machine.
+2. **Dataset Parsing**: Convert the 600 JSON replays in `D:\replays` into a massive sequence-based PyTorch dataset (Sequence Length = 10, to feed the LSTM).
+3. **LSTM Architecture**: Implement an LSTM network that replaces the old MLP. The hidden state will completely eliminate the "Jitter" problem by giving the agent memory.
+4. **Training Loop**: Execute the BC training loop on the RTX 3050, streaming batches efficiently from `D:\replays` so we don't blow out the RAM.
+

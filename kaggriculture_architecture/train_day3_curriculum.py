@@ -5,8 +5,8 @@ from gymnasium import spaces
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 
-sys.path.insert(0, r"C:\Coding\kaggriculture_architecture")
-sys.path.insert(0, r"C:\Coding\kaggriculture")
+sys.path.insert(0, r"C:\Programming\Coding_session_2026\kaggriculture_architecture")
+sys.path.insert(0, r"C:\Programming\Coding_session_2026")
 
 import hrl_heuristic_agent
 from project_maestro.engine.fast_engine import FastGame, BOARD_SIZE
