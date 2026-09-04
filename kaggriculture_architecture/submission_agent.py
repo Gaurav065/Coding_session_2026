@@ -141,7 +141,7 @@ def get_graph_targets(day, current_cash):
         targets[2] = 0.8  # Strawberry
         targets[4] = 0.6  # Buy more cows
         targets[9] = 1.0  # Sell Strawberry
-    elif day >= 6 and day < 27:
+    elif day >= 10 and day < 27:
         # The Engine Phase (Target 60 planted, 14 animals)
         targets[3] = 0.9  # Melon max
         targets[4] = 0.9  # Cows max (14)
