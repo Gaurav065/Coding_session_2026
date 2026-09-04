@@ -34,6 +34,11 @@ def agent(obs, config=None):
         if sell_amt > 0 and len(market_action) < 10:
             market_action.append(["SELL", item, sell_amt])
             
+        # 1.5 GREEDY EXPANSION (BUY LAND)
+    if cash > 1500:
+        market_action.append(['BUY_LAND'])
+        cash -= 1000  # Reserve for the land cost
+    
     # 2. Portfolio Management (Buy Assets) based on BUY_TARGETS
     # BUY_TARGETS indicates the *total* we want to hold (seeds + planted + shed)
     # For simplicity, let's just buy if current seeds < target
