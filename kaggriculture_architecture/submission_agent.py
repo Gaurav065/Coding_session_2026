@@ -116,6 +116,53 @@ def get_obs_tensors(obs):
     return torch.Tensor(grid).unsqueeze(0), torch.Tensor(vec).unsqueeze(0)
 
 # --- 4. Kaggle Entrypoint ---
+
+def get_graph_targets(day, current_cash):
+    '''
+    Overrides the RL model with the exact mathematical milestones 
+    discovered in the 159k Grandmaster EDA Graph.
+    '''
+    # Default array (13D)
+    # [WHEAT, CARROT, STRAWBERRY, MELON, COW, SHEEP, HIRE, sWHEAT, sCARROT, sSTRAW, sMELON, sMILK, sWOOL]
+    targets = [0.0] * 13
+    
+    # Sell ratios are always high for products
+    targets[11] = 1.0 # Sell Milk
+    targets[12] = 1.0 # Sell Wool
+    
+    if day < 3:
+        # Day 0-3: Wheat Rush & Early Animals
+        targets[0] = 0.8  # Buy Wheat
+        targets[4] = 0.3  # Buy Cow (target 5)
+        targets[7] = 1.0  # Sell Wheat immediately for cash
+    elif day >= 3 and day < 12:
+        # Expansion Phase (BUY_LAND triggers at 1500)
+        # Transition to Strawberries/Carrots to build cash faster
+        targets[2] = 0.8  # Strawberry
+        targets[4] = 0.6  # Buy more cows
+        targets[9] = 1.0  # Sell Strawberry
+    elif day >= 12 and day < 27:
+        # The Engine Phase (Target 60 planted, 14 animals)
+        targets[3] = 0.9  # Melon max
+        targets[4] = 0.9  # Cows max (14)
+        targets[10] = 1.0 # Sell Melon
+    elif day >= 27:
+        # Liquidation Phase
+        targets = [0.0] * 13 # Buy nothing
+        # Sell absolutely everything
+        for i in range(7, 13):
+            targets[i] = 1.0
+            
+    # Target 10 hands by late game if we have cash
+    if current_cash > 5000:
+        targets[6] = 1.0 # Max hires
+    elif current_cash > 1000:
+        targets[6] = 0.5 # 5 hires
+    else:
+        targets[6] = 0.2 # 2 hires
+        
+    return targets
+
 def agent(obs):
     global GLOBAL_MEMORY_STATE
     step = obs.get("step", 0)
