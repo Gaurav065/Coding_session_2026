@@ -24,7 +24,7 @@ class FiLMGenerator(nn.Module):
         total_channels = sum(num_channels_list)
         
         self.mlp = nn.Sequential(
-            orthogonal_init_(nn.Linear(goal_dim, 256), gain=nn.init.calculate_gain('silu')),
+            orthogonal_init_(nn.Linear(goal_dim, 256), gain=nn.init.calculate_gain('relu')),
             nn.SiLU(),
             # Initialized to near-zero so delta_gamma and beta start at 0
             orthogonal_init_(nn.Linear(256, total_channels * 2), gain=0.01) 

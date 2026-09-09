@@ -1,176 +1,93 @@
-import sys
-import json
-import glob
-import os
 import torch
-import torch.nn as nn
 import numpy as np
+import json
+import time
+from spatial_micro_agent import NeuralSpatialMicroAgent
 
-sys.path.insert(0, r"C:\Coding\kaggriculture_architecture")
-sys.path.insert(0, r"C:\Coding\kaggriculture")
-
-import hrl_heuristic_agent
-from project_maestro.engine.fast_engine import FastGame
-
-# 1. Define the Neural Network
-class MacroAgentNet(nn.Module):
-    def __init__(self, obs_dim=50, act_dim=17):
-        super(MacroAgentNet, self).__init__()
-        self.net = nn.Sequential(
-            nn.Linear(obs_dim, 128),
-            nn.ReLU(),
-            nn.LayerNorm(128),
-            nn.Linear(128, 128),
-            nn.ReLU(),
-            nn.LayerNorm(128),
-            nn.Linear(128, act_dim),
-            nn.Sigmoid()
-        )
-    def forward(self, x):
-        return self.net(x)
-
-# 2. Load the trained weights
-model_path = r"C:\Users\GauravPatel\Downloads\bc_macro_agent.pth"
-model = MacroAgentNet()
-try:
-    model.load_state_dict(torch.load(model_path, map_location="cpu", weights_only=True))
+def evaluate_model(model_path, test_chunk_path):
+    print(f"Loading Model: {model_path}")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    model = NeuralSpatialMicroAgent(in_channels=20, goal_dim=100, action_dim=11).to(device)
+    model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
-    print("Successfully loaded Behavioral Cloning model!")
-except Exception as e:
-    print(f"Failed to load model: {e}")
-    sys.exit(1)
-
-# 3. Observation Extraction
-def get_observation_vector(obs, player_idx):
-    vec = np.zeros(50, dtype=np.float32)
-    farm = obs.get("farms", [{}, {}])[player_idx]
-    priv = obs.get("private", {})
-    shed = priv.get("shed", {})
-    seeds = priv.get("seeds", {})
-    market = obs.get("market", {})
     
-    vec[0] = obs.get("step", 0) / 2000.0
-    vec[1] = farm.get("money", 0) / 10000.0
+    print(f"Loading Validation Data: {test_chunk_path}")
+    data = np.load(test_chunk_path)
+    spatial = torch.tensor(data['spatial'], dtype=torch.float32).to(device)
+    scalar = torch.tensor(data['scalar'], dtype=torch.float32).to(device)
+    micro_strs = data['micro']
     
-    items = ["WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON", "EGG", "MILK", "WOOL", "COW", "SHEEP", "GOOSE"]
-    for i, item in enumerate(items):
-        vec[2 + i] = shed.get(item, 0) / 100.0
-        vec[13 + i] = seeds.get(item, 0) / 100.0
-        prices = market.get("prices", {})
-        vec[24 + i] = prices.get(item, 0) / 100.0
-        
-    vec[35] = len(farm.get("hands", [])) / 10.0
-    return vec
-
-# 4. Neural Network Agent Wrapper
-def nn_agent(obs, conf=None):
-    player_idx = hrl_heuristic_agent.get_seat(obs)
-    
-    # Only query the neural network once per day to save compute and stabilize targets
-    step = obs.get("step", 0)
-    if not hasattr(nn_agent, "last_targets") or step % 24 == 0:
-        vec = get_observation_vector(obs, player_idx)
-        with torch.no_grad():
-            out = model(torch.tensor(vec).unsqueeze(0))[0].numpy()
-            
-        targets = {
-            "WHEAT": int(out[0] * 50),
-            "CARROT": int(out[1] * 50),
-            "TOMATO": int(out[2] * 50),
-            "STRAWBERRY": int(out[3] * 50),
-            "MELON": int(out[4] * 50),
-            "GOOSE": int(out[5] * 20),
-            "COW": int(out[6] * 20),
-            "SHEEP": int(out[7] * 20)
-        }
-        hire_target = max(2, int(out[8] * 10))
-        nn_agent.last_targets = targets
-        nn_agent.last_hire = hire_target
-    
-    hrl_heuristic_agent.TARGET_PORTFOLIO = {
-        "BUY_TARGETS": nn_agent.last_targets,
-        "SELL_RATIOS": {"WHEAT": 1.0, "CARROT": 1.0, "TOMATO": 1.0, "STRAWBERRY": 1.0, "MELON": 1.0, "EGG": 1.0, "MILK": 1.0, "WOOL": 1.0},
-        "HIRE_TARGET": nn_agent.last_hire
+    action_to_idx = {
+        "NORTH": 0, "SOUTH": 1, "EAST": 2, "WEST": 3,
+        "PICKUP": 4, "DROP": 5, "PLANT": 6, "WATER": 7, 
+        "DIG": 8, "FERTILIZE": 9
     }
     
-    # Enforce safe cash buffer to prevent neural net from starving the farm
-    farm = obs.get("farms", [])[player_idx]
-    orig_cash = farm.get("money", 0)
-    farm["money"] = max(0, orig_cash - 50)
-    
-    act = hrl_heuristic_agent.agent(obs, conf)
-    farm["money"] = orig_cash
-    return act
-
-# 5. ELO Arena Engine
-class GhostAgent:
-    def __init__(self, replay_data, opp_idx):
-        self.actions = [s[opp_idx].get("action", {}) for s in replay_data["steps"][1:]]
-        self.step_idx = 0
-    def __call__(self, obs):
-        if self.step_idx < len(self.actions):
-            act = self.actions[self.step_idx]
-            self.step_idx += 1
-            return act
-        return {"farmer": ["PASS"], "hands": [], "market": []}
-
-def run_shadow_match(replay_path):
-    with open(replay_path, "r", encoding="utf-8") as f:
-        replay_data = json.load(f)
-        
-    opp_idx = 1 # Force opponent to 1
-    
-    final_obs = replay_data["steps"][-1][0]["observation"]
-    orig_opp_money = final_obs["farms"][opp_idx]["money"]
-    
-    ghost = GhostAgent(replay_data, opp_idx)
-    g = FastGame(seed=42)
-    
-    while not g.done:
-        step = g.step
-        if step < len(replay_data["steps"]):
-            robs = replay_data["steps"][step][0]["observation"]
-            if "town" in robs and "unlocked_shops" in robs["town"]:
-                g.unlocked_shops = robs["town"]["unlocked_shops"]
-                
-        obs0 = g.get_observation(0)
-        obs1 = g.get_observation(1)
-        
+    print("Parsing Grandmaster Ground Truth...")
+    targets = []
+    for m_str in micro_strs:
         try:
-            act0 = nn_agent(obs0)
-        except Exception:
-            act0 = {"farmer": ["PASS"], "hands": [], "market": []}
+            d = json.loads(m_str)
+            idx = 10 # NOOP
+            if isinstance(d, dict) and "farmer" in d and len(d["farmer"]) > 0:
+                atype = d["farmer"][0]
+                idx = action_to_idx.get(atype, 10)
+        except:
+            idx = 10
+        targets.append(idx)
+        
+    targets = torch.tensor(targets, dtype=torch.long).to(device)
+    
+    print(f"Running Forward Pass on {len(targets)} frames...")
+    start_t = time.time()
+    
+    # Process in batches to avoid RAM OOM on CPU
+    batch_size = 512
+    predictions = []
+    
+    with torch.no_grad():
+        for i in range(0, len(targets), batch_size):
+            spat_b = spatial[i:i+batch_size]
+            scal_b = scalar[i:i+batch_size]
             
-        act1 = ghost(obs1)
-        g.step_game(act0, act1)
+            # Autocast prevents Float16/Float32 mismatch issues depending on CPU support
+            with torch.autocast(device_type=device.type, dtype=torch.bfloat16 if device.type == 'cpu' else torch.float16, enabled=torch.cuda.is_available()):
+                logits, _ = model(spat_b, scal_b)
+                preds = torch.argmax(logits, dim=1)
+                predictions.extend(preds.cpu().numpy())
+                
+    predictions = torch.tensor(predictions, dtype=torch.long).to(device)
+    inf_time = time.time() - start_t
+    print(f"Inference finished in {inf_time:.2f} seconds.")
+    
+    # Calculate Metrics
+    correct = (predictions == targets).sum().item()
+    total = targets.size(0)
+    accuracy = (correct / total) * 100
+    
+    print(f"\n" + "="*40)
+    print(f"      EVALUATION RESULTS")
+    print(f"="*40)
+    print(f"Total Test Frames  : {total}")
+    print(f"Validation Accuracy: {accuracy:.2f}%")
+    print(f"="*40)
+    
+    print("\nACTION DISTRIBUTION (Predicted vs Real Grandmaster)")
+    print("-" * 55)
+    idx_to_action = {v: k for k, v in action_to_idx.items()}
+    idx_to_action[10] = "NOOP"
+    
+    pred_counts = torch.bincount(predictions, minlength=11).cpu().numpy()
+    target_counts = torch.bincount(targets, minlength=11).cpu().numpy()
+    
+    print(f"{'ACTION'.ljust(12)} | {'AI PREDICTED'.ljust(15)} | {'REAL PRO'.ljust(15)}")
+    print("-" * 55)
+    for i in range(11):
+        action_name = idx_to_action[i]
+        p_c = str(pred_counts[i])
+        t_c = str(target_counts[i])
+        print(f"{action_name.ljust(12)} | {p_c.ljust(15)} | {t_c.ljust(15)}")
         
-    return {
-        "file": os.path.basename(replay_path),
-        "orig_opp_money": orig_opp_money,
-        "new_our_money": g.farms[0].money,
-        "new_opp_money": g.farms[1].money,
-    }
-
-replay_dir = r"C:\Coding\kaggriculture_architecture\our_replays"
-files = glob.glob(os.path.join(replay_dir, "*.json"))
-
-print("Running Behavioral Cloning Agent in the ELO Arena...")
-wins = 0
-total = 0
-for f in files[:15]:
-    with open(f, "r") as tmp:
-        d = json.load(tmp)
-        obs = d["steps"][-1][0]["observation"]
-        if "farms" not in obs: continue
-        m_our = obs["farms"][0]["money"]
-        m_opp = obs["farms"][1]["money"]
-        
-        # Test against games where the opponent scored highly (>100k)
-        if max(m_our, m_opp) > 100000:
-            res = run_shadow_match(f)
-            win = "WIN" if res['new_our_money'] > res['new_opp_money'] else "LOSS"
-            if win == "WIN": wins += 1
-            total += 1
-            print(f"[{win}] BC Neural Net: ${res['new_our_money']:.0f} vs Ghost: ${res['new_opp_money']:.0f} | (Original Ghost was ${res['orig_opp_money']:.0f})")
-
-print(f"\nFinal Result: {wins}/{total} Wins against Top Tier Opponents!")
+if __name__ == "__main__":
+    evaluate_model("training_weights/micro_agent_bc_epoch_3.pth", "data/elite_1900_chunk_99.npz")
