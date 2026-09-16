@@ -22,25 +22,28 @@ SEED_PRICES = {
 }
 
 ANIMAL_COSTS = {
-    "GOOSE": 300,
     "COW": 400,
     "SHEEP": 500,
 }
 
-ANIMALS = {"GOOSE", "COW", "SHEEP"}
-WEED_BLOCKED_WORK = {"PLANT", "BUILD_COOP", "BUILD_PASTURE"}
+ANIMALS = {"COW", "SHEEP"}
+CRASH_DUMP_ITEMS = ("STRAWBERRY", "MELON", "MILK", "WOOL", "TOMATO", "CARROT")
+PIZZA_EXPANSION_THRESHOLD = 2
+WEED_BLOCKED_WORK = {"PLANT", "BUILD_PASTURE"}
+
 
 # Default reactive layer settings
 CHASSIS_SETTINGS = {
     'hand_align': True,
     'weed_repair': True,
     'sell_lead': True,
+    'front_run': False,
+    'market_crash': True,
     'budget_guard': False,
     'room_guard': False,
     'clamp_sells': False,
     'dead_stock': False,
     'terminal_liquidation': False,
-    'front_run': False,
 }
 
 # Clean Opening Sequence (eliminates Day 0 bid-ask spread loss in Seat 1)

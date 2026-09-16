@@ -18,6 +18,7 @@ DEFAULT_SETTINGS = {
     "weed_repair": True,
     "sell_lead": True,
     "front_run": True,
+    "market_crash": True,
     "budget_guard": True,
     "room_guard": True,
     "clamp_sells": True,
@@ -230,7 +231,7 @@ class Chassis:
                 self._hand_align(action, view)
             if cfg["weed_repair"]:
                 self._weed_repair(action, view, st, route, step)
-            if cfg["sell_lead"] or cfg["front_run"]:
+            if cfg["sell_lead"] or cfg["front_run"] or cfg.get("market_crash", False):
                 self._apply_suppression(action, st["sell_state"], step)
             projected = self._projected_shed(action, view)
             lead_available = dict(projected)
@@ -239,6 +240,8 @@ class Chassis:
                 self._sell_lead(action, view, lead_available, route, step, next_sup)
             if cfg["front_run"] and self.opponent_plan:
                 self._front_run(action, view, lead_available, route, step, next_sup)
+            if cfg.get("market_crash", False):
+                self._market_crash_dump(action, view, lead_available, route, step, next_sup)
             st["sell_state"] = next_sup
             if cfg["budget_guard"]:
                 self._budget_guard(action, view, route, step)
@@ -441,6 +444,70 @@ class Chassis:
             next_sup["suppress"][item] = next_sup["suppress"].get(item, 0) + qty
         if next_sup["suppress"]:
             next_sup["due_step"] = nxt
+
+    # ---- layer: market_crash --------------------------------------------------
+    def _market_crash_dump(self, action, view, projected, route, step, next_sup):
+        """Mass Market Dumping Starvation Layer:
+        Monitors rival tiles and units in real-time. When rival has mature crops
+        (MELON, STRAWBERRY, TOMATO, CARROT) or livestock products (MILK, WOOL)
+        ready to harvest or nearing shed, and market price is lucrative (>= $10):
+        Dump shed stock ahead of them to crash the price to the $1.00 floor,
+        starving the opponent of harvest profits and worker wage capital.
+        """
+        cfg = self.cfg
+        if step > LAST_ACT_STEP or not view.rival:
+            return
+
+        rival_tiles = _get(view.rival, "tiles", []) or []
+        day = step // cfg["turns_per_day"]
+        vulnerable_items = set()
+
+        for row in rival_tiles:
+            for tile in row:
+                if not isinstance(tile, dict):
+                    continue
+                kind = _get(tile, "kind")
+                if kind == "PLANT":
+                    crop = _get(tile, "crop")
+                    yield_units = _int(_get(tile, "yield_units", 0))
+                    age = day - _int(_get(tile, "planted_day", 0))
+                    if (crop == "MELON" and (yield_units > 0 or age >= 9) or
+                        crop == "STRAWBERRY" and (yield_units > 0 or age >= 8) or
+                        crop == "TOMATO" and (yield_units > 0 or age >= 7) or
+                        crop == "CARROT" and (yield_units > 0 or age >= 2)):
+                        vulnerable_items.add(crop)
+                elif kind in ("COOP", "PASTURE"):
+                    animal = _get(tile, "animal")
+                    yield_units = _int(_get(tile, "yield_units", 0))
+                    if animal == "COW" and (yield_units > 0 or _get(tile, "fed_today")):
+                        vulnerable_items.add("MILK")
+                    elif animal == "SHEEP" and (yield_units > 0 or _get(tile, "fed_today")):
+                        vulnerable_items.add("WOOL")
+
+        if not vulnerable_items:
+            return
+
+        dump_orders = []
+        for item in vulnerable_items:
+            price = view.prices.get(item, 0)
+            if price < 10:
+                continue
+            avail = projected.get(item, 0)
+            if avail <= 0:
+                continue
+            qty = min(avail, 10)
+            if qty <= 0:
+                continue
+            dump_orders.append(["SELL", item, qty])
+            projected[item] -= qty
+            next_sup["suppress"][item] = next_sup["suppress"].get(item, 0) + qty
+
+        if dump_orders:
+            next_sup["due_step"] = step + 1
+            market = action.setdefault("market", [])
+            other_orders = [o for o in market if not (o and o[0] == "SELL" and o[1] in vulnerable_items)]
+            action["market"] = (dump_orders + other_orders)[:cfg["max_orders"]]
+
 
     # ---- layer: budget_guard --------------------------------------------------
     def _block_requirements(self, view, route, start, end):

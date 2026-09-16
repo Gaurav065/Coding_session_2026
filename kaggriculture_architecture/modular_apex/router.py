@@ -1,16 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 """Production Scenario Router for Modular Apex.
 
-Empirically validated across hundreds of benchmark games:
+Empirically validated across benchmark games:
+- At Step 648 (Day 27, Hour 0), transition to Route 2 and hold Route 2 for terminal cargo liquidation.
+- When 2 or more Pizza Shops appear, route to Route 13 for 4th quadrant SE expansion ($4,000) and Tomato/Milk focus.
 - When Yarn Store is in the first 2 town shops, route to the matched Wool specialist (Routes 1..12).
-- When Yarn Store is not in the first 2 shops, execute Route 0 (the $192k Dairy powerhouse with 8 Cows, 6 Sheep, 3 Geese, and full crop rotation).
-- At Step 648 (Day 27, Hour 0), transition to Route 2 for terminal cargo liquidation.
+- When Yarn Store is not in the first 2 shops, execute Route 0 (the Dairy + Crop powerhouse with Cows, Sheep, ongoing Tomatoes, and crop rotation).
 """
 
 try:
-    from .config import ROUTE_STEP, FINAL_PLAN_STEP
+    from .config import ROUTE_STEP, FINAL_PLAN_STEP, PIZZA_EXPANSION_THRESHOLD
 except ImportError:
-    from config import ROUTE_STEP, FINAL_PLAN_STEP
+    from config import ROUTE_STEP, FINAL_PLAN_STEP, PIZZA_EXPANSION_THRESHOLD
 
 SHOP_PLANS = {
     ("BAKERY", "YARN_STORE"): 3,
@@ -32,13 +33,16 @@ SHOP_PLANS = {
 
 def router(observation, step, state):
     """Production router that selects the proven optimal tape per scenario."""
-    if step >= FINAL_PLAN_STEP and not state.get("day27"):
+    if step >= FINAL_PLAN_STEP:
         state["route"] = 2
-        state["day27"] = True
         return 2
 
+    shops = (observation.get("town", {}) or {}).get("unlocked_shops", []) or []
+    if shops.count("PIZZA_SHOP") >= PIZZA_EXPANSION_THRESHOLD:
+        state["route"] = 13
+        return 13
+
     if step >= ROUTE_STEP and not state.get("day6"):
-        shops = (observation.get("town", {}) or {}).get("unlocked_shops", []) or []
         pair = tuple(shops[:2])
         state["route"] = SHOP_PLANS.get(pair, 0)
         state["day6"] = True
