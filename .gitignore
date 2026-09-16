@@ -15,3 +15,6 @@ project_maestro/replays/
 project_maestro/data/kaggle_results/
 episode-*.json
 cash_deposit_report_spark.py
+venv/
+m3_compute_runner/venv/
+
