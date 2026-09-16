@@ -50,8 +50,8 @@ def build_sanitized_route0(base_tape):
         if f:
             if f[0] == "BUILD_COOP":
                 tape[step]["farmer"] = ["PLANT", "TOMATO"]
-            elif f[0] in ("PLACE", "PICKUP") and len(f) >= 2 and f[1] == "GOOSE":
-                tape[step]["farmer"] = ["WATER"]
+            elif f[0] in ("PLACE", "PICKUP") and len(f) >= 2 and f[1] in ("GOOSE", "EGG"):
+                tape[step]["farmer"] = ["DROP"]
 
         # Hands replacements
         new_hands = []
@@ -62,8 +62,8 @@ def build_sanitized_route0(base_tape):
             op = h[0]
             if op == "BUILD_COOP":
                 new_hands.append(["PLANT", "TOMATO"])
-            elif op in ("PLACE", "PICKUP") and len(h) >= 2 and h[1] == "GOOSE":
-                new_hands.append(["WATER"])
+            elif op in ("PLACE", "PICKUP") and len(h) >= 2 and h[1] in ("GOOSE", "EGG"):
+                new_hands.append(["DROP"])
             else:
                 new_hands.append(h)
         tape[step]["hands"] = new_hands
