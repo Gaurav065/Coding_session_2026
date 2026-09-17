@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
+import os
 import sys
 from pathlib import Path
 
-_ROOT = Path(__file__).resolve().parent
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+_ROOT = Path(globals().get("__file__") or os.getcwd()).resolve().parent
+for _p in (str(_ROOT), ".", "/kaggle_simulations/agent"):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 try:
     from .config import CHASSIS_SETTINGS, CLEAN_OPENING
