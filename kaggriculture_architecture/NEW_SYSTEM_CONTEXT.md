@@ -1,6 +1,6 @@
 # MASTER CONTEXT & REPO NAVIGATION GUIDE
 **Project**: Kaggle Kaggriculture Simulation Competition (Target: 3000+ Elo & Top 10)  
-**Last Updated**: September 16, 2026  
+**Last Updated**: September 17, 2026  
 **Active Git Remote**: `https://github.com/Gaurav065/Coding_session_2026.git` (Branch: `main`)
 
 ---
@@ -9,26 +9,29 @@
 
 Our goal is to break the 2000 Elo plateau and surge to 3000+ Elo on Kaggle's simulation ladder.
 
-### Current Live Submissions:
-1. **Account `gaurav065`**:
+### Current Live Submissions & Real-Time Ladder Ratings:
+1. **Account `gaurav065` (Primary Grandmaster Account)**:
    - **Active Submission**: `56274948` (Apex Grandmaster 3000+ Rectified)
-   - **Public Ladder Match 1 (Ep `109616048`)**: **BLOWOUT WIN** — Us: **$152,051** vs Opponent: **$17,192** (Margin: **+$134,859**).
-   - **Quota Status**: **4/5 daily submissions safely intact**. Do not waste them!
-2. **Account `gaurav06520`**:
+   - **Current Live Rating**: **1,891.8 Elo** (Rapidly ascending; Won Match 1: Us: **$152,051** vs Opponent: **$17,192**).
+   - **Daily Quota Status**: **4/5 daily submissions safely intact**. Preserve them for verified breakthroughs!
+2. **Account `gaurav06520` (Secondary Exploration Account)**:
    - **Active Submission**: `56254428`
-   - **Matches**: 152+ played, current Elo **1,945.3**.
+   - **Current Live Rating**: **1,812.0 Elo**.
 
 ---
 
 ## 2. Repository Navigation (What to Pick Up First)
 
-If you are a new agent or developer entering this repository, **start here**:
+If you are a new agent, developer, or external machine entering this repository, **start here**:
 
 ```
 c:\Coding\
 ├── NEW_SYSTEM_CONTEXT.md               <-- THIS MASTER GUIDE
 ├── m3_compute_runner/                  <-- Mac M3 Distributed Compute Package
 │   ├── README_MAC.md                   # Step-by-step terminal instructions for macOS
+│   ├── deploy.py                       # Multi-account deployer (deploy to gaurav065 or gaurav06520)
+│   ├── switch_account.sh               # Shell script to switch active Kaggle CLI account
+│   ├── kaggle_deployment_ports.json    # Credentials & API tokens for both accounts
 │   ├── run_m3_tournament.py            # Parallel tournament engine across all M3 cores
 │   ├── optimize_counter_tapes.py       # Genetic evolutionary tape optimizer (200k+ God paths)
 │   ├── tournament_results.json         # Latest match telemetry
@@ -45,6 +48,7 @@ c:\Coding\
     │   ├── main.py                     # Kaggle-compliant callable agent entry point
     │   └── packager.py                 # Automated packager & sandbox validator
     │
+    ├── kaggle_deployment_ports.json    # Credentials & API tokens for both accounts
     ├── submission.tar.gz               # Verified 143 KB deployable Kaggle submission tarball
     ├── actions.json                    # Full uncompressed 13-route action tapes (1.75 MB reference)
     ├── optimal_64_shop_plans.json      # Complete 8x8 shop pair unlock mapping
@@ -157,7 +161,35 @@ git pull origin main
 
 ---
 
-## 6. Deployment Rules & Constraints
+## 6. Multi-Account Kaggle Deployment Ports & Credentials
+
+Both Kaggle accounts are configured for dual-machine deployment:
+
+| Account | Username | Token | Current Elo | Active Submission | Purpose |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Primary** | `gaurav065` | `KGAT_9b806157756d5ff934d83a0797ba658b` | **1,891.8** | `56274948` | Primary Grandmaster Ladder (Apex 3000+) |
+| **Secondary** | `gaurav06520` | `KGAT_ec5e135bd5730eb67df2a539d8fcac64` | **1,812.0** | `56254428` | Secondary Exploration Port & Counter-Tape Testing |
+
+### Direct Deploy Command (Mac & Windows):
+```bash
+# Deploy to primary account (gaurav065):
+python3 m3_compute_runner/deploy.py --account gaurav065 --file kaggriculture_architecture/submission.tar.gz --message "Apex Grandmaster 3000+"
+
+# Deploy to secondary account (gaurav06520):
+python3 m3_compute_runner/deploy.py --account gaurav06520 --file kaggriculture_architecture/submission.tar.gz --message "Counter-Tape Exploration"
+```
+
+### Switching Active Account on CLI:
+On Mac / Linux:
+```bash
+source m3_compute_runner/switch_account.sh gaurav065
+# or:
+source m3_compute_runner/switch_account.sh gaurav06520
+```
+
+---
+
+## 7. Deployment Rules & Constraints
 
 > [!CAUTION]
 > **STRICT SUBMISSION RULES**:

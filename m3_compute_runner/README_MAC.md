@@ -1,6 +1,6 @@
 # Apple Silicon Mac M3 Distributed Compute Runner
 
-This package enables high-throughput, multi-core simulation, tournament evaluation, and genetic tape optimization on your Apple Silicon Mac (M3 chip).
+This package enables high-throughput, multi-core simulation, tournament evaluation, genetic tape optimization, and multi-account Kaggle deployment directly from your Apple Silicon Mac (M3 chip).
 
 ---
 
@@ -24,6 +24,36 @@ cd Coding_session_2026/m3_compute_runner
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
+
+---
+
+## 🔑 Multi-Account Kaggle Deployment Ports
+
+Both Kaggle accounts are pre-configured as deployment ports:
+
+| Account | Role / Purpose | Token | Active Sub ID | Current Elo |
+| :--- | :--- | :--- | :--- | :--- |
+| **`gaurav065`** | **Primary Grandmaster Ladder** | `KGAT_9b806157756d5ff934d83a0797ba658b` | `56274948` | **1,891.8** |
+| **`gaurav06520`** | **Secondary Exploration Port** | `KGAT_ec5e135bd5730eb67df2a539d8fcac64` | `56254428` | **1,812.0** |
+
+### How to Switch Accounts on Mac CLI:
+```bash
+# Switch active session to gaurav065:
+source switch_account.sh gaurav065
+
+# Switch active session to gaurav06520:
+source switch_account.sh gaurav06520
+```
+
+### Direct Automated Deployment from Mac:
+You can deploy any package directly to either account using the multi-account deployer:
+```bash
+# Deploy to primary account (gaurav065):
+python3 deploy.py --account gaurav065 --file ../kaggriculture_architecture/submission.tar.gz --message "M3 Optimized Apex Grandmaster"
+
+# Deploy to secondary account (gaurav06520):
+python3 deploy.py --account gaurav06520 --file ../kaggriculture_architecture/submission.tar.gz --message "M3 Counter-Tape Exploration"
 ```
 
 ---
