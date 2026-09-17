@@ -41,7 +41,7 @@ CHASSIS_SETTINGS = {
     'market_crash': True,
     'budget_guard': False,
     'room_guard': False,
-    'clamp_sells': False,
+    'clamp_sells': True,
     'dead_stock': False,
     'terminal_liquidation': False,
 }

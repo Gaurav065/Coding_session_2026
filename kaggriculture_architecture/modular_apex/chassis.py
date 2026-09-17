@@ -10,6 +10,7 @@ ANIMAL_STRUCTURE = {"GOOSE": "COOP", "COW": "PASTURE", "SHEEP": "PASTURE"}
 LAND_PRICES = (1000, 2000, 4000)
 MOVES = {"NORTH": (0, -1), "SOUTH": (0, 1), "EAST": (1, 0), "WEST": (-1, 0)}
 FRONT_RUN_ITEMS = ("MILK", "WOOL", "STRAWBERRY", "MELON")
+CRASH_DUMP_ITEMS = ("STRAWBERRY", "MELON", "MILK", "WOOL", "TOMATO", "CARROT")
 LAST_ACT_STEP = 718
 PASS_ACTION = {"farmer": ["PASS"], "hands": [], "market": []}
 
@@ -133,6 +134,7 @@ class _View:
     """Cheap per-step snapshot of everything the layers read from the observation."""
 
     def __init__(self, observation, player, cfg):
+        self.player = player
         farms = list(_get(observation, "farms", []) or [])
         self.farm = farms[player] if player < len(farms) else {}
         self.rival = farms[1 - player] if len(farms) >= 2 and 1 - player < len(farms) else {}
@@ -180,7 +182,7 @@ class Chassis:
     # ---- state -----------------------------------------------------------------
     def _state(self, player, step):
         st = self.players.get(player)
-        if st is None or step == 0 or step <= st["last_step"]:
+        if st is None or step == 0 or step < st["last_step"]:
             st = {"last_step": -1, "route": None, "router_state": {},
                   "pending": {}, "sell_state": {"due_step": -1, "suppress": {}}}
             self.players[player] = st
@@ -231,6 +233,7 @@ class Chassis:
                 self._hand_align(action, view)
             if cfg["weed_repair"]:
                 self._weed_repair(action, view, st, route, step)
+            self._unit_utilization_guard(action, view, st, step)
             if cfg["sell_lead"] or cfg["front_run"] or cfg.get("market_crash", False):
                 self._apply_suppression(action, st["sell_state"], step)
             projected = self._projected_shed(action, view)
@@ -241,7 +244,7 @@ class Chassis:
             if cfg["front_run"] and self.opponent_plan:
                 self._front_run(action, view, lead_available, route, step, next_sup)
             if cfg.get("market_crash", False):
-                self._market_crash_dump(action, view, lead_available, route, step, next_sup)
+                self._market_crash_dump(action, view, lead_available, route, step, next_sup, st)
             st["sell_state"] = next_sup
             if cfg["budget_guard"]:
                 self._budget_guard(action, view, route, step)
@@ -314,6 +317,36 @@ class Chassis:
             elif is_weed and noop:
                 act = ["DIG"]
             units[i] = act
+        action["farmer"] = units[0]
+        action["hands"] = units[1:]
+
+    # ---- layer: crop_water_guard ----------------------------------------------
+    # ---- layer: unit_utilization_guard ----------------------------------------
+    def _unit_utilization_guard(self, action, view, st, step):
+        """Strictly in-place worker efficiency & life-support guard:
+        1. If an idle worker (PASS) stands on an unwatered PLANT: convert to WATER.
+        2. If an idle worker (PASS) stands on a fed, uncared animal: convert to CARE.
+        3. Never move workers off their designated path: keep them PASS if they have no valid action.
+        """
+        tiles = view.tiles
+        positions = [tuple(p) for p in view.positions]
+        units = [action.get("farmer") or ["PASS"]] + list(action.get("hands") or [])
+
+        for i in range(min(len(units), len(positions))):
+            act = units[i]
+            if not act or act[0] != "PASS":
+                continue
+            x, y = positions[i]
+            t = _tile_at(tiles, (x, y))
+            if not isinstance(t, dict):
+                continue
+            kind = _get(t, "kind")
+            if kind == "PLANT" and not _get(t, "watered_today"):
+                units[i] = ["WATER"]
+            elif kind in ("COOP", "PASTURE") and _get(t, "animal"):
+                if _get(t, "fed_today") and not _get(t, "cared_today"):
+                    units[i] = ["CARE"]
+
         action["farmer"] = units[0]
         action["hands"] = units[1:]
 
@@ -406,24 +439,26 @@ class Chassis:
             if item in ("WHEAT", "FERTILIZER") or planned.get(item, 0) <= 0 or item in already:
                 continue
             qty = min(projected.get(item, 0), planned[item])
-            if qty <= 0 or view.prices.get(item, 0) < cfg["min_sell_price"]:
+            if qty <= 0:
                 continue
-            if not self._add_sell(action, item, qty, cfg["max_orders"], merge=False):
+            if not self._add_sell(action, item, qty, cfg["max_orders"]):
                 break
             projected[item] -= qty
+            already.add(item)
             next_sup["suppress"][item] = next_sup["suppress"].get(item, 0) + qty
         if next_sup["suppress"]:
             next_sup["due_step"] = nxt
 
     def _front_run(self, action, view, projected, route, step, next_sup):
-        """Hook: if ``opponent_plan`` (their expected tape) schedules a SELL of
-        MILK/WOOL/STRAWBERRY/MELON next step, sell what we hold of it now (before
-        their supply depresses the price) and suppress our own SELL of that quantity
-        next step. Bounded by our own remaining planned sales so it never dumps."""
+        """dmitrii _front_run: when the opponent plan is known, if the opponent plans
+        to sell a FRONT_RUN_ITEM next step and we have stock at viable price, sell now
+        ahead of them to capture the higher pre-drop price."""
         cfg = self.cfg
         nxt = step + 1
+        if nxt > LAST_ACT_STEP or not self.opponent_plan:
+            return
         plan = self.opponent_plan
-        if nxt > LAST_ACT_STEP or nxt >= len(plan) or not isinstance(plan[nxt], dict):
+        if nxt >= len(plan):
             return
         already = {o[1] for o in action.get("market") or [] if o and o[0] == "SELL" and len(o) > 1}
         for o in plan[nxt].get("market") or []:
@@ -446,67 +481,74 @@ class Chassis:
             next_sup["due_step"] = nxt
 
     # ---- layer: market_crash --------------------------------------------------
-    def _market_crash_dump(self, action, view, projected, route, step, next_sup):
-        """Mass Market Dumping Starvation Layer:
-        Monitors rival tiles and units in real-time. When rival has mature crops
-        (MELON, STRAWBERRY, TOMATO, CARROT) or livestock products (MILK, WOOL)
-        ready to harvest or nearing shed, and market price is lucrative (>= $10):
-        Dump shed stock ahead of them to crash the price to the $1.00 floor,
-        starving the opponent of harvest profits and worker wage capital.
+    def _market_crash_dump(self, action, view, projected, route, step, next_sup, st=None):
+        """Precision Market Dumping Starvation Layer:
+        Monitors rival harvests and inventory in real-time.
+        Strikes at the exact turn the rival harvests premium crops
+        (STRAWBERRY, MELON, TOMATO, CARROT) or produces livestock (MILK, WOOL).
+        Dumps shed stock ahead of rival sell orders, crashing the market to the $1 floor,
+        without ever displacing critical non-sell orders (HIRE, BUY_*).
         """
         cfg = self.cfg
         if step > LAST_ACT_STEP or not view.rival:
             return
 
         rival_tiles = _get(view.rival, "tiles", []) or []
-        day = step // cfg["turns_per_day"]
-        vulnerable_items = set()
+        if st is None:
+            st = self.players.get(view.player, {})
+        rival_prev = st.setdefault("rival_prev_tiles", {})
+        rival_harvests = st.setdefault("rival_harvests", {})
 
+        # 1. Real-time rival harvest & mature crop tracking
+        for y in range(min(10, len(rival_tiles))):
+            for x in range(min(10, len(rival_tiles[y]))):
+                curr_t = _tile_at(rival_tiles, (x, y))
+                prev_crop, prev_yield = rival_prev.get((x, y), (None, 0))
+
+                curr_crop = _get(curr_t, "crop") if isinstance(curr_t, dict) and _get(curr_t, "kind") == "PLANT" else None
+                curr_yield = _int(_get(curr_t, "yield_units", 0)) if curr_crop else 0
+
+                if prev_crop and prev_yield > 0 and (curr_crop != prev_crop or curr_yield < prev_yield):
+                    # RIVAL HARVESTED! Active strike window
+                    rival_harvests[prev_crop] = step
+                elif curr_crop and curr_yield >= 2:
+                    # RIVAL HAS RIPE CROPS on the vine (pre-strike alert)
+                    rival_harvests[curr_crop] = step
+
+                rival_prev[(x, y)] = (curr_crop, curr_yield)
+
+        # 2. Real-time rival livestock product tracking
         for row in rival_tiles:
             for tile in row:
                 if not isinstance(tile, dict):
                     continue
                 kind = _get(tile, "kind")
-                if kind == "PLANT":
-                    crop = _get(tile, "crop")
-                    yield_units = _int(_get(tile, "yield_units", 0))
-                    age = day - _int(_get(tile, "planted_day", 0))
-                    if (crop == "MELON" and (yield_units > 0 or age >= 9) or
-                        crop == "STRAWBERRY" and (yield_units > 0 or age >= 8) or
-                        crop == "TOMATO" and (yield_units > 0 or age >= 7) or
-                        crop == "CARROT" and (yield_units > 0 or age >= 2)):
-                        vulnerable_items.add(crop)
-                elif kind in ("COOP", "PASTURE"):
+                if kind in ("COOP", "PASTURE"):
                     animal = _get(tile, "animal")
                     yield_units = _int(_get(tile, "yield_units", 0))
                     if animal == "COW" and (yield_units > 0 or _get(tile, "fed_today")):
-                        vulnerable_items.add("MILK")
+                        rival_harvests["MILK"] = step
                     elif animal == "SHEEP" and (yield_units > 0 or _get(tile, "fed_today")):
-                        vulnerable_items.add("WOOL")
+                        rival_harvests["WOOL"] = step
 
-        if not vulnerable_items:
-            return
-
-        dump_orders = []
-        for item in vulnerable_items:
-            price = view.prices.get(item, 0)
-            if price < 10:
-                continue
-            avail = projected.get(item, 0)
-            if avail <= 0:
-                continue
-            qty = min(avail, 10)
-            if qty <= 0:
-                continue
-            dump_orders.append(["SELL", item, qty])
-            projected[item] -= qty
-            next_sup["suppress"][item] = next_sup["suppress"].get(item, 0) + qty
-
-        if dump_orders:
-            next_sup["due_step"] = step + 1
-            market = action.setdefault("market", [])
-            other_orders = [o for o in market if not (o and o[0] == "SELL" and o[1] in vulnerable_items)]
-            action["market"] = (dump_orders + other_orders)[:cfg["max_orders"]]
+        # 3. Precision strike execution
+        hour = step % cfg["turns_per_day"]
+        for item in CRASH_DUMP_ITEMS:
+            last_harvest = rival_harvests.get(item, -999)
+            # Strike when rival harvested recently (within 24 turns), or morning sell wave (hour == 1)
+            strike = (0 <= step - last_harvest <= 24) or (hour == 1 and 0 <= step - last_harvest <= 48)
+            if strike:
+                price = view.prices.get(item, 0)
+                if price >= 5:
+                    avail = projected.get(item, 0)
+                    if item == "WHEAT":
+                        avail = max(0, avail - 20)  # Reserve wheat for animal feed
+                    if avail > 0:
+                        qty = min(avail, 4)
+                        if self._add_sell(action, item, qty, cfg["max_orders"], merge=True):
+                            projected[item] -= qty
+                            next_sup["suppress"][item] = next_sup["suppress"].get(item, 0) + qty
+                            rival_harvests[item] = -999
 
 
     # ---- layer: budget_guard --------------------------------------------------
@@ -688,7 +730,8 @@ class Chassis:
                 n = min(_int(o[2]), have)
                 n = max(0, n)
                 avail[o[1]] = have - n
-                kept.append(["SELL", o[1], n])
+                if n > 0:
+                    kept.append(["SELL", o[1], n])
             else:
                 kept.append(o)
                 if o and o[0] in ("BUY_PRODUCT", "BUY_ANIMAL") and len(o) >= 3:
