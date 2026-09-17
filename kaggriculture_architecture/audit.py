@@ -96,6 +96,9 @@ def run_audit(agent_fn, opponent="starter", steps=720, seed=42, agent_name="Agen
     # 4. Livestock
     livestock_placed = defaultdict(list)
     livestock_escaped = []
+    animal_days = defaultdict(int)
+    animal_fed_days = defaultdict(int)
+    animal_unfed_days = defaultdict(int)
 
     # 5. Workers
     worker_actions = defaultdict(lambda: defaultdict(int)) # role -> action_type -> count
@@ -212,12 +215,23 @@ def run_audit(agent_fn, opponent="starter", steps=720, seed=42, agent_name="Agen
                         if animal:
                             if not isinstance(prev, dict) or prev.get("animal") != animal:
                                 livestock_placed[animal].append((s_idx, x, y))
+                        elif isinstance(prev, dict) and prev.get("animal"):
+                            livestock_escaped.append((s_idx, day, x, y, prev.get("animal")))
 
                 elif t is None and isinstance(prev, dict):
                     if prev.get("kind") in ("COOP", "PASTURE") and prev.get("animal") is not None:
                         livestock_escaped.append((s_idx, day, x, y, prev.get("animal")))
 
                 tile_history[(x, y)] = t
+
+                # Daily livestock feeding check at hour 23
+                if hour == 23 and isinstance(t, dict) and t.get("animal"):
+                    an = t.get("animal")
+                    animal_days[an] += 1
+                    if t.get("fed_today"):
+                        animal_fed_days[an] += 1
+                    else:
+                        animal_unfed_days[an] += 1
 
     # Post-game telemetry aggregation
     final_step = ep_steps[-1][player]
@@ -321,7 +335,24 @@ def run_audit(agent_fn, opponent="starter", steps=720, seed=42, agent_name="Agen
         for item, cnt in sorted(phantom_sells.items(), key=lambda x: x[1], reverse=True)[:5]:
             print(f"  - {item:<12}: {cnt:>6,} phantom sell orders/units")
 
-    print("\n4. DIAGNOSTIC VERDICT:")
+    print("\n4. LIVESTOCK WELFARE & FEEDING MATRIX:")
+    print(f"{'Animal':<10} | {'Placed':<8} | {'Total Days':<12} | {'Fed %':<8} | {'Unfed Days':<12} | {'Escaped':<8}")
+    print("-" * 70)
+    all_animals = sorted(list(set(list(livestock_placed.keys()) + list(animal_days.keys()))))
+    if not all_animals:
+        print("No livestock placed this episode.")
+    else:
+        for a in all_animals:
+            placed = len(livestock_placed.get(a, []))
+            tot_d = animal_days.get(a, 0)
+            fed_d = animal_fed_days.get(a, 0)
+            unfed_d = animal_unfed_days.get(a, 0)
+            fed_pct = f"{(fed_d / tot_d * 100):.1f}%" if tot_d > 0 else "N/A"
+            esc_cnt = sum(1 for e in livestock_escaped if e[4] == a)
+            esc_marker = " ❌ ESCAPED" if esc_cnt > 0 else ""
+            print(f"{a:<10} | {placed:<8} | {tot_d:<12} | {fed_pct:<8} | {unfed_d:<12} | {esc_cnt:<8}{esc_marker}")
+
+    print("\n5. DIAGNOSTIC VERDICT:")
     if flags_critical:
         print("❌ STATUS: CRITICAL DEFECTS DETECTED (Fix Required)")
         for f in flags_critical:

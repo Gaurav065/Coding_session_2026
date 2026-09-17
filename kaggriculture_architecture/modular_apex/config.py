@@ -39,6 +39,8 @@ CHASSIS_SETTINGS = {
     'sell_lead': True,
     'front_run': False,
     'market_crash': True,
+    'animal_life_support': True,
+    'progressive_sales': True,
     'budget_guard': False,
     'room_guard': False,
     'clamp_sells': True,

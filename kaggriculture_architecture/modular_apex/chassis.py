@@ -205,9 +205,13 @@ class Chassis:
             for t in range(n - 1, -1, -1):
                 for p in PRODUCTS:
                     table[p][t] = table[p][t + 1]
-                for o in (tape[t].get("market") or []) if isinstance(tape[t], dict) else []:
-                    if o and o[0] == "SELL" and len(o) >= 3 and o[1] in table:
-                        table[o[1]][t] += max(0, _int(o[2]))
+                # Filter out terminal dummy liquidation orders (step >= 712 or qty >= 100)
+                if t < 712:
+                    for o in (tape[t].get("market") or []) if isinstance(tape[t], dict) else []:
+                        if o and o[0] == "SELL" and len(o) >= 3 and o[1] in table:
+                            qty = max(0, _int(o[2]))
+                            if qty < 100:
+                                table[o[1]][t] += qty
             self._future_sells[route] = table
         col = table.get(item)
         return col[step] if col and 0 <= step < len(col) else 0
@@ -246,6 +250,10 @@ class Chassis:
             if cfg.get("market_crash", False):
                 self._market_crash_dump(action, view, lead_available, route, step, next_sup, st)
             st["sell_state"] = next_sup
+            if cfg.get("animal_life_support", False):
+                self._animal_life_support(action, view, projected, step)
+            if cfg.get("progressive_sales", False):
+                self._progressive_yield_sales(action, view, projected, step)
             if cfg["budget_guard"]:
                 self._budget_guard(action, view, route, step)
             if cfg["room_guard"]:
@@ -325,8 +333,12 @@ class Chassis:
     def _unit_utilization_guard(self, action, view, st, step):
         """Strictly in-place worker efficiency & life-support guard:
         1. If an idle worker (PASS) stands on an unwatered PLANT: convert to WATER.
-        2. If an idle worker (PASS) stands on a fed, uncared animal: convert to CARE.
-        3. Never move workers off their designated path: keep them PASS if they have no valid action.
+        2. If an idle worker stands on a ripe PLANT: convert to HARVEST.
+        3. If an idle worker stands on an unfed animal and has WHEAT: convert to FEED.
+        4. If an idle worker stands on a fed, uncared animal: convert to CARE.
+        5. If an idle worker stands on a cared animal with fertilizer available: convert to COLLECT_FERTILIZER.
+        6. If an idle worker stands on an animal with unharvested yield: convert to HARVEST.
+        7. Never move workers off their designated path: keep them PASS if they have no valid action.
         """
         tiles = view.tiles
         positions = [tuple(p) for p in view.positions]
@@ -341,11 +353,24 @@ class Chassis:
             if not isinstance(t, dict):
                 continue
             kind = _get(t, "kind")
-            if kind == "PLANT" and not _get(t, "watered_today"):
-                units[i] = ["WATER"]
+            if kind == "PLANT":
+                if not _get(t, "watered_today"):
+                    units[i] = ["WATER"]
+                elif _get(t, "yield_units", 0) > 0:
+                    units[i] = ["HARVEST"]
             elif kind in ("COOP", "PASTURE") and _get(t, "animal"):
-                if _get(t, "fed_today") and not _get(t, "cared_today"):
+                # 1. Life support: FEED if unfed and holding wheat
+                if not _get(t, "fed_today") and view.inv(i).get("WHEAT", 0) > 0:
+                    units[i] = ["FEED"]
+                # 2. Care bonus: CARE if fed and uncared
+                elif _get(t, "fed_today") and not _get(t, "cared_today"):
                     units[i] = ["CARE"]
+                # 3. Fertilizer collection: COLLECT_FERTILIZER if available
+                elif _get(t, "fertilizer_available"):
+                    units[i] = ["COLLECT_FERTILIZER"]
+                # 4. Harvest yield if available
+                elif _get(t, "yield_units", 0) > 0:
+                    units[i] = ["HARVEST"]
 
         action["farmer"] = units[0]
         action["hands"] = units[1:]
@@ -511,7 +536,7 @@ class Chassis:
                 if prev_crop and prev_yield > 0 and (curr_crop != prev_crop or curr_yield < prev_yield):
                     # RIVAL HARVESTED! Active strike window
                     rival_harvests[prev_crop] = step
-                elif curr_crop and curr_yield >= 2:
+                elif curr_crop and curr_yield >= 1:
                     # RIVAL HAS RIPE CROPS on the vine (pre-strike alert)
                     rival_harvests[curr_crop] = step
 
@@ -550,6 +575,105 @@ class Chassis:
                             next_sup["suppress"][item] = next_sup["suppress"].get(item, 0) + qty
                             rival_harvests[item] = -999
 
+    # ---- layer: animal_life_support -------------------------------------------
+    def _animal_life_support(self, action, view, projected, step):
+        """Active Animal Life Support:
+        1. Count living animals on our farm.
+        2. If shed wheat + held wheat is below safe reserve, queue BUY_PRODUCT WHEAT.
+        3. If a worker is shed-adjacent and holds 0 wheat while animals need food, PICKUP WHEAT.
+        """
+        tiles = view.tiles
+        animals = 0
+        unfed_animals = 0
+        for row in tiles:
+            for t in row:
+                if isinstance(t, dict) and _get(t, "animal"):
+                    animals += 1
+                    if not _get(t, "fed_today"):
+                        unfed_animals += 1
+
+        if animals == 0:
+            return
+
+        shed_wheat = view.shed.get("WHEAT", 0)
+        held_wheat = view.in_hands("WHEAT")
+        total_wheat = shed_wheat + held_wheat
+        needed_reserve = max(animals * 2, 8)
+
+        # 1. Market order: Buy wheat if reserves drop below safe threshold
+        if total_wheat < needed_reserve and view.money >= 30:
+            buy_qty = min(needed_reserve - total_wheat, 5)
+            market = action.setdefault("market", [])
+            has_wheat_buy = any(o and o[0] == "BUY_PRODUCT" and o[1] == "WHEAT" for o in market)
+            if not has_wheat_buy and len(market) < self.cfg["max_orders"]:
+                market.insert(0, ["BUY_PRODUCT", "WHEAT", buy_qty])
+
+        # 2. Worker pickup: if an unfed animal exists, shed-adjacent idle workers grab wheat
+        units = [action.get("farmer") or ["PASS"]] + list(action.get("hands") or [])
+        if shed_wheat > 0 and unfed_animals > 0:
+            for i in range(min(len(units), len(view.positions))):
+                pos = view.positions[i]
+                if _shed_adjacent(pos, view.board):
+                    act = units[i]
+                    if act and act[0] == "PASS" and view.inv(i).get("WHEAT", 0) == 0:
+                        pickup_qty = min(shed_wheat, 2)
+                        if pickup_qty > 0:
+                            units[i] = ["PICKUP", "WHEAT", pickup_qty]
+                            shed_wheat -= pickup_qty
+                            unfed_animals -= 1
+                            if unfed_animals <= 0:
+                                break
+
+        action["farmer"] = units[0]
+        action["hands"] = units[1:]
+
+    # ---- layer: progressive_yield_sales ---------------------------------------
+    def _progressive_yield_sales(self, action, view, projected, step):
+        """Progressive Yield Sales Layer:
+        Continuously sells harvested produce (MELON, STRAWBERRY, CARROT, TOMATO, MILK, WOOL, FERTILIZER)
+        to meet town demand and keep the shed clean, earning top prices and preventing shed overflow.
+        Maintains a strict wheat reserve for living livestock.
+        """
+        cfg = self.cfg
+        market = action.setdefault("market", [])
+        if len(market) >= cfg["max_orders"]:
+            return
+
+        # Keep a safe reserve of WHEAT for animals (animals * 3, min 10)
+        animals = sum(1 for row in view.tiles for t in row if isinstance(t, dict) and _get(t, "animal"))
+        wheat_reserve = max(animals * 3, 10)
+
+        existing_sells = {o[1]: _int(o[2]) for o in market if o and o[0] == "SELL" and len(o) >= 3}
+
+        # Priority: Premium crops & livestock first, then staples, then fertilizer, then surplus wheat
+        sale_priority = ["MELON", "STRAWBERRY", "MILK", "WOOL", "TOMATO", "CARROT", "FERTILIZER", "WHEAT"]
+
+        for item in sale_priority:
+            if len(market) >= cfg["max_orders"]:
+                break
+            price = view.prices.get(item, 0)
+            if price < 2:
+                continue
+
+            avail = projected.get(item, 0) - existing_sells.get(item, 0)
+            if item == "WHEAT":
+                avail = max(0, avail - wheat_reserve)
+
+            if avail <= 0:
+                continue
+
+            # Steady batches: 2-4 units to feed town consumption without crashing price
+            # Near end of game (step >= 680) or when shed is crowded (> 70 items), sell more aggressively
+            shed_crowded = sum(view.shed.values()) >= 70
+            if step >= 680 or shed_crowded:
+                qty = min(avail, 10)
+            else:
+                qty = min(avail, 4)
+
+            if qty > 0:
+                if self._add_sell(action, item, qty, cfg["max_orders"], merge=True):
+                    projected[item] -= qty
+                    existing_sells[item] = existing_sells.get(item, 0) + qty
 
     # ---- layer: budget_guard --------------------------------------------------
     def _block_requirements(self, view, route, start, end):
