@@ -9,8 +9,12 @@ from pathlib import Path
 import kaggle_environments
 
 def verify():
-    tar_path = Path(__file__).resolve().parent.parent / "kaggriculture_architecture" / "submission.tar.gz"
-    assert tar_path.exists(), f"Missing {tar_path}"
+    candidates = [
+        Path(__file__).resolve().parent.parent / "submission.tar.gz",
+        Path(__file__).resolve().parent.parent / "kaggriculture_architecture" / "submission.tar.gz",
+    ]
+    tar_path = next((p for p in candidates if p.exists()), candidates[0])
+    assert tar_path.exists(), f"Missing submission.tar.gz in candidates: {candidates}"
     
     with tempfile.TemporaryDirectory() as tmpdir:
         with tarfile.open(tar_path, "r:gz") as tar:
