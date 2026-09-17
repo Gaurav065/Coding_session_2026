@@ -69,15 +69,20 @@ python modular_apex/packager.py
 
 ## Deployment to Kaggle
 
+The agent is compiled into a single self-contained Python file: `submission.py` (and `main.py`). No `.tar.gz` or `.zip` archive is required.
+
 Deploy directly to the primary Grandmaster account (`gaurav065`):
 
 ```bash
-python deploy.py --account gaurav065 --message "Apex Grandmaster v2.0"
+python deploy.py --account gaurav065 --message "Apex Grandmaster Single File"
 ```
 
-Or switch native CLI credentials:
+Or submit directly via Kaggle CLI:
 
 ```bash
 source switch_account.sh gaurav065
-kaggle competitions submit kaggriculture -f submission.tar.gz -m "Apex Grandmaster v2.0"
+kaggle competitions submit kaggriculture -f submission.py -m "Apex Grandmaster Single File"
 ```
+
+Or upload `submission.py` directly to the Kaggle Web UI:
+`https://www.kaggle.com/competitions/kaggriculture/submissions`

@@ -9,42 +9,51 @@ from pathlib import Path
 import kaggle_environments
 
 def verify():
-    candidates = [
-        Path(__file__).resolve().parent / "submission.tar.gz",
-        Path(__file__).resolve().parent.parent / "submission.tar.gz",
-    ]
-    tar_path = next((p for p in candidates if p.exists()), candidates[0])
-    assert tar_path.exists(), f"Missing submission.tar.gz in candidates: {candidates}"
-    
-    with tempfile.TemporaryDirectory() as tmpdir:
+    py_path = Path(__file__).resolve().parent / "submission.py"
+    if py_path.exists():
+        print(f"Verifying standalone Python file: {py_path.name} ({py_path.stat().st_size:,} bytes)...")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("sub_module", str(py_path))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        agent_fn = mod.agent
+    else:
+        candidates = [
+            Path(__file__).resolve().parent / "submission.tar.gz",
+            Path(__file__).resolve().parent.parent / "submission.tar.gz",
+        ]
+        tar_path = next((p for p in candidates if p.exists()), candidates[0])
+        assert tar_path.exists(), f"Missing submission.tar.gz in candidates: {candidates}"
+        tmpdir = tempfile.mkdtemp()
         with tarfile.open(tar_path, "r:gz") as tar:
             tar.extractall(tmpdir)
         sys.path.insert(0, tmpdir)
         import main
+        agent_fn = main.agent
 
-        print("1. Match vs Starter (Seed 42)...")
-        env1 = kaggle_environments.make("kaggriculture", configuration={"episodeSteps": 720, "seed": 42})
-        env1.run([main.agent, "starter"])
-        s1_us, s1_opp = env1.steps[-1][0]["reward"], env1.steps[-1][1]["reward"]
-        print(f"   Score: Us = ${s1_us:,.0f} | Starter = ${s1_opp:,.0f}")
-        assert s1_us > s1_opp * 10, "Should crush starter agent"
+    print("1. Match vs Starter (Seed 42)...")
+    env1 = kaggle_environments.make("kaggriculture", configuration={"episodeSteps": 720, "seed": 42})
+    env1.run([agent_fn, "starter"])
+    s1_us, s1_opp = env1.steps[-1][0]["reward"], env1.steps[-1][1]["reward"]
+    print(f"   Score: Us = ${s1_us:,.0f} | Starter = ${s1_opp:,.0f}")
+    assert s1_us > s1_opp * 10, "Should crush starter agent"
 
-        print("2. Match vs Random (Seed 42)...")
-        env2 = kaggle_environments.make("kaggriculture", configuration={"episodeSteps": 720, "seed": 42})
-        env2.run([main.agent, "random"])
-        s2_us, s2_opp = env2.steps[-1][0]["reward"], env2.steps[-1][1]["reward"]
-        print(f"   Score: Us = ${s2_us:,.0f} | Random = ${s2_opp:,.0f}")
-        assert s2_us > s2_opp * 10, "Should crush random agent"
+    print("2. Match vs Random (Seed 42)...")
+    env2 = kaggle_environments.make("kaggriculture", configuration={"episodeSteps": 720, "seed": 42})
+    env2.run([agent_fn, "random"])
+    s2_us, s2_opp = env2.steps[-1][0]["reward"], env2.steps[-1][1]["reward"]
+    print(f"   Score: Us = ${s2_us:,.0f} | Random = ${s2_opp:,.0f}")
+    assert s2_us > s2_opp * 10, "Should crush random agent"
 
-        print("3. Match vs Pass (Seed 100 - Pizza 2+ SE Expansion)...")
-        env3 = kaggle_environments.make("kaggriculture", configuration={"episodeSteps": 720, "seed": 100})
-        env3.run([main.agent, "pass"])
-        s3_us, s3_opp = env3.steps[-1][0]["reward"], env3.steps[-1][1]["reward"]
-        quads = env3.steps[-1][0]["observation"]["farms"][0]["unlocked_quadrants"]
-        print(f"   Score: Us = ${s3_us:,.0f} | Pass = ${s3_opp:,.0f} | Quads = {quads}")
-        assert len(quads) == 4, "Should unlock all 4 quadrants"
+    print("3. Match vs Pass (Seed 100 - Pizza 2+ SE Expansion)...")
+    env3 = kaggle_environments.make("kaggriculture", configuration={"episodeSteps": 720, "seed": 100})
+    env3.run([agent_fn, "pass"])
+    s3_us, s3_opp = env3.steps[-1][0]["reward"], env3.steps[-1][1]["reward"]
+    quads = env3.steps[-1][0]["observation"]["farms"][0]["unlocked_quadrants"]
+    print(f"   Score: Us = ${s3_us:,.0f} | Pass = ${s3_opp:,.0f} | Quads = {quads}")
+    assert len(quads) == 4, "Should unlock all 4 quadrants"
 
-        print("\nAll sandbox tests PASSED! The submission tarball is flawless.")
+    print("\nAll sandbox tests PASSED! The submission is flawless.")
 
 if __name__ == "__main__":
     verify()

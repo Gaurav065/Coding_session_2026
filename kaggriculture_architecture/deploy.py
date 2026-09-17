@@ -38,12 +38,11 @@ def deploy(account_name, file_path=None, description=None):
     # Locate package to deploy
     if not file_path:
         candidates = [
+            ROOT / "submission.py",
             ROOT / "submission.tar.gz",
-            ROOT.parent / "kaggriculture_architecture" / "submission.tar.gz",
-            ROOT / "discovered_tapes.json"
         ]
         for c in candidates:
-            if c.exists() and c.suffix in (".gz", ".py"):
+            if c.exists() and c.suffix in (".py", ".gz"):
                 file_path = c
                 break
 
