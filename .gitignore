@@ -17,4 +17,6 @@ episode-*.json
 cash_deposit_report_spark.py
 venv/
 m3_compute_runner/venv/
+.DS_Store
+*.DS_Store
 
