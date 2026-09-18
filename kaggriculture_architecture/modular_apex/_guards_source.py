@@ -981,11 +981,16 @@ def _v233_eligible(obs,native):
     milk_shops=sum(shops.count(s) for s in ('ICE_CREAM_SHOP','PIZZA_SHOP','SMOOTHIE_SHOP'))
     wool_shops=shops.count('YARN_STORE')
     if animal=='COW':
-        if milk_shops<2 and opp_cows>=2:return False
-        if milk_shops<3 and opp_cows>=4:return False
+        if milk_shops<2:return False
+        if milk_shops<3 and opp_cows>=2:return False
+        if milk_shops<4 and opp_cows>=4:return False
+        if milk_shops<5 and opp_cows>=6:return False
+        if milk_shops<6 and opp_cows>=8:return False
     if animal=='SHEEP':
+        if wool_shops<1:return False
         if wool_shops<2 and opp_sheep>=2:return False
         if wool_shops<3 and opp_sheep>=4:return False
+        if wool_shops<4 and opp_sheep>=6:return False
     if obs['private']['shed'].get('SHEEP',0) or obs['private']['shed'].get('COW',0):return False
     if any(i.get('SHEEP',0) or i.get('COW',0) for i in obs['private']['inventories']):return False
     for day in range(12,30):
@@ -1158,6 +1163,10 @@ def _v234_rescue(obs,action,state):
     shortage=hungry-carried-stock.get('WHEAT',0)
     n_animals=state.get('n_animals',9)
     if not 0<shortage<=n_animals or state.get('rescue_today',0)+shortage>n_animals:return action
+    shops=obs['town'].get('unlocked_shops',[])
+    prices=obs['market']['prices']
+    if animal=='SHEEP' and prices.get('WOOL',0)<=10 and shops.count('YARN_STORE')==0:return action
+    if animal=='COW' and prices.get('MILK',0)<=10 and sum(shops.count(s) for s in ('ICE_CREAM_SHOP','PIZZA_SHOP','SMOOTHIE_SHOP'))<=1:return action
     quote=int(obs['market']['prices']['WHEAT'])
     if quote<1 or farm['money']<1000+shortage*(quote+10) or sum(stock.values())+shortage>100:return action
     result=copy.deepcopy(action);result['market'].append(['BUY_PRODUCT','WHEAT',shortage])
