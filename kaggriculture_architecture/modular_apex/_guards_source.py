@@ -965,14 +965,35 @@ _V233_REPORT=dict(sheep_commit_requests=0,sheep_committed=0,sheep_hire_requests=
 def _v233_eligible(obs,native):
     farm=obs['farms'][obs['player']];prices=obs['market']['prices']
     if len(farm['tiles'])!=10 or set(farm['unlocked_quadrants'])!={'NW','NE','SW'}:return False
-    if obs['town']['unlocked_shops'].count('YARN_STORE')<2 or prices['WOOL']<220 or prices['WHEAT']>45:return False
-    if any(farm['tiles'][y][x]!='LOCKED' for y in (5,6) for x in range(5,8)):return False
-    if obs['private']['shed'].get('SHEEP',0) or any(i.get('SHEEP',0) for i in obs['private']['inventories']):return False
+    if prices['WHEAT']>50 or farm['money']<10000:return False
+    r=native.get('route',0)
+    xmax=9 if r==2 else 8
+    if any(farm['tiles'][y][x]!='LOCKED' for y in range(5,8) for x in range(5,xmax)):return False
+    shops=obs['town'].get('unlocked_shops',[])
+    animal=_v233_choose_animal(obs)
+    if animal=='COW' and not any(s in shops for s in ('ICE_CREAM_SHOP','PIZZA_SHOP','SMOOTHIE_SHOP')):return False
+    if animal=='SHEEP' and 'YARN_STORE' not in shops:return False
+    if animal=='COW' and prices.get('MILK',0)<100:return False
+    if animal=='SHEEP' and prices.get('WOOL',0)<100:return False
+    if obs['private']['shed'].get('SHEEP',0) or obs['private']['shed'].get('COW',0):return False
+    if any(i.get('SHEEP',0) or i.get('COW',0) for i in obs['private']['inventories']):return False
     for day in range(12,30):
         for a in _v219_native_day(native,day):
-            if any(o and (o[0]=='BUY_LAND' or o[:2]==['BUY_ANIMAL','SHEEP']) for o in a.get('market',[])):return False
-            if any(c and c[0] in ('PICKUP','PLACE') and len(c)>1 and c[1]=='SHEEP' for c in [a.get('farmer')]+a.get('hands',[])):return False
+            if any(o and (o[0]=='BUY_LAND' or o[:2] in (['BUY_ANIMAL','SHEEP'],['BUY_ANIMAL','COW'])) for o in a.get('market',[])):return False
+            if any(c and c[0] in ('PICKUP','PLACE') and len(c)>1 and c[1] in ('SHEEP','COW') for c in [a.get('farmer')]+a.get('hands',[])):return False
     return True
+
+def _v233_choose_animal(obs):
+    shops=obs['town']['unlocked_shops']
+    if shops.count('YARN_STORE')>=2:
+        return 'SHEEP'
+    return 'COW'
+
+def _v233_choose_crop(obs):
+    shops=obs['town']['unlocked_shops']
+    if shops.count('PIZZA_SHOP')>=1 or shops.count('FARMERS_MARKET')>=1:
+        return 'TOMATO'
+    return 'STRAWBERRY'
 
 def _v233_request(obs,action,state,native):
     step=int(obs['step']);day=step//24;hour=step%24
@@ -985,12 +1006,20 @@ def _v233_request(obs,action,state,native):
     expected=max(len(a.get('hands',[])) for a in planned)
     if len(farm['hands'])+parent_hires!=expected:return action
     initial=not state.get('committed')
-    extra=([['BUY_LAND'],['BUY_ANIMAL','SHEEP',6]] if initial else [])+[['BUY_PRODUCT','WHEAT',6],['HIRE'],['HIRE']]
+    if initial:
+        state['animal']=_v233_choose_animal(obs)
+    r=native.get('route',0)
+    n_animals=12 if r==2 else 9
+    xmax=9 if r==2 else 8
+    state['n_animals']=n_animals
+    animal=state.get('animal','SHEEP')
+    cost_per_animal=500 if animal=='SHEEP' else 400
+    extra=([['BUY_LAND'],['BUY_ANIMAL',animal,n_animals]] if initial else [])+(([['BUY_PRODUCT','WHEAT',n_animals]] if day<29 else [])+[['HIRE'],['HIRE'],['HIRE']])
     if len(market)+len(extra)>MAX_ORDERS:return action
     stock=projected_shed(action,FarmView(obs))
-    incoming=6+6*initial
-    budget=7000*initial+6*(int(obs['market']['prices']['WHEAT'])+10)
-    budget+=sum(_v219_fib(n) for n in range(farm['hires_today'],farm['hires_today']+parent_hires+2))
+    incoming=(n_animals if day<29 else 0)+n_animals*initial
+    budget=(4000+n_animals*cost_per_animal)*initial+(n_animals if day<29 else 0)*(int(obs['market']['prices']['WHEAT'])+10)
+    budget+=sum(_v219_fib(n) for n in range(farm['hires_today'],farm['hires_today']+parent_hires+3))
     for o in market:
         if not o:continue
         if o[0]=='BUY_LAND':return action
@@ -1004,25 +1033,26 @@ def _v233_request(obs,action,state,native):
     if farm['money']<budget+(3000 if initial else 1000):
         _V233_REPORT['sheep_budget_declines']+=1;return action
     state['requested_day']=day
-    state['pending']={'first':expected+1,'initial':initial}
-    _V233_REPORT['sheep_hire_requests']+=2;_V233_REPORT['sheep_feed_buy_requests']+=6
+    state['pending']={'first':expected+1,'initial':initial,'animal':animal,'n_animals':n_animals,'xmax':xmax}
+    _V233_REPORT['sheep_hire_requests']+=3;_V233_REPORT['sheep_feed_buy_requests']+=(9 if day<29 else 0)
     if initial:_V233_REPORT['sheep_commit_requests']+=1
     result=copy.deepcopy(action);result['market']=market+extra
     return result
 
-def _v233_worker(obs,actor,targets):
-    farm=obs['farms'][obs['player']];private=obs['private'];step=int(obs['step'])
+def _v233_worker(obs,actor,targets,animal,state=None):
+    farm=obs['farms'][obs['player']];private=obs['private'];step=int(obs['step']);day=step//24
     pos=tuple(farm['hands'][actor-1]);inv=private['inventories'][actor]
     access=((4,4),(5,4),(4,5),(5,5))
     home=min(access,key=lambda p:(abs(pos[0]-p[0])+abs(pos[1]-p[1]),p))
     distance=abs(pos[0]-home[0])+abs(pos[1]-home[1])
-    cargo=[item for item in ('WOOL','FERTILIZER') if inv.get(item,0)]
-    if cargo and step%24 >= (22 if step//24==29 else 23)-distance:
-        return _v219_walk(pos,home) or ['PLACE',cargo[0],inv[cargo[0]]]
-    missing=sum(not(isinstance(farm['tiles'][y][x],dict) and farm['tiles'][y][x].get('animal')=='SHEEP') for x,y in targets)
-    if missing and not inv.get('SHEEP',0) and private['shed'].get('SHEEP',0):
-        return _v219_walk(pos,home) or ['PICKUP','SHEEP',min(missing,private['shed']['SHEEP'])]
-    hungry=sum(not(isinstance(farm['tiles'][y][x],dict) and farm['tiles'][y][x].get('fed_today')) for x,y in targets)
+    product='WOOL' if animal=='SHEEP' else 'MILK'
+    cargo=[item for item in ('MILK','WOOL','FERTILIZER','WHEAT','CARROT','TOMATO','STRAWBERRY','MELON') if inv.get(item,0)]
+    if cargo and step%24 >= (21 if day==29 else 23)-distance:
+        return _v219_walk(pos,home) or ['DROP']
+    missing=sum(not(isinstance(farm['tiles'][y][x],dict) and farm['tiles'][y][x].get('animal')==animal) for x,y in targets)
+    if missing and not inv.get(animal,0) and private['shed'].get(animal,0):
+        return _v219_walk(pos,home) or ['PICKUP',animal,min(missing,private['shed'][animal])]
+    hungry=sum(not(isinstance(farm['tiles'][y][x],dict) and farm['tiles'][y][x].get('fed_today')) for x,y in targets) if day<29 else 0
     if hungry and not inv.get('WHEAT',0) and private['shed'].get('WHEAT',0):
         return _v219_walk(pos,home) or ['PICKUP','WHEAT',min(hungry,private['shed']['WHEAT'])]
     tasks=[]
@@ -1031,16 +1061,73 @@ def _v233_worker(obs,actor,targets):
         if tile is None:command=['BUILD_PASTURE']
         elif isinstance(tile,dict) and tile.get('kind')=='WEED':command=['DIG']
         elif isinstance(tile,dict) and tile.get('kind')=='PASTURE' and not tile.get('animal'):
-            if inv.get('SHEEP',0):command=['PLACE','SHEEP']
-        elif isinstance(tile,dict) and tile.get('animal')=='SHEEP':
-            if not tile['fed_today'] and inv.get('WHEAT',0):command=['FEED']
-            elif not tile['cared_today']:command=['CARE']
-            elif tile['yield_units']:command=['HARVEST']
-            elif tile['fertilizer_available']:command=['COLLECT_FERTILIZER']
+            if inv.get(animal,0):command=['PLACE',animal]
+        elif isinstance(tile,dict) and tile.get('animal')==animal:
+            if day==29:
+                if tile['yield_units']:command=['HARVEST']
+                elif tile['fertilizer_available']:command=['COLLECT_FERTILIZER']
+            else:
+                if not tile['fed_today'] and inv.get('WHEAT',0):command=['FEED']
+                elif not tile['cared_today']:command=['CARE']
+                elif tile['yield_units']:command=['HARVEST']
+                elif tile['fertilizer_available']:command=['COLLECT_FERTILIZER']
         if command:tasks.append((abs(pos[0]-x)+abs(pos[1]-y),targets.index(target),target,command))
     if tasks:
         _,_,target,command=min(tasks);return _v219_walk(pos,target) or command
-    if cargo:return _v219_walk(pos,home) or ['PLACE',cargo[0],inv[cargo[0]]]
+    if day==29:
+        if cargo:return _v219_walk(pos,home) or ['DROP']
+        remaining=718-step;scavenge=[]
+        claimed=state.get('claimed',set()) if state else set()
+        for y in range(10):
+            for x in range(10):
+                if (x,y) in claimed:continue
+                t=farm['tiles'][y][x]
+                if isinstance(t,dict) and ('animal' in t or t.get('kind')=='PLANT'):
+                    yu=t.get('yield_units',0);fert=t.get('fertilizer_available',False)
+                    if yu>0 or fert:
+                        d_tile=abs(pos[0]-x)+abs(pos[1]-y)
+                        d_home=min(abs(x-hx)+abs(y-hy) for hx,hy in access)
+                        if d_tile+d_home+2<=remaining:
+                            prio=0 if (x,y)==(6,2) and yu>0 else (1 if yu>0 else 2)
+                            val=yu*(300 if t.get('animal')=='COW' else (200 if t.get('animal')=='SHEEP' else 50))+(20 if fert else 0)
+                            op=['HARVEST'] if yu>0 else ['COLLECT_FERTILIZER']
+                            scavenge.append((prio,-val,d_tile,(x,y),op))
+        if scavenge:
+            scavenge.sort()
+            _,_,_,target,command=scavenge[0]
+            if state:state.setdefault('claimed',set()).add(target)
+            return _v219_walk(pos,target) or command
+    if cargo:return _v219_walk(pos,home) or ['DROP']
+    return ['PASS']
+
+def _v233_crop_worker(obs,actor,targets,crop):
+    farm=obs['farms'][obs['player']];private=obs['private'];step=int(obs['step']);hour=step%24
+    pos=tuple(farm['hands'][actor-1]);inv=private['inventories'][actor]
+    access=((4,4),(5,4),(4,5),(5,5))
+    home=min(access,key=lambda p:(abs(pos[0]-p[0])+abs(pos[1]-p[1]),p))
+    distance=abs(pos[0]-home[0])+abs(pos[1]-home[1])
+    cargo_qty=inv.get(crop,0)
+    if cargo_qty>0 and hour>=(22 if step//24==29 else 23)-distance:
+        return _v219_walk(pos,home) or ['PLACE',crop,cargo_qty]
+    tasks=[];seeds_avail=private['seeds'].get(crop,0)
+    for target in targets:
+        x,y=target;tile=farm['tiles'][y][x];cmd=None
+        if tile is None:
+            if seeds_avail>0:cmd=['PLANT',crop]
+        elif isinstance(tile,dict) and tile.get('kind')=='WEED':cmd=['DIG']
+        elif isinstance(tile,dict) and tile.get('kind')=='PLANT':
+            if tile.get('yield_units',0)>0:cmd=['HARVEST']
+            elif not tile.get('watered_today'):cmd=['WATER']
+        if cmd:
+            dist=abs(pos[0]-x)+abs(pos[1]-y)
+            prio=0 if dist==0 else (1 if cmd[0] in ('HARVEST','WATER') else (2 if cmd[0]=='PLANT' else 3))
+            tasks.append((prio,dist,target,cmd))
+    if tasks:
+        tasks.sort(key=lambda t:(t[0],t[1]))
+        _,_,target,cmd=tasks[0]
+        return _v219_walk(pos,target) or cmd
+    if cargo_qty>0:
+        return _v219_walk(pos,home) or ['PLACE',crop,cargo_qty]
     return ['PASS']
 
 def _v234_rescue(obs,action,state):
@@ -1050,14 +1137,16 @@ def _v234_rescue(obs,action,state):
     if any(o and (o[0] in ('HIRE','BUY_LAND','BUY_ANIMAL','BUY_PRODUCT','BUY_SEED') or (len(o)>1 and o[1]=='WHEAT')) for o in orders):return action
     farm=obs['farms'][obs['player']];private=obs['private'];hungry=carried=0
     commands=[action.get('farmer') or ['PASS']]+list(action.get('hands') or [])
+    animal=state.get('animal','SHEEP')
     for actor,targets in state['workers'].items():
         command=commands[actor]
         if command==['FEED'] or command[:2]==['PICKUP','WHEAT']:return action
         carried+=private['inventories'][actor].get('WHEAT',0)
-        hungry+=sum(isinstance(farm['tiles'][y][x],dict) and farm['tiles'][y][x].get('animal')=='SHEEP' and not farm['tiles'][y][x].get('fed_today') for x,y in targets)
+        hungry+=sum(isinstance(farm['tiles'][y][x],dict) and farm['tiles'][y][x].get('animal')==animal and not farm['tiles'][y][x].get('fed_today') for x,y in targets)
     stock=projected_shed(action,FarmView(obs))
     shortage=hungry-carried-stock.get('WHEAT',0)
-    if not 0<shortage<=6 or state.get('rescue_today',0)+shortage>6:return action
+    n_animals=state.get('n_animals',9)
+    if not 0<shortage<=n_animals or state.get('rescue_today',0)+shortage>n_animals:return action
     quote=int(obs['market']['prices']['WHEAT'])
     if quote<1 or farm['money']<1000+shortage*(quote+10) or sum(stock.values())+shortage>100:return action
     result=copy.deepcopy(action);result['market'].append(['BUY_PRODUCT','WHEAT',shortage])
@@ -1070,7 +1159,7 @@ def agent(observation,configuration=None):
     step=int(observation['step']);player=int(observation['player']);day=step//24
     state=_V233_STATES.get(player)
     if state is None or step<=state['last_step']:
-        state={'last_step':step,'day':-1,'workers':{},'work':{},'credit':{'WOOL':0,'FERTILIZER':0}}
+        state={'last_step':step,'day':-1,'workers':{},'work':{},'credit':{'WOOL':0,'MILK':0,'FERTILIZER':0},'animal':'SHEEP'}
         _V233_STATES[player]=state
     state['last_step']=step
     if configuration is not None and any(configuration.get(k,v)!=v for k,v in
@@ -1078,40 +1167,53 @@ def agent(observation,configuration=None):
     if day<12:return action
     farm=observation['farms'][player];private=observation['private']
     if state['day']!=day:state['day']=day;state['workers']={};state['work']={};state['rescue_today']=0
+    animal=state.get('animal','SHEEP')
+    product='WOOL' if animal=='SHEEP' else 'MILK'
     for actor,previous in state['work'].items():
         if previous['step']!=step-1 or actor>=len(private['inventories']):continue
-        item={'HARVEST':'WOOL','COLLECT_FERTILIZER':'FERTILIZER'}.get(previous['command'][0])
-        if item:
-            gained=max(0,private['inventories'][actor].get(item,0)-previous['inventory'].get(item,0))
-            state['credit'][item]+=gained
-            _V233_REPORT['sheep_wool_harvested' if item=='WOOL' else 'sheep_fert_collected']+=gained
+        cmd=previous['command'][0]
+        if cmd=='HARVEST':
+            gained=max(0,private['inventories'][actor].get(product,0)-previous['inventory'].get(product,0))
+            if gained:
+                state['credit'][product]=state['credit'].get(product,0)+gained
+                _V233_REPORT['sheep_wool_harvested']+=gained
+        elif cmd=='COLLECT_FERTILIZER':
+            gained=max(0,private['inventories'][actor].get('FERTILIZER',0)-previous['inventory'].get('FERTILIZER',0))
+            if gained:
+                state['credit']['FERTILIZER']=state['credit'].get('FERTILIZER',0)+gained
+                _V233_REPORT['sheep_fert_collected']+=gained
     pending=state.pop('pending',None)
     if pending:
-        funded='SE' in farm['unlocked_quadrants'] and (not pending['initial'] or private['shed'].get('SHEEP',0)>=6)
+        animal=pending.get('animal','SHEEP')
+        n_animals=pending.get('n_animals',9)
+        xmax=pending.get('xmax',8)
+        funded='SE' in farm['unlocked_quadrants'] and (not pending['initial'] or private['shed'].get(animal,0)>=n_animals)
         if not funded:_V233_REPORT['sheep_purchase_shortfalls']+=1
-        elif len(farm['hands'])<pending['first']+1:_V233_REPORT['sheep_hire_shortfalls']+=1
+        elif len(farm['hands'])<pending['first']+2:_V233_REPORT['sheep_hire_shortfalls']+=1
         else:
-            for i in range(2):state['workers'][pending['first']+i]=[(x,5+i) for x in range(5,8)]
-            _V233_REPORT['sheep_workers_confirmed']+=2
-            if pending['initial']:state['committed']=True;_V233_REPORT['sheep_committed']+=1
+            for i in range(3):state['workers'][pending['first']+i]=[(x,5+i) for x in range(5,xmax)]
+            _V233_REPORT['sheep_workers_confirmed']+=3
+            if pending['initial']:state['committed']=True;state['animal']=animal;state['n_animals']=n_animals;_V233_REPORT['sheep_committed']+=1
     action=_v233_request(observation,action,state,_IMPL.chassis.players[player])
     if not state.get('committed'):return action
     result=copy.deepcopy(action)
     commands=[result.get('farmer') or ['PASS']]+list(result.get('hands') or [])
     commands += [['PASS'] for _ in range(len(farm['hands'])+1-len(commands))]
     state['work']={}
+    state['claimed']=set()
     for actor,targets in state['workers'].items():
-        command=_v233_worker(observation,actor,targets);commands[actor]=command
+        command=_v233_worker(observation,actor,targets,state.get('animal','SHEEP'),state);commands[actor]=command
         state['work'][actor]={'step':step,'command':command,'inventory':dict(private['inventories'][actor])}
     result['farmer'],result['hands']=commands[0],commands[1:]
     result=_v234_rescue(observation,result,state)
     stock=projected_shed(result,FarmView(observation))
-    for item in ('WOOL','FERTILIZER'):
+    product='WOOL' if state.get('animal')=='SHEEP' else 'MILK'
+    for item in (product,'FERTILIZER'):
         scheduled=sum(int(o[2]) for o in result['market'] if o[:2]==['SELL',item])
-        count=min(state['credit'][item],max(0,stock.get(item,0)-scheduled))
+        count=min(state['credit'].get(item,0),max(0,stock.get(item,0)-scheduled))
         if count and len(result['market'])<MAX_ORDERS:
             result['market'].append(['SELL',item,count]);state['credit'][item]-=count
-            _V233_REPORT['sheep_extra_wool_sales' if item=='WOOL' else 'sheep_extra_fert_sales']+=count
+            _V233_REPORT['sheep_extra_wool_sales' if item==product else 'sheep_extra_fert_sales']+=count
     return result
 
 _R46_SHEEP_AGENT=agent

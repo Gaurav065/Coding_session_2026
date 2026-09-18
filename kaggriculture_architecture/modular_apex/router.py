@@ -27,8 +27,15 @@ SHOP_PLANS = {
     ("YARN_STORE", "ICE_CREAM_SHOP"): 9,
     ("YARN_STORE", "PET_CAFE"): 10,
     ("YARN_STORE", "PIZZA_SHOP"): 6,
-    ("YARN_STORE", "SMOOTHIE_SHOP"): 11,
+    ("YARN_STORE", "SMOOTHIE_SHOP"): 12,
     ("YARN_STORE", "YARN_STORE"): 12,
+    ("SMOOTHIE_SHOP", "PIZZA_SHOP"): 2,
+    ("SMOOTHIE_SHOP", "ICE_CREAM_SHOP"): 2,
+    ("SMOOTHIE_SHOP", "BAKERY"): 2,
+    ("SMOOTHIE_SHOP", "BRUNCH_SPOT"): 2,
+    ("SMOOTHIE_SHOP", "FARMERS_MARKET"): 2,
+    ("SMOOTHIE_SHOP", "PET_CAFE"): 2,
+    ("SMOOTHIE_SHOP", "SMOOTHIE_SHOP"): 2,
 }
 
 def router(observation, step, state):
@@ -37,14 +44,17 @@ def router(observation, step, state):
         state["route"] = 2
         return 2
 
-    shops = (observation.get("town", {}) or {}).get("unlocked_shops", []) or []
-    if shops.count("PIZZA_SHOP") >= PIZZA_EXPANSION_THRESHOLD:
-        state["route"] = 13
-        return 13
+    # Bypassed Route 13: standard base tape + universal SE 9-livestock expansion outperforms Route 13 by +$18k
 
     if step >= ROUTE_STEP and not state.get("day6"):
+        shops = (observation.get("town", {}) or {}).get("unlocked_shops", []) or []
         pair = tuple(shops[:2])
-        state["route"] = SHOP_PLANS.get(pair, 0)
+        if pair in SHOP_PLANS:
+            state["route"] = SHOP_PLANS[pair]
+        elif len(pair) > 0 and pair[0] == "SMOOTHIE_SHOP":
+            state["route"] = 2
+        else:
+            state["route"] = 0
         state["day6"] = True
 
     return state.get("route", 0)

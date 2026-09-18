@@ -346,13 +346,22 @@ class Chassis:
 
         for i in range(min(len(units), len(positions))):
             act = units[i]
-            if not act or act[0] != "PASS":
-                continue
             x, y = positions[i]
             t = _tile_at(tiles, (x, y))
             if not isinstance(t, dict):
                 continue
             kind = _get(t, "kind")
+
+            # Life support override: if standing on an unfed animal and holding wheat,
+            # FEED must take priority over CARE and COLLECT_FERTILIZER
+            if kind in ("COOP", "PASTURE") and _get(t, "animal"):
+                if not _get(t, "fed_today") and view.inv(i).get("WHEAT", 0) > 0:
+                    if act and act[0] in ("CARE", "COLLECT_FERTILIZER"):
+                        units[i] = ["FEED"]
+                        continue
+
+            if not act or act[0] != "PASS":
+                continue
             if kind == "PLANT":
                 if not _get(t, "watered_today"):
                     units[i] = ["WATER"]
@@ -592,13 +601,18 @@ class Chassis:
                     if not _get(t, "fed_today"):
                         unfed_animals += 1
 
-        if animals == 0:
+        if animals == 0 or step >= 696:
             return
 
         shed_wheat = view.shed.get("WHEAT", 0)
         held_wheat = view.in_hands("WHEAT")
         total_wheat = shed_wheat + held_wheat
-        needed_reserve = max(animals * 2, 8)
+
+        day = step // 24
+        if day >= 28:
+            needed_reserve = unfed_animals
+        else:
+            needed_reserve = max(int(animals * 0.8), 8)
 
         # 1. Market order: Buy wheat if reserves drop below safe threshold
         if total_wheat < needed_reserve and view.money >= 30:
