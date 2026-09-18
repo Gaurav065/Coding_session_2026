@@ -1,0 +1,11 @@
+# OS metadata & temporary files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+.DS_Store
+
+# Office / PowerPoint temp files
+~$*
+.~lock.*
+*.zip

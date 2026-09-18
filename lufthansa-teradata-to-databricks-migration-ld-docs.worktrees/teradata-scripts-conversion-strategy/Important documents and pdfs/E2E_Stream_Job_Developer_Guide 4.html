@@ -1,0 +1,290 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ADW E2E Stream Job — Developer Reference</title>
+<style>
+:root{--navy:#05164D;--gold:#FFB81C;--bg:#f4f7fc;--ink:#1a2233;--mut:#64748b;--line:#e2e8f0;--blue:#0b6e99;--green:#0f9d58;--red:#b02a2a;--teal:#0e7c86;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 22px 80px}
+header.hero{background:var(--navy);color:#fff;border-radius:14px;padding:26px 30px;margin-bottom:8px}
+.hero h1{margin:0 0 8px;font-size:25px}.hero p{margin:0;color:#c9d4ee;font-size:14px;max-width:900px}
+.eyebrow{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:12px;letter-spacing:.6px}
+nav.toc{position:sticky;top:0;z-index:50;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:14px 0 26px;display:flex;flex-wrap:wrap;gap:6px;box-shadow:0 2px 8px rgba(5,22,77,.06)}
+nav.toc a{font-size:12px;color:var(--navy);text-decoration:none;padding:4px 10px;border-radius:16px;background:#eef2f7;font-weight:600}
+nav.toc a:hover{background:var(--gold)}
+h2{font-size:20px;color:var(--navy);margin:42px 0 6px;padding-bottom:6px;border-bottom:2px solid var(--gold)}
+h3{font-size:15.5px;color:var(--navy);margin:22px 0 8px}
+.sub{color:var(--mut);font-size:13px;margin:0 0 14px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:12.5px;margin:10px 0}
+th{background:var(--navy);color:#fff;text-align:left;padding:8px 10px;font-weight:600}
+td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#fafbfe}
+code{font-family:var(--mono);font-size:12px;background:#eef2f7;border-radius:4px;padding:1px 5px;color:#1d3f9e}
+pre{background:#0d1b3d;color:#dbe4f7;border-radius:10px;padding:14px 16px;font-size:12px;overflow-x:auto;font-family:var(--mono);line-height:1.5}
+.callout{background:#fffbea;border:1px solid #f5e3a3;border-radius:10px;padding:12px 16px;font-size:13px;margin:14px 0}
+.callout.gold{border-left:5px solid var(--gold)}
+.callout .kind{display:inline-block;font-weight:700;color:var(--navy);background:var(--gold);font-size:10.5px;padding:2px 8px;border-radius:10px;margin-right:8px;vertical-align:1px}
+.callout.green{background:#ecfdf3;border-color:#bbe5c8}
+.callout.red{background:#fdf0ef;border-color:#f2c8c4}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:880px){.grid2{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h4{margin:0 0 6px;font-size:13.5px;color:var(--navy)}
+/* flow diagram */
+.flow{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin:14px 0}
+.fstep{display:flex;align-items:flex-start;gap:14px;margin:0 0 2px}
+.fbox{min-width:230px;max-width:230px;background:var(--navy);color:#fff;border-radius:10px;padding:9px 13px;font-size:12.5px;font-weight:600;text-align:center}
+.fbox.branch{background:var(--gold);color:var(--navy)}
+.fbox.opt{background:#8e44ad}
+.fbox.teal{background:var(--teal)}
+.fbox.green{background:var(--green)}
+.fdesc{font-size:12px;color:var(--mut);padding-top:8px}
+.farrow{text-align:center;color:var(--navy);font-size:15px;font-weight:700;margin:1px 0 3px;width:230px}
+.split{display:flex;gap:12px;margin:4px 0}
+.split>div{flex:1;border:1.5px dashed var(--line);border-radius:10px;padding:10px}
+.split h5{margin:0 0 6px;font-size:11.5px;color:var(--navy);text-transform:uppercase;letter-spacing:.5px}
+.split .fbox{min-width:unset;max-width:unset;width:100%;margin-bottom:6px}
+/* flashcards */
+.fcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px;margin:14px 0}
+details.fc{background:#fff;border:1.5px solid var(--navy);border-radius:12px;overflow:hidden}
+details.fc summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;font-size:12.5px;color:var(--navy);background:linear-gradient(135deg,#eef2f7,#fff)}
+details.fc summary::before{content:"❓ "}
+details.fc[open] summary::before{content:"💡 "}
+details.fc div{padding:10px 14px 14px;font-size:12.5px;border-top:1px dashed var(--line)}
+.chip{display:inline-block;padding:2px 9px;border-radius:12px;font-size:10.5px;font-weight:700;margin-left:6px;vertical-align:2px}
+.chip.first{background:#e8eefc;color:#1d3f9e}.chip.inc{background:#e7f6ee;color:#0b7a43}.chip.always{background:#fde8e8;color:#b02a2a}.chip.var{background:#fdf3e0;color:#9a6a00}
+.scroll{overflow-x:auto}
+footer{margin-top:50px;font-size:12px;color:var(--mut);text-align:center}
+</style></head><body><div class="wrap">
+
+<header class="hero">
+<span class="eyebrow">ADW MIGRATION · DEVELOPER REFERENCE BOOK</span>
+<h1>The E2E Stream Job — end to end, in plain language</h1>
+<p>Every stream you deliver is really <b>two jobs</b>. The <b>stream job</b> is your code — the converted scripts. The <b>E2E job</b> is the wrapper around it: it checks the source is ready, loads the data, runs your code, then proves the result matches Teradata. This guide explains the whole flow step by step in plain words: every task, every parameter, how one YAML file works in all three environments — plus flash cards and a "when you're stuck" table. The example throughout is <code>IMP_TDA_BOOKING_GERMANY</code>, but it's just an example — §9 shows the stream types that look different.</p>
+</header>
+
+<nav class="toc">
+<a href="#big">1 Big picture</a><a href="#flow">2 Visual flow</a><a href="#tasks">3 Task-by-task</a><a href="#loads">4 First vs incremental</a><a href="#odat">5 ODAT vs ODAT_Incremental</a><a href="#params">6 All parameters</a><a href="#stream">7 Stream job facts</a><a href="#vars">8 One YAML, 3 environments</a><a href="#variants">9 Stream variants</a><a href="#stuck">10 When you're stuck</a><a href="#cards">11 Flash cards</a>
+</nav>
+
+<h2 id="big">1 · The big picture — why an E2E job exists at all</h2>
+<p>Your code can transform data — but on its own it doesn't know the answers to five questions: <i>Is today's source data ready? Is this the very first run here, or a normal daily run? Do my tables exist yet? Did the data arrive correctly? Does my result match Teradata's?</i></p>
+<p>The E2E job answers all of that <b>around</b> your code. Think of it as an airport departure sequence: check the inbound aircraft has landed (Teradata done), decide if this is a new route's first flight (first load), make sure the gate exists (tables), board the passengers (data load), fly (stream run), and confirm everyone arrived (AVF). <b>Your notebooks only ever fly the plane — the E2E does everything else.</b></p>
+<div class="callout gold"><span class="kind">Key insight</span>The order isn't red tape — <b>each step hands the next one something it needs</b>: the status check says "source is ready" → load_status says "first run or daily run" → that decides which setup runs → the load brings the data → your stream transforms it → AVF checks both ends match. Change the order and you end up checking data that was never loaded, or loading data Teradata hadn't finished writing.</div>
+
+<h2 id="flow">2 · Visual flow — the whole run on one screen</h2>
+<div class="flow">
+<div class="fstep"><div class="fbox">1 · teradata_status</div><div class="fdesc">Asks Teradata: is today's source data finished? Waits for a yes</div></div>
+<div class="farrow">↓</div>
+<div class="fstep"><div class="fbox">2 · load_status</div><div class="fdesc">Checks the stream's history: has it loaded here before? Outputs <code>load_type</code> = <code>first_load</code> or <code>incremental_load</code></div></div>
+<div class="farrow">↓</div>
+<div class="fstep"><div class="fbox branch">3 · is_first_load? (condition)</div><div class="fdesc">A simple IF: is <code>load_type</code> = <code>first_load</code>? The run splits into two paths</div></div>
+<div class="split">
+<div><h5>first_load = TRUE (once per environment)</h5>
+<div class="fbox opt">4a · Table_exists_job</div>
+<div class="fbox opt">4b · ddl_deployment_recon</div>
+<div class="fdesc">Check every table exists; create the missing ones — on a first run, nothing exists yet</div></div>
+<div><h5>first_load = FALSE (every daily run)</h5>
+<div class="fbox teal">4c · AVF_Metrics_Collector_Job</div>
+<div class="fdesc">Take a photo of the Teradata numbers NOW — before anything changes — so the final check compares against the true "before" picture</div></div>
+</div>
+<div class="farrow">↓ (AT_LEAST_ONE_SUCCESS — either branch feeds in)</div>
+<div class="fstep"><div class="fbox">5 · data_load_job</div><div class="fdesc">Copy the Teradata data into the Databricks tables — everything on a first load, just today's on a daily run</div></div>
+<div class="farrow">↓</div>
+<div class="fstep"><div class="fbox green">6 · Stream_run</div><div class="fdesc"><b>Your stream job</b> — your converted scripts run in order (e.g. bkgde.01 → exit gate → bkgde.10 → bkgde.20)</div></div>
+<div class="farrow">↓</div>
+<div class="fstep"><div class="fbox teal">7 · AVF_Orchestrator_Job</div><div class="fdesc">The referee: computes the same numbers on the Databricks side and compares with the photo → match or mismatch</div></div>
+</div>
+<div class="callout"><span class="kind">Variants</span>Some streams add a <b>cycle_check</b> before/instead of the flat status check (GCFR/cascade streams), some <b>self-gate on files</b> instead of Teradata status (file-fed IMP_ streams with a CHECK_AND_LOAD step), and families run under a <b>master E2E</b> that chains child E2Es. See §9.</div>
+
+<h2 id="tasks">3 · Task by task — what each step does, in plain words</h2>
+<p class="sub">Read each row as: <b>what it does → why it comes at this point → what goes wrong without it.</b></p>
+<div class="scroll"><table>
+<tr><th>Step</th><th>Runs when</th><th>What it does</th><th>Why here</th><th>Without it</th></tr>
+<tr><td><b>1 · teradata_status</b></td><td><span class="chip always">every run</span></td><td>Asks Teradata: "are you finished making today's data?" It checks the source system's own control table and waits for a yes.</td><td>First — because every later step copies or measures that data.</td><td>You'd copy data that is still being written. Counts won't match, and validation fails for no real reason.</td></tr>
+<tr><td><b>cycle_check</b> <i>(only some streams)</i></td><td><span class="chip var">some streams</span></td><td>The thorough version of "are you done?", for GCFR streams. GCFR runs in <b>cycles</b> (one cycle = one complete nightly batch, tracked in control tables). The check makes sure: it's looking at <b>tonight's</b> cycle (not yesterday's leftover FIN), that cycle truly <b>finished</b> (not just stopped, not mid-restart), its output file (if any) actually landed, and the numbers have been <b>quiet for a few minutes</b>. See the box below the table.</td><td>Same position — it <i>is</i> the "are you done?" step for those streams. Each stream checks its own source; there is no single check for a whole family, because different sources finish at different times.</td><td>A restarted Teradata run could look "done" too early → you'd copy old or half-ready data.</td></tr>
+<tr><td><b>2 · load_status</b></td><td><span class="chip always">every run</span></td><td>Answers one question: <b>"has this stream ever loaded here before?"</b> It looks at the stream's own history and outputs one value: <code>load_type</code> = <code>first_load</code> or <code>incremental_load</code>.</td><td>Every later step needs that answer to know which path to take.</td><td>The job can't tell "build everything from scratch" apart from "just add today's data".</td></tr>
+<tr><td><b>3 · is_first_load</b></td><td><span class="chip always">every run</span></td><td>A simple IF. No work happens here — it just splits the run into two paths based on <code>load_type</code>.</td><td>Makes the fork visible: open any run and you can see which path it took.</td><td>The first-run setup would either run every day (wasteful) or never (the first run crashes).</td></tr>
+<tr><td><b>4a · Table_exists_job</b></td><td><span class="chip first">first load only</span></td><td>Goes through the stream's table list (from ODAT) and checks each table really exists in this environment.</td><td>A 2-minute check before a 40-minute load. If something is missing, better to fail now with a clear message.</td><td>The load would crash halfway with a confusing error instead of "these 3 tables are missing".</td></tr>
+<tr><td><b>4b · ddl_deployment_recon</b></td><td><span class="chip first">first load only</span></td><td>Creates any tables that are missing. "Recon" = compare what <i>should</i> exist (the ODAT map) with what <i>does</i> exist, and create only the gap. Safe to run twice — it never re-creates what's already there.</td><td>On the very first run in an environment, your tables may not exist yet. This builds them.</td><td>Nothing to load into. (It's skipped on daily runs — tables don't change daily, and re-running it just risks clashes with other teams' runs.)</td></tr>
+<tr><td><b>4c · AVF_Metrics_Collector_Job</b></td><td><span class="chip inc">daily runs only</span></td><td>Takes a <b>photo of the Teradata numbers</b> (row counts, sums) the moment the source is finished — and saves it for the validator to compare against later.</td><td>Timing is everything: the photo must be taken <b>after Teradata finishes and before anything else writes</b>. Take it later and the source has already moved on.</td><td>Validation would compare against a "before" picture taken too late → mismatches that aren't real, and hours wasted chasing them.</td></tr>
+<tr><td><b>5 · data_load_job</b></td><td><span class="chip always">every run</span></td><td>Copies the Teradata data into the Databricks tables. First load = copy everything. Daily run = copy just what's needed. Copy settings (trim spaces, convert time columns, timezone) keep the copy faithful to how Teradata stored it.</td><td>After the fork (tables ready / photo taken), before your code (which reads these tables).</td><td>Your code would transform <i>yesterday's</i> data. Everything "works" — but describes the wrong day.</td></tr>
+<tr><td><b>6 · Stream_run</b></td><td><span class="chip always">every run</span></td><td><b>Your stream job.</b> The converted scripts run one after another, in the same order they ran on Teradata.</td><td>Only now is everything true that your code assumes: source finished, tables exist, today's data loaded.</td><td>—</td></tr>
+<tr><td><b>7 · AVF_Orchestrator_Job</b></td><td><span class="chip always">every run</span></td><td>The referee. Computes the <b>same numbers on the Databricks side</b> and compares them with the Teradata photo from step 4c. Match = green. 3 green runs in a row + DQA sign-off = stream done.</td><td>Last — it needs both sides to exist before it can compare them.</td><td>No proof. "It ran" is not the same as "it's right" — this step is what turns a run into evidence.</td></tr>
+</table></div>
+<div class="callout gold"><span class="kind">Cycle check, explained with a washing machine</span>
+A simple status check is glancing at the machine's "done" light. The cycle check is what an experienced person does instead: <b>is that light for <i>my</i> wash</b> and not the previous load? (→ pin tonight's cycle id, don't accept yesterday's FIN) · <b>has the drum actually stopped?</b> (→ reached FINISH properly, not merely "not running") · <b>did someone restart it mid-cycle?</b> (→ wait for the restarted run to really complete) · <b>give it a minute before opening the door</b> (→ settle time; and for file-producing streams, the export gate: the output file exists). Same question — "is it done?" — asked by someone who's been burned before. It's always per-stream, never per-family: sources finish at different times of night, so one shared check at the top would either wait on everyone or wave streams through too early.</div>
+<h2 id="loads">4 · First load vs incremental load — one switch, two different runs</h2>
+<div class="grid2">
+<div class="card"><h4>First load <span class="chip first">once per environment</span></h4>
+<p>The stream has never successfully loaded here. The environment may be missing tables, and there is no previous data to compare deltas against. So the E2E:</p>
+<ul><li>verifies/creates tables (<b>Table_exists → ddl_deployment_recon</b>)</li>
+<li>loads the <b>full snapshot</b></li>
+<li>skips the metrics collector (there is no meaningful "before" picture; AVF still validates with <code>load_type=first_load</code> semantics — full-table comparison)</li></ul>
+<p>Happens again when you promote: first run in <code>_i</code>, first run in <code>_p</code> — "first" is per environment, not per stream forever.</p></div>
+<div class="card"><h4>Incremental load <span class="chip inc">every scheduled run</span></h4>
+<p>Tables exist, yesterday's data is in. The E2E:</p>
+<ul><li>skips DDL work entirely (nothing structural changes daily)</li>
+<li><b>photographs source metrics first</b> (the timing-sensitive step)</li>
+<li>loads only what the run needs (delta / overwrite per <code>execution_mode</code>)</li>
+<li>AVF compares the just-finished period</li></ul>
+<p>This is the steady state — the run your stream lives in for years.</p></div>
+</div>
+<div class="callout gold"><span class="kind">Key insight</span><code>load_type</code> is computed, never passed by hand. You don't tell the job "this is a first load" — <b>load_status figures it out</b> from control state. That's what makes reruns safe: run the same E2E twice and it re-derives the truth each time.</div>
+
+<h2 id="odat">5 · ODAT vs ODAT_Incremental — the map and the day's route</h2>
+<p><b>ODAT is the master map.</b> It says which Teradata table becomes which Databricks table, which tables a stream owns vs only reads, and which script touches what. Every framework reads this same map: DDL deployment to know what to <i>create</i>, data load to know what to <i>copy</i>, table-exists to know what to <i>check</i>.</p>
+<div class="grid2">
+<div class="card"><h4>ODAT (full)</h4><p>The <b>complete</b> object map for the estate/community — every table a stream owns or reads. Used on <b>first load</b>: build and load <i>everything</i> the stream needs from zero. Versioned files (<code>odat_file_name</code> parameter — e.g. <code>ODAT202608101824</code>) so a run is reproducible against a known map version.</p></div>
+<div class="card"><h4>ODAT_Incremental</h4><p>The <b>daily subset</b> — only the objects that participate in a recurring run (transform-owned registries that are seeded once, static reference tables and one-time loads are <b>excluded from the recurring path</b>). Used on incremental runs so the daily load doesn't wastefully re-copy (or worse, TRUNCATE-reload) tables that must persist — the exact lesson behind reclassifying <code>CUSTOMER_ALIAS</code>/<code>FLT_SEGMENT</code> as seed-once registries.</p></div>
+</div>
+<div class="callout red"><span class="kind">Classic trap</span>Full-vs-incremental <b>ODAT version mismatch</b> reads as "dozens of missing tables" during validation. If table-exists or the load suddenly reports many missing objects, check <i>which ODAT file name</i> the run used before assuming a deployment gap.</div>
+
+<h2 id="params">6 · Every parameter, explained</h2>
+<p class="sub">These are the real defaults from <code>E2E_IMP_TDA_BOOKING_GERMANY_RUN.yml</code>. Grouped by who consumes them. Anything <code>${var.…}</code> is filled per environment (§8).</p>
+
+<h3>Identity — who am I, where am I</h3>
+<div class="scroll"><table>
+<tr><th>Parameter</th><th>Example default</th><th>Plain-language meaning</th></tr>
+<tr><td><code>stream_name</code></td><td><code>imp_tda_booking_germany</code></td><td>The stream's id — keys everything: metrics, AVF config, load deployment name</td></tr>
+<tr><td><code>community_number</code> / <code>squad_id</code></td><td><code>Community_10</code> / <code>SALES</code></td><td>Where this stream sits in the estate — used by table-exists/DDL to scope the ODAT slice</td></tr>
+<tr><td><code>env_db</code></td><td><code>${var.env_id}.${var.dev_id}</code></td><td>The environment suffix injected into catalog/schema names — the single reason one YAML works in dev/int/prod</td></tr>
+<tr><td><code>domain_or_community</code></td><td><code>{"Community_10": ["IMP_TDA_BOOKING_GERMANY"]}</code></td><td>JSON telling DDL deployment exactly which stream(s) of which community to reconcile — here, just this one</td></tr>
+</table></div>
+
+<h3>Maps &amp; metadata — what to build and where records live</h3>
+<div class="scroll"><table>
+<tr><th>Parameter</th><th>Example default</th><th>Plain-language meaning</th></tr>
+<tr><td><code>odat_file_name</code></td><td><code>${var.odat_mapping_filename}</code></td><td><b>Which version of the ODAT map</b> this run obeys — pinning it makes runs reproducible</td></tr>
+<tr><td><code>ddl_source_path</code></td><td><code>${var.ddl_source_path}</code></td><td>Where the deployed DDL bundle lives in the workspace (also where the load_status notebook is found)</td></tr>
+<tr><td><code>metadata_catalog</code> / <code>metadata_schema</code></td><td><code>odp_adw_utilities${var.env_id}</code> / <code>ddl_metadata_schema</code></td><td>Where the frameworks keep their bookkeeping (deployment records, validation state)</td></tr>
+</table></div>
+
+<h3>DDL deployment tuning (first load only)</h3>
+<div class="scroll"><table>
+<tr><th>Parameter</th><th>Example default</th><th>Plain-language meaning</th></tr>
+<tr><td><code>batch_size</code> / <code>max_workers</code></td><td><code>15</code> / <code>3</code></td><td>How many DDLs per batch and how many parallel workers — kept modest deliberately: the metadata table is shared, and more workers = more Delta write conflicts</td></tr>
+<tr><td><code>script_execution_mode</code></td><td><code>ignore</code></td><td>What to do with already-deployed objects: <code>ignore</code> = skip unchanged (the safe recon default)</td></tr>
+<tr><td><code>skip_managed_tables_creation</code> / <code>skip_external_tables_creation</code></td><td><code>true</code> / <code>false</code></td><td>Which table classes recon may create here — in this stream's env, managed tables are pre-provisioned so recon only handles external ones</td></tr>
+<tr><td><code>is_integration_run</code></td><td><code>true</code></td><td>Tells the framework it's running inside an E2E integration flow (affects logging/validation behaviour)</td></tr>
+<tr><td><code>run_id</code></td><td><code>{{job.run_id}}</code></td><td>The E2E run's own id, passed down so every framework's records trace back to one run</td></tr>
+</table></div>
+
+<h3>Data load behaviour</h3>
+<div class="scroll"><table>
+<tr><th>Parameter</th><th>Example default</th><th>Plain-language meaning</th></tr>
+<tr><td><code>load_type</code></td><td><code>{{tasks.load_status.values.load_type}}</code></td><td><b>Not a parameter you set</b> — the value load_status computed, flowing to the load</td></tr>
+<tr><td><code>deployment_level</code> / <code>deployment_name</code></td><td><code>stream</code> / stream_name</td><td>Load scope: this one stream (a community-level load would say <code>community</code>)</td></tr>
+<tr><td><code>execution_mode</code></td><td><code>overwrite</code></td><td>How incoming data lands: overwrite the slice vs append/merge — must match the stream's Teradata semantics</td></tr>
+<tr><td><code>load_mode</code></td><td><code>auto</code></td><td>Let the framework pick the transfer mechanism</td></tr>
+<tr><td><code>load_timeout_minutes</code></td><td><code>5</code></td><td>Per-table safety valve — a stuck copy fails fast instead of hanging the night</td></tr>
+<tr><td><code>string_trim_enabled</code></td><td><code>true</code></td><td>Faithful-copy switch: trim trailing spaces the way Teradata CHAR semantics implied (the RTRIM rule)</td></tr>
+<tr><td><code>time_conversion_enabled</code></td><td><code>true</code></td><td>Apply the time-column conversion rules (the one-YAML time-column automation) during load</td></tr>
+<tr><td><code>timestamp_selection</code> / <code>target_timezone</code> / <code>cast_timestamp_timezone</code></td><td>"" / "" / <code>ignore</code></td><td>Timezone knobs for streams that need explicit Berlin-time handling; empty/ignore = this stream doesn't</td></tr>
+<tr><td><code>table_type_filter</code></td><td>""</td><td>Optionally load only certain ODAT table types (e.g. only <code>Src</code>) — empty = all in scope</td></tr>
+<tr><td><b><code>data_load_time</code></b></td><td><code>20260526201639731</code></td><td><b>The run's datetime anchor</b> — format <code>YYYYMMDDHHMMSSmmm</code> (here: 26 May 2026, 20:16:39.731). load_status compares it against the recorded watermark to reason about what "this run's data" means; it also stamps the load so a rerun of the same anchor is idempotent, and it's your first breadcrumb when investigating "which data did that run actually load?"</td></tr>
+<tr><td><code>lookback_hours</code></td><td><code>8</code></td><td>How far back the status/load logic searches for the relevant source completion — covers late-running Teradata nights</td></tr>
+<tr><td><code>cleanup_checkpoints</code></td><td><code>true</code></td><td>Housekeeping: clear streaming/autoloader checkpoints after the run where applicable</td></tr>
+</table></div>
+
+<h3>AVF (validation)</h3>
+<div class="scroll"><table>
+<tr><th>Parameter</th><th>Example default</th><th>Plain-language meaning</th></tr>
+<tr><td><code>stream_names</code></td><td>stream_name</td><td>Which stream(s) to validate — the orchestrator can do several; here, one</td></tr>
+<tr><td><code>use_precollected_source_metrics</code></td><td><code>true</code></td><td>Compare against the metrics photographed <i>before</i> the load (matched by stream + period — <b>never by run_id</b>), not a fresh Teradata read</td></tr>
+<tr><td><code>metrics_validation</code></td><td><code>true</code></td><td>Actually compare (false = collect only)</td></tr>
+<tr><td><code>include_tables</code></td><td>""</td><td>Restrict validation to named tables; empty = the stream's full AVF config</td></tr>
+</table></div>
+
+<h2 id="stream">7 · Stream job facts — the anatomy of <i>your</i> job</h2>
+<div class="grid2">
+<div class="card"><h4>Structure</h4>
+<ul>
+<li><b>One task per converted script</b>, named after it (<code>bkgde_01_prepare_data</code> ← <code>bkgde.01.PREPARE_DATA.py</code>), chained with <code>depends_on</code> in script-number order — the same order the ksh ran them in Teradata.</li>
+<li>Notebooks referenced <b>relatively</b> (<code>../src/…</code>) so the bundle is self-contained.</li>
+<li>Each task gets <code>base_parameters</code> like <code>stream_base_dir</code> (where this stream's files land under the volume, e.g. <code>…/tda</code>) and <code>table_suffix</code>.</li>
+<li><b>Internal gates:</b> a script can publish task values and a <code>condition_task</code> reads them — here <code>exit_110</code> stops the run cleanly when <code>bkgde_01</code> sets <code>stop_stream=true</code> (e.g. no file arrived). A clean planned stop, not a failure.</li>
+</ul></div>
+<div class="card"><h4>Runtime facts</h4>
+<ul>
+<li><b>Wheel environment:</b> tasks run with <code>odp_adw_utilities-…-py3-none-any.whl</code> from the environment Volume — the unix_framework functions your scripts import.</li>
+<li><b>Timeouts:</b> per-task and job-level (<code>3600s</code> here) — no silent all-night hangs.</li>
+<li><b>Schedule is PAUSED on the stream job</b> — the E2E owns the schedule (05:00 Europe/Berlin, Mondays here); the stream is only ever <i>triggered by</i> the E2E's Stream_run. Never unpause the stream's own schedule.</li>
+<li><b>run_as a service principal</b>, not you — runs behave identically whoever deploys.</li>
+<li><b>Queueing on</b> (<code>queue.enabled</code>) + effectively single concurrent run — a late previous run queues the next rather than colliding.</li>
+<li><b>Cost tags</b> (<code>odp_workload_*</code>) on every job — how the cost dashboards attribute spend.</li>
+</ul></div>
+</div>
+
+<h2 id="vars">8 · Target variables — one YAML, three environments</h2>
+<p>You write the E2E YAML <b>once</b>. Nothing in it names dev, int or prod. Instead it uses <code>${var.…}</code> placeholders, and the bundle's <b>target files</b> supply per-environment values at deploy time:</p>
+<pre>databricks.yml            ← declares the bundle + variables
+resources/
+  E2E_&lt;STREAM&gt;_RUN.yml    ← the E2E job (this guide)
+  &lt;STREAM&gt;.yml            ← your stream job
+src/                      ← the converted scripts
+targets/
+  target_dev.yml          ← env_id="_n", dev job-ids, dev service principal…
+  target_int.yml          ← env_id="_i", …
+  target_prod.yml         ← env_id="_p", …</pre>
+<div class="scroll"><table>
+<tr><th>Variable</th><th>What it injects</th><th>Why it makes one YAML portable</th></tr>
+<tr><td><code>${var.env_id}</code></td><td><code>_n</code> (dev) / <code>_i</code> (int) / <code>_p</code> (prod)</td><td>Every catalog name ends with it: <code>odp_adw_sales<b>_n</b></code> in dev becomes <code>…<b>_p</b></code> in prod — same code, different world. <code>env_db</code> is built from it.</td></tr>
+<tr><td><code>${var.dev_id}</code></td><td>developer/schema discriminator</td><td>Lets individual dev schemas coexist in the dev workspace</td></tr>
+<tr><td><code>${var.teradata_status_job_id}</code>, <code>${var.data_load_job_id}</code>, <code>${var.ddl_deployment_job_id}</code>, <code>${var.avf_metrics_collector_job_id}</code>, <code>${var.avf_orchestrator_job_id}</code>, <code>${var.check_dbx_tables_exits_job_id}</code></td><td>the <b>shared framework jobs' ids in that workspace</b></td><td>The frameworks are deployed once per environment; your E2E calls them by id — the target file knows each environment's ids</td></tr>
+<tr><td><code>${var.job_runner_service_principal_id}</code></td><td>the env's runner identity</td><td>Prod runs as the prod principal without touching the YAML</td></tr>
+<tr><td><code>${var.odat_mapping_filename}</code></td><td>the pinned ODAT version</td><td>Environments can advance ODAT versions independently</td></tr>
+<tr><td><code>${var.ddl_source_path}</code>, <code>${var.base_dir}</code></td><td>workspace paths / volume roots</td><td>File locations differ per env; scripts never hard-code them</td></tr>
+<tr><td><code>${resources.jobs.&lt;STREAM&gt;.id}</code></td><td>your own stream job's id <i>in this deployment</i></td><td>The E2E finds its stream wherever the bundle deployed it — no copied ids, ever</td></tr>
+</table></div>
+<div class="callout gold"><span class="kind">Key insight</span>The only difference between dev, int and prod is which target you deploy with: <code>databricks bundle deploy -t dev</code> vs <code>-t prod</code>. If you catch yourself editing the YAML "for prod" — stop. That change belongs in the target file, not the YAML.</div>
+
+<h2 id="variants">9 · Not every stream looks like TDA — the shapes you'll meet</h2>
+<div class="scroll"><table>
+<tr><th>Shape</th><th>How it differs from the TDA example</th><th>Examples</th></tr>
+<tr><td><b>Table-fed import (the example)</b></td><td>The baseline above: flat teradata_status → load → run → AVF</td><td>IMP_TDA_BOOKING_GERMANY, most IMP_ table streams</td></tr>
+<tr><td><b>File-fed import (self-gating)</b></td><td>The source is <b>a file arriving on disk</b>, not a Teradata table. The stream's first script picks the file up itself (CHECK_AND_LOAD); if no file arrived, it stops the run cleanly with the <code>stop_stream</code> gate — the waiting logic lives inside the stream. Old MultiLoad streams also capture bad rows into <code>_ERR</code>/<code>_UNQ</code> tables and stop if there are too many.</td><td>inventory <code>002.CHECK_AND_LOAD</code> (OS/4Y), the ~35 MLD IMP_ streams</td></tr>
+<tr><td><b>GCFR / cascade stream</b></td><td>"Is the source done?" needs the richer <b>cycle check</b> (finished cleanly, not a restart, settled). The transform steps run as temp views; only the final DB_IDM tables get written.</td><td>INT_IDM_* streams (63 in the register)</td></tr>
+<tr><td><b>Family master E2E</b></td><td>One master job runs the family's E2Es one after another. There is deliberately <b>no single source check at the top</b> — each child E2E still checks its own source, because different sources finish at different times of night.</td><td>E2E_INVENTORY_MASTER (EN→…→LH→consolidation→PNR)</td></tr>
+<tr><td><b>Co-parallel GCFR legs</b></td><td>Two streams that share tables run <b>side by side inside one E2E</b>: each loads only its own tables (so they never write the same table at the same time), the source check waits for <i>both</i> Teradata jobs, and validation runs once at the end after both finish.</td><td>Sales TIX + Network TIX (+ PNR)</td></tr>
+<tr><td><b>Export stream</b></td><td>After the transform, the stream also <b>builds a file and sends it out</b> (file build + SFTP). The file format must match Teradata's byte for byte — a partner outside Lufthansa reads it.</td><td>EXP_OAD_*, EXP_IATA_DDS, EXP_OSI_TRACKING_*</td></tr>
+</table></div>
+
+<h2 id="stuck">10 · When you're stuck — triage by task</h2>
+<div class="scroll"><table>
+<tr><th>Symptom</th><th>First place to look</th><th>Usual cause</th></tr>
+<tr><td>E2E never starts working / sits at teradata_status</td><td>The status job's run log; the TD control table for today</td><td>Teradata side genuinely not finished, or <code>lookback_hours</code> window missed a late run</td></tr>
+<tr><td>Run took the wrong branch (first vs incremental)</td><td>load_status task output — what <code>load_type</code> did it publish, and why</td><td>Control state wiped/seeded wrongly; <code>data_load_time</code> anchor vs watermark confusion</td></tr>
+<tr><td>Table_exists / load reports <b>many</b> missing tables</td><td>Which <code>odat_file_name</code> the run used</td><td>Full-vs-incremental <b>ODAT version mismatch</b> — not a real deployment gap</td></tr>
+<tr><td>ddl_deployment_recon slow or DELTA_CONCURRENT errors</td><td>Other squads' E2Es running the same window</td><td>Concurrent runs writing the shared metadata table — don't raise retries/workers; queue or re-run</td></tr>
+<tr><td>data_load loaded 0 rows / partial</td><td>Load framework logs per table; the TD snapshot itself</td><td>Filter/timezone params, or the source really was empty (check <code>FILE_TIME</code>/control table)</td></tr>
+<tr><td>Stream_run failed in one script</td><td>That task's notebook output — it's just your notebook</td><td>Normal debugging; check the script's own exit-gate values before assuming a crash</td></tr>
+<tr><td>Stream green but AVF red</td><td>Which metric differs (count vs sum vs checksum), which table</td><td>The silent-defect classes: collation, trailing spaces (RTRIM), rounding, timezone, non-deterministic dedup — or a stale source photo (collector timing)</td></tr>
+<tr><td>AVF found no source metrics</td><td><code>avf_source_metrics</code> for stream + period</td><td>Collector didn't run (first_load branch), or period/stream key mismatch — remember: matched by stream+period, never run_id</td></tr>
+<tr><td>Everything green in dev, fails in int</td><td>The <b>target file</b> for that env</td><td>A variable (job id, path, ODAT version) differs or is stale in that target — never patch the YAML</td></tr>
+</table></div>
+
+<h2 id="cards">11 · Flash cards — the 60-second recap <span style="font-size:12px;color:var(--mut)">(click to flip)</span></h2>
+<div class="fcgrid">
+<details class="fc"><summary>What are the two jobs every stream ships as?</summary><div>The <b>stream job</b> (your converted notebooks — the ETL) and the <b>E2E job</b> (the wrapper: source check → load decision → DDL/metrics branch → data load → stream → AVF).</div></details>
+<details class="fc"><summary>Why does teradata_status run first?</summary><div>Everything downstream copies or measures Teradata data — so first prove the source finished writing. Load a half-written source and AVF fails for a fake reason.</div></details>
+<details class="fc"><summary>What is a cycle check and who needs it?</summary><div>GCFR streams run in <b>cycles</b> (one cycle = one nightly batch). The cycle check confirms four things before copying data: it's <b>tonight's</b> cycle (not yesterday's FIN), it <b>truly finished</b> (not stopped or mid-restart), its <b>output file landed</b> (if it makes one), and it's been <b>quiet for a few minutes</b>. A flat <code>status='FIN'</code> can pass on all four lies; the cycle check can't.</div></details>
+<details class="fc"><summary>What does load_status produce?</summary><div>One task value: <code>load_type</code> = <code>first_load</code> or <code>incremental_load</code> — computed from control state + the <code>data_load_time</code> anchor. Every later task reads it. You never set it by hand.</div></details>
+<details class="fc"><summary>What runs ONLY on first load?</summary><div><b>Table_exists_job</b> (verify every ODAT table exists) then <b>ddl_deployment_recon</b> (create what's missing). First load = nothing exists yet; on daily runs DDL never changes, so both are skipped.</div></details>
+<details class="fc"><summary>What runs ONLY on incremental?</summary><div><b>AVF_Metrics_Collector</b> — photographs Teradata's metrics <i>before the load</i>, so validation later compares against the true "before" picture instead of a source that kept moving.</div></details>
+<details class="fc"><summary>Why is the metric collector's timing sacred?</summary><div>It must snapshot the source <b>right after Teradata finishes and before anything else writes</b>. Collect later and you get false mismatches. (The centralized collector solves this permanently by pinning the finished period.)</div></details>
+<details class="fc"><summary>First load vs incremental in one line?</summary><div>First load = build the world (tables + full snapshot, once per environment). Incremental = the steady daily state (photo → delta load → run → validate).</div></details>
+<details class="fc"><summary>ODAT vs ODAT_Incremental?</summary><div>ODAT = the complete object map (first load builds/loads everything). ODAT_Incremental = the daily subset — seed-once registries and static tables excluded so recurring runs never wipe what must persist.</div></details>
+<details class="fc"><summary>What format is data_load_time?</summary><div><code>YYYYMMDDHHMMSSmmm</code> — e.g. <code>20260526201639731</code> = 26 May 2026 20:16:39.731. It anchors what "this run's data" means, makes reruns idempotent, and is your first breadcrumb in load investigations.</div></details>
+<details class="fc"><summary>How does one YAML serve dev, int and prod?</summary><div>Nothing in the YAML names an environment — every env-specific thing is a <code>${var.…}</code> filled by <code>targets/target_dev|int|prod.yml</code> at <code>bundle deploy -t &lt;target&gt;</code>. <code>env_id</code> (<code>_n/_i/_p</code>) suffixes every catalog.</div></details>
+<details class="fc"><summary>How does the E2E find the framework jobs?</summary><div>By id, via target variables (<code>${var.data_load_job_id}</code> …). The frameworks deploy once per environment; each target file knows that environment's ids.</div></details>
+<details class="fc"><summary>Why is the stream job's own schedule PAUSED?</summary><div>The E2E owns the schedule; the stream is only triggered by <code>Stream_run</code>. Unpausing it would run your ETL without the source check, load, or validation around it.</div></details>
+<details class="fc"><summary>What does AT_LEAST_ONE_SUCCESS mean on data_load?</summary><div>data_load depends on both branch arms (Table_exists on the first-load side, the condition's false edge otherwise) — it proceeds when <i>whichever branch actually ran</i> succeeded.</div></details>
+<details class="fc"><summary>What is stop_stream / the exit gate?</summary><div>A stream-internal condition: an early script publishes <code>stop_stream=true</code> (e.g. no file today) and a condition task ends the run <b>cleanly</b> — a planned stop, not a failure.</div></details>
+<details class="fc"><summary>How does AVF match source and target metrics?</summary><div>By <b>stream + period/version — never run_id</b>. That's why the collector and validator don't need to share a run, and why the target side must be filtered to the same period.</div></details>
+<details class="fc"><summary>When is a stream "done"?</summary><div><b>3 consecutive 100% AVF runs + DQA verification</b> — production-ready pipelines, not closed tickets.</div></details>
+<details class="fc"><summary>AVF red but stream green — first suspects?</summary><div>The silent-defect classes: collation, trailing spaces, rounding, timezone, non-deterministic dedup — then collector timing (stale source photo). Check which metric and table diverged before touching code.</div></details>
+</div>
+
+<div class="callout green"><span class="kind">Where to go deeper</span>The full platform documentation lives in the <b>Lufthansa_ADW_Discovery</b> portal: Architecture (06) for the E2E machine verbatim, Frameworks (08) for ODAT/DDL/Data-Load/AVF/Brickify internals, What's New (05) for the latest decisions incl. the centralized metric collector, and FAQ/Debug (15) for more triage recipes.</div>
+
+<footer>ADW Migration · E2E Stream Job Developer Reference · worked example IMP_TDA_BOOKING_GERMANY (structure varies per stream — see §9) · companion to the Lufthansa_ADW_Discovery portal</footer>
+</div></body></html>
