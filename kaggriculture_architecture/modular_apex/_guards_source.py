@@ -975,6 +975,13 @@ def _v233_eligible(obs,native):
     if animal=='SHEEP' and 'YARN_STORE' not in shops:return False
     if animal=='COW' and prices.get('MILK',0)<100:return False
     if animal=='SHEEP' and prices.get('WOOL',0)<100:return False
+    opp_farm=obs['farms'][1-obs['player']]
+    opp_cows=sum(isinstance(t,dict) and t.get('animal')=='COW' for r_tile in opp_farm['tiles'] for t in r_tile)
+    opp_sheep=sum(isinstance(t,dict) and t.get('animal')=='SHEEP' for r_tile in opp_farm['tiles'] for t in r_tile)
+    milk_shops=sum(shops.count(s) for s in ('ICE_CREAM_SHOP','PIZZA_SHOP','SMOOTHIE_SHOP'))
+    wool_shops=shops.count('YARN_STORE')
+    if animal=='COW' and opp_cows>=6 and milk_shops<3:return False
+    if animal=='SHEEP' and opp_sheep>=4 and wool_shops<2:return False
     if obs['private']['shed'].get('SHEEP',0) or obs['private']['shed'].get('COW',0):return False
     if any(i.get('SHEEP',0) or i.get('COW',0) for i in obs['private']['inventories']):return False
     for day in range(12,30):

@@ -50,6 +50,9 @@ An agent run is flagged as **CRITICAL DEFECT** if any of the following occur:
 | **Ghost Land (0 tiles cultivated)** | ❌ CRITICAL | `BUY_LAND` executed for NE/SW/SE, but no worker was routed there. | Route hired hands to cultivate newly unlocked quadrants. |
 | **Phantom Sell Orders (>50 units)** | ❌ CRITICAL | Market tape fires `SELL` orders when shed inventory is 0. | Filter market orders against `obs["private"]["shed"]` before submission. |
 | **Livestock Escaped** | ❌ CRITICAL | Animals missed feeding for 2 consecutive days. | Verify daily wheat feeding task in worker queue. |
+| **Negative Net Feed Margin (Glut Trap)** | ❌ CRITICAL | Feeding animals when `sale_price < wheat_price * interval`. Milk/wool crashed to $1 while wheat surged to $45+. | Implement macroeconomic demand guard: abstain from expansion / halt unprofitable feeding unless 2+ town demand buildings exist. |
+| **Sunk-Cost SE Expansion Trap** | ❌ CRITICAL | Spending $4,000 on SE quadrant in 1v1 play when opponent already floods market with livestock. | Gate SE quadrant unlock on town demand capacity and opponent animal census. |
+| **Terminal Zero-Yield Feeding Waste** | ⚠️ WARNING | Feeding wheat ($45+) on Days 28–29 when no additional production milestone occurs before Step 720. | Cut off wheat purchases and feeding on Day 28/29 once remaining interval exceeds remaining turns. |
 | **Dormant Seeds (>5 bought, 0 planted)** | ⚠️ WARNING | Agent spends money buying seeds that are never planted. | Remove dormant seed orders or dispatch planters. |
 
 ---
